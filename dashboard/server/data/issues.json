@@ -1,0 +1,15 @@
+{
+  "issues": [
+    {
+      "id": "ISS-001",
+      "title": "Criar primeira campanha teste",
+      "description": "Testar fluxo completo com briefing real",
+      "status": "open",
+      "priority": "high",
+      "assignedTo": "estrategista",
+      "projectId": "proj_001",
+      "createdAt": "2024-06-01T10:00:00Z",
+      "updatedAt": "2026-06-02T17:20:58.462Z"
+    }
+  ]
+}

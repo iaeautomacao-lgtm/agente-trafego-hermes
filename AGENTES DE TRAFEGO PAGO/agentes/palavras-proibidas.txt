@@ -1,0 +1,152 @@
+================================================================================
+LISTA DE PALAVRAS E EXPRESSÕES PROIBIDAS
+================================================================================
+Setor: Tráfego Pago DDM
+Aplicação: Todos os agentes (Estrategista, Criativo, Compliance, Dados)
+Atualização: Versão 1.0
+
+================================================================================
+REGRA: Se qualquer termo abaixo aparecer em um criativo → REPROVADO AUTOMÁTICO
+================================================================================
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 1: TERMOS FINANCEIROS DIRETOS
+--------------------------------------------------------------------------------
+• dívida
+• débito
+• inadimplência
+• inadimplente
+• pendência
+• pendente
+• devedor
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 2: INSTITUIÇÕES DE CRÉDITO/COBRANÇA
+--------------------------------------------------------------------------------
+• SPC
+• Serasa
+• protesto
+• negativação
+• negativado
+• nome sujo
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 3: DOCUMENTOS E OBRIGAÇÕES
+--------------------------------------------------------------------------------
+• boleto em aberto
+• boleto vencido
+• valor em aberto
+• parcela atrasada
+• mensalidade atrasada
+• vencimento
+• vencido
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 4: AÇÕES DE COBRANÇA
+--------------------------------------------------------------------------------
+• cobrança
+• cobrar
+• regularize
+• regularização
+• quite
+• quitar
+• pagar
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 5: LINGUAGEM DE URGÊNCIA/PRESSÃO
+--------------------------------------------------------------------------------
+• última chance
+• última oportunidade
+• antes que seja tarde
+• não perca o prazo
+• prazo final
+• urgente
+• imediato
+• AGORA! (com exclamação)
+• corre que acaba
+• só até [data]
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 6: PROMESSAS PROIBIDAS
+--------------------------------------------------------------------------------
+• desconto garantido
+• aprovação garantida
+• aprovação automática
+• sem análise
+• 100% aprovado
+• desconto para inadimplentes
+• perdão de dívida
+
+
+--------------------------------------------------------------------------------
+CATEGORIA 7: LINGUAGEM DE AMEAÇA IMPLÍCITA
+--------------------------------------------------------------------------------
+• consequências
+• penalidade
+• multa
+• juros
+• bloqueio
+• suspensão
+• cancelamento de matrícula
+• impedimento
+
+
+================================================================================
+ALTERNATIVAS PERMITIDAS
+================================================================================
+
+Em vez de...                    Use...
+--------------------------------------------------------------------------------
+"Regularize sua situação"   →   "Fale com a gente"
+"Pague suas pendências"     →   "Conheça suas opções"
+"Boleto em aberto"          →   "Condições especiais"
+"Última chance"             →   "Oportunidade disponível"
+"Antes que seja tarde"      →   "Sua jornada continua"
+"Quite sua dívida"          →   "Retome seus estudos"
+"Desconto para inadimplentes" → "Condições facilitadas"
+
+
+================================================================================
+EXEMPLOS DE FRASES APROVADAS
+================================================================================
+
+✅ "Sua jornada continua aqui."
+✅ "Retome com condições especiais para você."
+✅ "Fale com a [instituição] e descubra suas opções."
+✅ "Mais um passo para concluir sua graduação."
+✅ "Estamos aqui para ajudar você a seguir em frente."
+✅ "Converse com nosso time de atendimento."
+✅ "Novas possibilidades para você."
+✅ "Seu futuro acadêmico não precisa esperar."
+
+
+================================================================================
+EXEMPLOS DE FRASES REPROVADAS
+================================================================================
+
+❌ "Regularize sua situação financeira agora!"
+❌ "Você tem boletos em aberto. Resolva já."
+❌ "Desconto de 50% para alunos inadimplentes."
+❌ "Não perca o prazo de renegociação."
+❌ "Sua dívida pode ser quitada com desconto."
+❌ "Evite ter o nome negativado."
+❌ "Última chance de regularização."
+❌ "Antes que seja tarde demais."
+
+
+================================================================================
+PROCESSO DE ATUALIZAÇÃO
+================================================================================
+
+1. Novas palavras podem ser adicionadas pelo time de Compliance
+2. Toda adição deve ser comunicada a todos os agentes
+3. O arquivo deve ser versionado (ex: v1.1, v1.2)
+4. Dashboard deve exibir versão atual da lista
+
+================================================================================

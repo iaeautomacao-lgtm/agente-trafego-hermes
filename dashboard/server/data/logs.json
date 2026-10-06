@@ -1,0 +1,76 @@
+{
+  "logs": [
+    {
+      "id": "log_1780420444924_b4o0yo1e1",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Iniciando execução",
+      "meta": {
+        "skill": "ddm-estrategista-trafego"
+      },
+      "timestamp": "2026-06-02T17:14:04.924Z"
+    },
+    {
+      "id": "log_1780420444932_siwdsnzou",
+      "level": "debug",
+      "agentId": "estrategista",
+      "message": "Input: Campanha: Universidade XPTO. Meta: gerar leads portal renegociacao. Orcamento: R$5000. Periodo: Set/2024...",
+      "meta": {},
+      "timestamp": "2026-06-02T17:14:04.932Z"
+    },
+    {
+      "id": "log_1780420539259_24r63phpd",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Tokens: 622 (~$0.0090)",
+      "meta": {},
+      "timestamp": "2026-06-02T17:15:39.259Z"
+    },
+    {
+      "id": "log_1780420539261_clhvt7ffe",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Execução concluída com sucesso",
+      "meta": {
+        "duration": 94303
+      },
+      "timestamp": "2026-06-02T17:15:39.261Z"
+    },
+    {
+      "id": "log_1780421022114_qdwjhivt2",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Iniciando execução",
+      "meta": {
+        "skill": "ddm-estrategista-trafego"
+      },
+      "timestamp": "2026-06-02T17:23:42.114Z"
+    },
+    {
+      "id": "log_1780421022116_7j3d17caz",
+      "level": "debug",
+      "agentId": "estrategista",
+      "message": "Input:  Campanha Faculdade Teste. Meta: 100 leads. Orçamento R$2000....",
+      "meta": {},
+      "timestamp": "2026-06-02T17:23:42.116Z"
+    },
+    {
+      "id": "log_1780421085827_9bjofrb7g",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Tokens: 2089 (~$0.0311)",
+      "meta": {},
+      "timestamp": "2026-06-02T17:24:45.827Z"
+    },
+    {
+      "id": "log_1780421085831_q7ekk8id5",
+      "level": "info",
+      "agentId": "estrategista",
+      "message": "Execução concluída com sucesso",
+      "meta": {
+        "duration": 63704
+      },
+      "timestamp": "2026-06-02T17:24:45.831Z"
+    }
+  ]
+}

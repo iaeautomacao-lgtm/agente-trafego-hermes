@@ -1,0 +1,13 @@
+{
+  "projects": [
+    {
+      "id": "proj_001",
+      "name": "Campanha Faculdade ABC",
+      "description": "Re-engajamento alunos pendência financeira",
+      "status": "active",
+      "agents": ["estrategista", "criativo", "compliance", "dados"],
+      "createdAt": "2024-06-01T10:00:00Z",
+      "updatedAt": "2024-06-01T10:00:00Z"
+    }
+  ]
+}

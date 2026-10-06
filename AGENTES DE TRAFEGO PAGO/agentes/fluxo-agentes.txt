@@ -1,0 +1,197 @@
+================================================================================
+FLUXO DOS AGENTES DE TRÁFEGO PAGO DDM
+================================================================================
+
+================================================================================
+1. VISÃO GERAL DO CICLO
+================================================================================
+
+                         ┌─────────────────┐
+                         │    BRIEFING     │
+                         │   (input humano)│
+                         └────────┬────────┘
+                                  │
+                                  ▼
+                    ┌─────────────────────────┐
+                    │      ESTRATEGISTA       │
+                    │   ddm-estrategista      │
+                    │                         │
+                    │  • Analisa briefing     │
+                    │  • Define público       │
+                    │  • Estrutura campanha   │
+                    │  • Define KPIs          │
+                    └────────────┬────────────┘
+                                 │
+                          plano_campanha
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │        CRIATIVO         │
+                    │   ddm-criativo          │
+                    │                         │
+                    │  • Cria headlines       │
+                    │  • Escreve copies       │
+                    │  • Define briefs visuais│
+                    │  • Varia ângulos        │
+                    └────────────┬────────────┘
+                                 │
+                          pack_criativos
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │       COMPLIANCE        │
+                    │   ddm-compliance        │
+                    │                         │
+                    │  • Verifica Meta Ads    │
+                    │  • Verifica LGPD        │
+                    │  • Verifica ética DDM   │
+                    │  • Emite parecer        │
+                    └────────────┬────────────┘
+                                 │
+                         parecer_compliance
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │   APROVAÇÃO HUMANA      │
+                    │   (obrigatória)         │
+                    │                         │
+                    │  • Revisa pareceres     │
+                    │  • Aprova/rejeita final │
+                    │  • Publica no Meta Ads  │
+                    └────────────┬────────────┘
+                                 │
+                          [campanha ativa]
+                                 │
+                          (aguarda métricas)
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │         DADOS           │
+                    │   ddm-dados             │
+                    │                         │
+                    │  • Analisa métricas     │
+                    │  • Identifica padrões   │
+                    │  • Gera hipóteses       │
+                    │  • Recomenda ações      │
+                    └────────────┬────────────┘
+                                 │
+                          analise_dados
+                                 │
+                                 ▼
+              ┌──────────────────────────────────────┐
+              │           PRÓXIMO CICLO              │
+              │                                      │
+              │  Estrategista recebe:                │
+              │  • Hipóteses do agente Dados         │
+              │  • Novo briefing (se houver)         │
+              │  • Ajustes solicitados               │
+              └──────────────────────────────────────┘
+                                 │
+                                 └─────────────────────────┐
+                                                          │
+                    ┌─────────────────────────┐           │
+                    │      ESTRATEGISTA       │◀──────────┘
+                    │      (novo ciclo)       │
+                    └─────────────────────────┘
+
+
+================================================================================
+2. VARIÁVEIS DE CONTEXTO
+================================================================================
+
+| Variável            | Origem       | Destino      | Conteúdo                |
+|---------------------|--------------|--------------|-------------------------|
+| briefing            | Humano       | Estrategista | Objetivo, público, etc  |
+| plano_campanha      | Estrategista | Criativo     | Plano com 7 seções      |
+| pack_criativos      | Criativo     | Compliance   | Headlines, copies, etc  |
+| parecer_compliance  | Compliance   | Humano       | Aprovado/Reprovado      |
+| relatorio_meta      | Humano       | Dados        | CSV/tabela do Meta Ads  |
+| analise_dados       | Dados        | Estrategista | Hipóteses próximo ciclo |
+
+
+================================================================================
+3. PONTOS DE INTERVENÇÃO HUMANA
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│  PONTO 1: PRÉ-BRIEFING                                                      │
+│  • Quem: Gestor de tráfego                                                  │
+│  • Ação: Validar briefing antes de enviar ao Estrategista                   │
+│  • Critério: Briefing completo? Objetivo claro? Orçamento definido?         │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  PONTO 2: PÓS-COMPLIANCE                                                    │
+│  • Quem: Gestor de tráfego + Jurídico (se necessário)                       │
+│  • Ação: Aprovar/rejeitar criativos finais                                  │
+│  • Critério: Parecer do Compliance + avaliação subjetiva                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  PONTO 3: PUBLICAÇÃO                                                        │
+│  • Quem: Gestor de tráfego                                                  │
+│  • Ação: Subir campanha no Meta Ads Manager                                 │
+│  • Critério: Criativos aprovados + configuração técnica                     │
+├─────────────────────────────────────────────────────────────────────────────┤
+│  PONTO 4: DECISÃO PÓS-ANÁLISE                                               │
+│  • Quem: Gestor de tráfego + Coordenação                                    │
+│  • Ação: Aceitar hipóteses do Dados ou mudar direção                        │
+│  • Critério: Alinhamento com objetivos de negócio                           │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+
+================================================================================
+4. MODOS DE EXECUÇÃO
+================================================================================
+
+MODO 1: FLUXO COMPLETO (briefing → criativos aprovados)
+─────────────────────────────────────────────────────────
+Comando: "INICIAR: [briefing]"
+Executa: Estrategista → Criativo → Compliance
+Retorna: Plano + Criativos + Parecer
+Tempo médio: 3-5 minutos
+
+
+MODO 2: ANÁLISE DE DADOS (métricas → hipóteses)
+─────────────────────────────────────────────────────────
+Comando: "ANALISAR: [colar relatório]"
+Executa: Apenas Dados
+Retorna: Análise em 4 partes + hipóteses
+Tempo médio: 1-2 minutos
+
+
+MODO 3: CICLO COMPLETO (inclui feedback)
+─────────────────────────────────────────────────────────
+Comando: "NOVO CICLO"
+Usa: Hipóteses do último Dados como input
+Executa: Estrategista → Criativo → Compliance
+Retorna: Nova campanha otimizada
+Tempo médio: 3-5 minutos
+
+
+MODO 4: AGENTE ISOLADO
+─────────────────────────────────────────────────────────
+Comando: Carregar skill específica
+Exemplo: skill_view("ddm-criativo-anuncios")
+Executa: Apenas o agente solicitado
+Uso: Retrabalho, ajuste pontual, teste
+
+
+================================================================================
+5. INTEGRAÇÃO COM DASHBOARD
+================================================================================
+
+O dashboard se comunica com os agentes via Hermes:
+
+┌─────────────┐         ┌─────────────┐         ┌─────────────┐
+│  DASHBOARD  │────────▶│   HERMES    │────────▶│   AGENTE    │
+│  (React)    │◀────────│   (CLI/API) │◀────────│   (Skill)   │
+└─────────────┘         └─────────────┘         └─────────────┘
+     │                        │                       │
+     │  POST /execute         │  delegate_task        │
+     │  {agent, input}        │  {skill, context}     │
+     │                        │                       │
+     │  GET /status           │  poll status          │
+     │  {agent_id}            │                       │
+     │                        │                       │
+     │  Response              │  Output               │
+     │  {output, status}      │  {result}             │
+
+
+================================================================================

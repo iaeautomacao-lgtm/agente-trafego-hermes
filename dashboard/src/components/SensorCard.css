@@ -1,0 +1,42 @@
+.sensor-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.sensor-card:hover {
+  border-color: var(--accent, var(--accent-blue));
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.sensor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.sensor-icon {
+  font-size: 1.2rem;
+}
+
+.sensor-label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+}
+
+.sensor-value {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--accent, var(--text));
+  margin-bottom: 4px;
+}
+
+.sensor-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}

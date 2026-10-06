@@ -1,0 +1,22 @@
+{
+  "goals": [
+    {
+      "id": "goal_001",
+      "title": "100 campanhas geradas",
+      "target": 100,
+      "current": 2,
+      "unit": "campanhas",
+      "deadline": "2024-12-31",
+      "status": "in_progress"
+    },
+    {
+      "id": "goal_002", 
+      "title": "Taxa sucesso > 95%",
+      "target": 95,
+      "current": 100,
+      "unit": "%",
+      "deadline": "2024-12-31",
+      "status": "on_track"
+    }
+  ]
+}

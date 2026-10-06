@@ -1,0 +1,121 @@
+{
+  "agents": [
+    {
+      "id": "estrategista",
+      "name": "Estrategista",
+      "skill": "ddm-estrategista-trafego",
+      "role": "Planejamento",
+      "description": "Transforma briefings em planos de campanha estruturados",
+      "icon": "📊",
+      "color": "#3B82F6",
+      "order": 1,
+      "inputs": [
+        "briefing"
+      ],
+      "outputs": [
+        "plano_campanha"
+      ],
+      "status": "idle",
+      "metrics": {
+        "totalRuns": 4,
+        "successCount": 4,
+        "failCount": 0,
+        "avgDuration": 70291
+      },
+      "lastRunStart": "2026-06-02T17:23:42.118Z",
+      "lastRun": "2026-06-02T17:24:45.835Z",
+      "lastOutput": "Perfeito. Agora vou executar o fluxo completo para a campanha \"Faculdade Teste\".\r\n\r\n================================================================================\r\nCAMPANHA: FACULDADE TESTE\r\nMeta: 100 leads | Orçamento: R$2.000\r\n================================================================================\r\n\r\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\r\nETAPA 1/3: ESTRATEGISTA\r\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\r\n\r\n1. OBJETIVO DA CAMPANHA\r\n   Gerar 100 leads qualificados de potenciais alunos interessados em \r\n   retomar/iniciar seus estudos na Faculdade Teste.\r\n   Ação esperada: preenchimento de formulário de contato.\r\n\r\n2. PÚBLICO-ALVO\r\n   - Faixa etária: 18-45 anos\r\n   - Interesse: educação superior, cursos de graduação, carreira\r\n   - Comportamento: engajamento com conteúdo educacional\r\n   - Segmentação Meta: Lookalike de alunos atuais (1-3%) + Interesses em \r\n     faculdades, vestibular, educação a distância, carreira profissional\r\n   - Geolocalização: raio de atuação da instituição\r\n\r\n3. ESTRUTURA DE CAMPANHA\r\n   Campanha: Leads - Faculdade Teste\r\n   \r\n   Conjunto 1 - Aspiracional (40% verba = R$800)\r\n   → Público: interesses em carreira, desenvolvimento profissional\r\n   → Foco: sonho, transformação de vida\r\n   \r\n   Conjunto 2 - Racional (40% verba = R$800)\r\n   → Público: interesses em faculdade, ensino superior\r\n   → Foco: benefícios práticos, diferenciais\r\n   \r\n   Conjunto 3 - Retargeting (20% verba = R$400)\r\n   → Público: visitantes site 30 dias\r\n   → Foco: reforço de CTA\r\n\r\n4. FUNIL\r\n   Consciência: alcance via stories/reels (awareness do nome)\r\n   Consideração: feed com benefícios/diferenciais\r\n   Conversão: formulário nativo Meta (Lead Ads)\r\n\r\n5. HIPÓTESES DE TESTE A/B\r\n   H1: Headline aspiracional vs. racional (qual gera mais cliques?)\r\n   H2: Imagem com pessoa vs. imagem conceitual (qual converte mais?)\r\n\r\n6. KPIs PRIORITÁRIOS\r\n   - CPL (Custo por Lead) — meta: R$20,00\r\n   - CTR (Click-Through Rate) — meta: >1%\r\n   - Taxa de conversão do formulário — meta: >15%\r\n   - Volume de leads — meta: 100\r\n\r\n7. RESTRIÇÕES DE LINGUAGEM\r\n   Proibido: dívida, débito, inadimplência, cobrança, atraso, vencido,\r\n   boleto em aberto, regularize, última chance, antes que seja tarde\r\n   \r\n   Permitido: jornada, oportunidade, condições especiais, retome,\r\n   conquiste, próximo passo\r\n\r\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\r\nETAPA 2/3: CRIATIVO\r\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\r\n\r\n────────────────────────────────────────────────────────────────────────────────\r\nCONJUNTO 1 — ASPIRACIONAL\r\nÂngulo: Transformação de vida através da educação\r\n────────────────────────────────────────────────────────────────────────────────\r\n\r\nCRIATIVO 1A\r\n  Headline A: Sua história merece um diploma (32 chars)\r\n  Headline B: O futuro começa com um passo (29 chars)\r\n  Texto A: Transforme seu sonho em conquista. A Faculdade Teste \r\n           tem o caminho certo para você. (89 chars)\r\n  Texto B: Cada grande jornada começa com uma decisão. Descubra \r\n           como a educação pode mudar sua vida. (93 chars)\r\n  Descrição link: Inscreva-se agora (17 chars)\r\n  Brief visual: Pessoa jovem/adulta sorrindo, ambiente universitário \r\n                ao fundo, cores institucionais, iluminação natural\r\n\r\nCRIATIVO 1B\r\n  Headline A: Realize seu potencial (21 chars)\r\n  Headline B: Você pode mais (14 chars)\r\n  Texto A: Na Faculdade Teste, seu futuro ganha forma. Conheça \r\n           nossos cursos e condições especiais. (92 chars)\r\n  Texto B: Investir em você é a melhor decisão. Venha conhecer \r\n           a Faculdade Teste. (74 chars)\r\n  Descrição link: Saiba mais (10 chars)\r\n  Brief visual: Formatura, capelo sendo jogado para cima, \r\n                celebração, tons alegres\r\n\r\n────────────────────────────────────────────────────────────────────────────────\r\nCONJUNTO 2 — RACIONAL\r\nÂngulo: Benefícios práticos e diferenciais competitivos\r\n────────────────────────────────────────────────────────────────────────────────\r\n\r\nCRIATIVO 2A\r\n  Headline A: Graduação com flexibilidade (26 chars)\r\n  Headline B: Estude no seu ritmo (19 chars)\r\n  Texto A: Cursos reconhecidos pelo MEC, mensalidades que cabem \r\n           no bolso e horários flexíveis. (88 chars)\r\n  Texto B: Faculdade Teste: qualidade de ensino e condições \r\n           especiais para você começar agora. (86 chars)\r\n  Descrição link: Ver cursos (10 chars)\r\n  Brief visual: Grid com ícones (diploma, relógio, cifra), \r\n                design limpo, cores institucionais\r\n\r\nCRIATIVO 2B\r\n  Headline A: Seu diploma mais perto (22 chars)\r\n  Headline B: Qualidade ao seu alcance (24 chars)\r\n  Texto A: Professores qualificados, infraestrutura completa e \r\n           suporte do início ao fim. Conheça! (91 chars)\r\n  Texto B: A Faculdade Teste oferece o melhor custo-benefício \r\n           para sua graduação. Fale conosco. (89 chars)\r\n  Descrição link",
+      "lastError": null
+    },
+    {
+      "id": "criativo",
+      "name": "Criativo",
+      "skill": "ddm-criativo-anuncios",
+      "role": "Produção",
+      "description": "Produz copies e briefs visuais para Meta Ads",
+      "icon": "✨",
+      "color": "#F59E0B",
+      "order": 2,
+      "inputs": [
+        "plano_campanha"
+      ],
+      "outputs": [
+        "pack_criativos"
+      ],
+      "status": "idle",
+      "metrics": {
+        "totalRuns": 0,
+        "successCount": 0,
+        "failCount": 0,
+        "avgDuration": 0
+      }
+    },
+    {
+      "id": "compliance",
+      "name": "Compliance",
+      "skill": "ddm-compliance-anuncios",
+      "role": "Controle",
+      "description": "Revisa criativos (Meta Ads, LGPD, ética DDM)",
+      "icon": "✅",
+      "color": "#10B981",
+      "order": 3,
+      "inputs": [
+        "pack_criativos"
+      ],
+      "outputs": [
+        "parecer_compliance"
+      ],
+      "status": "idle",
+      "metrics": {
+        "totalRuns": 0,
+        "successCount": 0,
+        "failCount": 0,
+        "avgDuration": 0
+      }
+    },
+    {
+      "id": "dados",
+      "name": "Dados",
+      "skill": "ddm-dados-campanhas",
+      "role": "Inteligência",
+      "description": "Analisa métricas e gera hipóteses para próximo ciclo",
+      "icon": "📈",
+      "color": "#8B5CF6",
+      "order": 4,
+      "inputs": [
+        "relatorio_meta"
+      ],
+      "outputs": [
+        "analise_dados"
+      ],
+      "status": "idle",
+      "metrics": {
+        "totalRuns": 0,
+        "successCount": 0,
+        "failCount": 0,
+        "avgDuration": 0
+      }
+    }
+  ],
+  "flows": [
+    {
+      "id": "campanha-completa",
+      "name": "Fluxo Campanha Completa",
+      "description": "Estrategista → Criativo → Compliance",
+      "steps": [
+        "estrategista",
+        "criativo",
+        "compliance"
+      ]
+    },
+    {
+      "id": "analise-ciclo",
+      "name": "Análise de Ciclo",
+      "description": "Dados → Estrategista (feedback loop)",
+      "steps": [
+        "dados",
+        "estrategista"
+      ]
+    }
+  ]
+}

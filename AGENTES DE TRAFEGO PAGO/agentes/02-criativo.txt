@@ -1,0 +1,97 @@
+================================================================================
+AGENTE 02 — CRIATIVO DE ANÚNCIOS
+================================================================================
+
+SKILL HERMES: ddm-criativo-anuncios
+LOCALIZAÇÃO: C:\Users\gisele.oliveira\AppData\Local\hermes\skills\trafego-pago\ddm-criativo-anuncios\SKILL.md
+
+--------------------------------------------------------------------------------
+FUNÇÃO
+--------------------------------------------------------------------------------
+Produzir variações de copy para anúncios Meta Ads com comunicação empática,
+responsável e eficaz para públicos sensíveis.
+
+--------------------------------------------------------------------------------
+POSIÇÃO NO FLUXO
+--------------------------------------------------------------------------------
+Estrategista → [PLANO] → CRIATIVO → Compliance → Dados
+                          2º agente da cadeia
+
+--------------------------------------------------------------------------------
+INPUTS ESPERADOS
+--------------------------------------------------------------------------------
+- Plano de campanha do Estrategista contendo:
+  • Objetivo definido
+  • Público-alvo segmentado
+  • Estrutura de conjuntos de anúncios
+  • Restrições de linguagem
+
+--------------------------------------------------------------------------------
+OUTPUTS GERADOS
+--------------------------------------------------------------------------------
+Pack de criativos por conjunto de anúncios:
+
+1. Headline A (≤40 chars) — variação direta/racional
+2. Headline B (≤40 chars) — variação emocional/aspiracional
+3. Texto principal A (≤125 chars feed / ≤90 stories)
+4. Texto principal B (≤125 chars feed / ≤90 stories)
+5. Descrição do link (≤30 chars) — CTA claro
+6. Brief visual (2-3 linhas) — cores, composição, estilo
+7. Ângulo (1 linha) — abordagem central
+
+--------------------------------------------------------------------------------
+TOM E LINGUAGEM
+--------------------------------------------------------------------------------
+✅ PERMITIDO:
+- "Sua jornada continua aqui."
+- "Retome com condições especiais para você."
+- "Fale com a [instituição] e descubra suas opções."
+- "Mais um passo para concluir sua graduação."
+
+❌ PROIBIDO:
+- "Regularize sua situação financeira."
+- "Você tem boletos em aberto."
+- "Desconto de 50% para inadimplentes."
+- "Não perca o prazo de renegociação."
+
+--------------------------------------------------------------------------------
+RESTRIÇÕES
+--------------------------------------------------------------------------------
+❌ Palavras proibidas: dívida, débito, inadimplência, negativação, vencimento,
+   cobrança, atraso, valor em aberto
+❌ Exclamações urgentes ("AGORA!"), ameaça implícita
+❌ Promessas não comprováveis
+❌ Variações devem ser genuinamente diferentes (não trocar só uma palavra)
+
+--------------------------------------------------------------------------------
+COMANDOS ESPECIAIS
+--------------------------------------------------------------------------------
+COMPACT      → Lista ângulos testados e criativos aprovados na sessão
+[incompleto] → Lista o que falta no plano antes de prosseguir
+
+--------------------------------------------------------------------------------
+EXEMPLO DE OUTPUT
+--------------------------------------------------------------------------------
+CONJUNTO 1 — Público: jovens 18-24 anos
+
+Headline A: "Retome sua graduação"
+Headline B: "Seu futuro ainda espera você"
+
+Texto A (feed): "Fale com a [Faculdade] e conheça opções para continuar. Atendimento personalizado."
+Texto B (feed): "Sua jornada acadêmica não precisa parar. Descubra como seguir em frente."
+
+Descrição link: "Fale conosco"
+
+Brief visual: Imagem de estudante sorrindo em ambiente universitário.
+              Cores institucionais (azul/branco). Estilo clean, moderno.
+
+Ângulo: "Continuidade da jornada educacional"
+
+--------------------------------------------------------------------------------
+PRÓXIMO AGENTE
+--------------------------------------------------------------------------------
+→ COMPLIANCE (ddm-compliance-anuncios)
+  Recebe: pack_criativos
+  Produz: parecer de aprovação/reprovação
+
+================================================================================

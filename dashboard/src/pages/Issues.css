@@ -1,0 +1,108 @@
+.filter-select {
+  width: auto;
+  min-width: 140px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.issue-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.issue-card.done {
+  opacity: 0.6;
+}
+
+.issue-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.issue-id {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-family: monospace;
+}
+
+.issue-priority {
+  width: 4px;
+  height: 24px;
+  border-radius: 2px;
+}
+
+.issue-content {
+  flex: 1;
+}
+
+.issue-content h4 {
+  font-size: 1rem;
+  margin-bottom: 4px;
+}
+
+.issue-content p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.issue-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.issue-assignee {
+  color: var(--text-muted);
+}
+
+.issue-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.status-select {
+  width: auto;
+  min-width: 120px;
+  font-size: 0.8rem;
+  padding: 6px 10px;
+}
+
+.form-card {
+  margin-bottom: 24px;
+}
+
+.form-card h3 {
+  margin-bottom: 16px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: var(--text-muted);
+}

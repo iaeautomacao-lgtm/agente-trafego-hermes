@@ -1,0 +1,40 @@
+{
+  "usage": {
+    "totalTokens": 2711,
+    "totalCost": 0.040160999999999995,
+    "byAgent": {
+      "estrategista": {
+        "tokens": 2711,
+        "cost": 0.040160999999999995,
+        "runs": 2
+      }
+    },
+    "byDay": {
+      "2026-06-02": {
+        "tokens": 2711,
+        "cost": 0.040160999999999995,
+        "runs": 2
+      }
+    },
+    "history": [
+      {
+        "agentId": "estrategista",
+        "inputTokens": 26,
+        "outputTokens": 596,
+        "totalTokens": 622,
+        "cost": 0.009,
+        "model": "claude-sonnet-4",
+        "timestamp": "2026-06-02T17:15:39.258Z"
+      },
+      {
+        "agentId": "estrategista",
+        "inputTokens": 16,
+        "outputTokens": 2073,
+        "totalTokens": 2089,
+        "cost": 0.0311,
+        "model": "claude-sonnet-4",
+        "timestamp": "2026-06-02T17:24:45.825Z"
+      }
+    ]
+  }
+}

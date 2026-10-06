@@ -1,0 +1,75 @@
+================================================================================
+AGENTE 01 — ESTRATEGISTA DE TRÁFEGO
+================================================================================
+
+SKILL HERMES: ddm-estrategista-trafego
+LOCALIZAÇÃO: C:\Users\gisele.oliveira\AppData\Local\hermes\skills\trafego-pago\ddm-estrategista-trafego\SKILL.md
+
+--------------------------------------------------------------------------------
+FUNÇÃO
+--------------------------------------------------------------------------------
+Transformar briefings de campanha em planos estruturados, prontos para execução
+pelos agentes Criativo e Compliance.
+
+--------------------------------------------------------------------------------
+POSIÇÃO NO FLUXO
+--------------------------------------------------------------------------------
+[BRIEFING] → ESTRATEGISTA → Criativo → Compliance → Dados
+     1º agente da cadeia
+
+--------------------------------------------------------------------------------
+INPUTS ESPERADOS
+--------------------------------------------------------------------------------
+- Briefing de campanha contendo:
+  • Objetivo de negócio (qual ação o aluno deve tomar)
+  • Público-alvo (descrição geral)
+  • Orçamento disponível
+  • Período da campanha
+  • Restrições específicas (se houver)
+
+--------------------------------------------------------------------------------
+OUTPUTS GERADOS
+--------------------------------------------------------------------------------
+Plano de campanha com 7 seções:
+
+1. Objetivo da campanha — ação esperada do aluno
+2. Público-alvo — segmento, faixa etária, segmentação Meta
+3. Estrutura de campanha — conjuntos, lógica, orçamento
+4. Funil — consciência → consideração → conversão
+5. Hipóteses de teste A/B — mínimo 2
+6. KPIs prioritários — máximo 4 métricas
+7. Restrições de linguagem — palavras/abordagens proibidas
+
+--------------------------------------------------------------------------------
+RESTRIÇÕES
+--------------------------------------------------------------------------------
+❌ Nunca segmentação que identifique publicamente inadimplentes
+❌ Nunca promessa de desconto garantido ou aprovação automática
+❌ Nunca linguagem de cobrança, pressão ou urgência coercitiva
+⚠️ Dados de alunos = dado sensível (LGPD Art. 11)
+⚠️ Públicos personalizados requerem base legal documentada
+
+--------------------------------------------------------------------------------
+COMANDOS ESPECIAIS
+--------------------------------------------------------------------------------
+COMPACT     → Resume últimas decisões em 5 pontos (para colar em novo contexto)
+[incompleto] → Lista informações faltantes antes de gerar plano
+
+--------------------------------------------------------------------------------
+EXEMPLO DE USO
+--------------------------------------------------------------------------------
+Input:
+"Preciso de uma campanha para re-engajamento de alunos da Faculdade X.
+Orçamento: R$ 5.000/mês. Período: Julho 2024. Objetivo: fazer o aluno
+acessar o portal de negociação."
+
+Output: Plano completo com as 7 seções.
+
+--------------------------------------------------------------------------------
+PRÓXIMO AGENTE
+--------------------------------------------------------------------------------
+→ CRIATIVO (ddm-criativo-anuncios)
+  Recebe: plano_campanha
+  Produz: pack de criativos
+
+================================================================================

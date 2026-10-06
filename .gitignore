@@ -1,0 +1,16 @@
+# sistema
+.DS_Store
+Thumbs.db
+
+# node
+node_modules/
+dist/
+dashboard/node_modules/
+dashboard/dist/
+
+# segredos e sessões
+.env
+.env.*
+*.key
+_hermes-session-raw.json
+dashboard/server/data/*.log
