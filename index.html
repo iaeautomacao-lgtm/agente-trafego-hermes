@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agente de Tráfego Pago — Grupo DDM</title>
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--line:#262b36;--ink:#e8eaf0;--muted:#9aa3b2;--acc:#7cc4ff;--ok:#5fd38d;--warn:#f0c062}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,Segoe UI,Inter,Roboto,sans-serif}
+  main{max-width:880px;margin:0 auto;padding:40px 20px 64px}
+  h1{font-size:28px;margin:0 0 6px}
+  .sub{color:var(--muted);margin:0 0 28px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:0 0 28px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .card h3{margin:0 0 6px;font-size:15px}
+  .card p{margin:0;color:var(--muted);font-size:14px}
+  .tag{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px}
+  .ok{color:var(--ok);border-color:var(--ok)} .warn{color:var(--warn);border-color:var(--warn)}
+  table{width:100%;border-collapse:collapse;margin:0 0 28px;font-size:14px}
+  th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{color:var(--muted);font-weight:600}
+  a{color:var(--acc);text-decoration:none} a:hover{text-decoration:underline}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 28px}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:14px}
+  .arrow{color:var(--muted)}
+  footer{color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:16px}
+</style>
+</head>
+<body>
+<main>
+  <h1>Agente de Tráfego Pago (Meta Ads)</h1>
+  <p class="sub">Grupo DDM · Automação &amp; IA · agentes Hermes orquestrados pelo Paperclip. Nada é publicado no Meta Ads sem aprovação humana.</p>
+
+  <div class="flow">
+    <span class="step">Briefing</span><span class="arrow">→</span>
+    <span class="step">Estrategista</span><span class="arrow">→</span>
+    <span class="step">Criativo</span><span class="arrow">→</span>
+    <span class="step">Compliance (score 0–100)</span><span class="arrow">→</span>
+    <span class="step">Aprovação humana</span><span class="arrow">→</span>
+    <span class="step">Publicar PAUSADO</span><span class="arrow">→</span>
+    <span class="step">Dados</span>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h3>Skills Hermes <span class="tag ok">funcionando</span></h3><p>5 skills em <a href="skills/trafego-pago/">skills/trafego-pago/</a>: estrategista, criativo, compliance, dados e orquestrador.</p></div>
+    <div class="card"><h3>Orquestração no Paperclip <span class="tag ok">funcionando</span></h3><p>Agente Orquestrador Hermes delega por child issues e para no gate de aprovação.</p></div>
+    <div class="card"><h3>Demos <span class="tag ok">2</span></h3><p><a href="exemplos/campanha-faculdade-teste-2026-10-01.md">Terminal (01/10)</a> · <a href="exemplos/demo-matricula-trancada-paperclip.md">Paperclip (06/10)</a></p></div>
+    <div class="card"><h3>Dashboard <span class="tag warn">parcial</span></h3><p>React/Vite + Express herdado do repo Agente-Trafego; bridge Hermes corrigida.</p></div>
+  </div>
+
+  <table>
+    <tr><th>Demo</th><th>Entrada</th><th>Saída</th><th>Score</th><th>Tempo</th></tr>
+    <tr><td>Terminal (Hermes)</td><td>Briefing faculdade, R$ 3.000 / 14 dias</td><td>Plano + 6 criativos + parecer</td><td>20 / 100 🟢</td><td>4 min 33 s</td></tr>
+    <tr><td>Paperclip (4 agentes)</td><td>Matrícula trancada, R$ 3.000 / 14 dias</td><td>Plano + 6 criativos + parecer + documento final</td><td>18 / 100 🟢</td><td>~18 min</td></tr>
+  </table>
+
+  <table>
+    <tr><th>Pendente</th><th>Depende de</th></tr>
+    <tr><td>Agente Designer (artes dos criativos)</td><td>Gustavo</td></tr>
+    <tr><td>Acesso ao Meta Business Manager e integração com a API (publicar pausado)</td><td>Gustavo / chave OpenAI via Gisele</td></tr>
+    <tr><td>Score de risco com Jev (TypeSafe)</td><td>Chave de API TypeSafe</td></tr>
+  </table>
+
+  <footer>Repositório: <a href="https://github.com/iaeautomacao-lgtm/agente-trafego-hermes">github.com/iaeautomacao-lgtm/agente-trafego-hermes</a> · Publicação: commit + push → cPanel Git (Atualizar). Responsável: João Guilherme (Gui).</footer>
+</main>
+</body>
+</html>
