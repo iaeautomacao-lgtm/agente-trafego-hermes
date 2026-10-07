@@ -48,7 +48,7 @@
   .panel .hint{margin:0 0 18px;font-size:13.5px;color:var(--mute)}
   .stack > .panel + .panel{margin-top:28px}
 
-  .pipe{display:grid;grid-template-columns:repeat(6,1fr);position:relative;margin-top:8px}
+  .pipe{display:grid;grid-template-columns:repeat(7,1fr);position:relative;margin-top:8px}
   .pipe::before{content:"";position:absolute;left:6px;right:6px;top:7px;height:1px;background:var(--line-2)}
   .pst{position:relative;padding:20px 12px 0 0}
   .pst::before{content:"";position:absolute;left:0;top:2px;width:11px;height:11px;border-radius:50%;background:var(--panel);border:1.5px solid var(--mute)}
@@ -112,15 +112,48 @@
   .todo li:first-child{border-top:0}
   .todo li span{color:var(--mute);font-size:12.5px;white-space:nowrap}
 
+  /* Resultados */
+  .res-top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:14px}
+  .sel{background:var(--panel-2);border:1px solid var(--line);border-radius:7px;color:var(--ink);padding:8px 12px;font:13.5px var(--sans)}
+  .badge{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--amber);border:1px solid rgba(232,163,61,.45);border-radius:999px;padding:5px 11px}
+  .badge.ok{color:var(--ok);border-color:rgba(123,196,127,.45)}
+  .empty{padding:34px 20px;text-align:center;border:1px dashed var(--line-2);border-radius:9px;color:var(--ink-2)}
+  .empty p{margin:0 0 6px;max-width:520px;margin-inline:auto}
+  .empty .btn{margin-top:14px}
+  .rk{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:18px}
+  .rk > div{padding:14px 16px;border-right:1px solid var(--line);background:var(--panel-2)}
+  .rk > div:last-child{border-right:0}
+  .rk b{display:block;font-family:var(--serif);font-weight:300;font-size:28px;letter-spacing:-.02em;line-height:1}
+  .rk span{display:block;font-size:12px;color:var(--mute);margin-top:6px}
+  .rk em{display:block;font-style:normal;font-size:11.5px;margin-top:4px}
+  .rk em.ok{color:var(--ok)}.rk em.amb{color:var(--amber)}.rk em.red{color:var(--red)}
+  .charts{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+  .chart h3{margin:0 0 2px;font-size:13.5px;font-weight:600}
+  .chart .hint{margin:0 0 10px}
+  .chart svg{width:100%;height:auto;display:block;overflow:visible}
+  .legend{display:flex;gap:16px;font-size:12px;color:var(--mute);margin-top:6px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+  .read{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .read h3{margin:0 0 8px;font-size:13.5px;font-weight:600}
+  .read p{margin:0 0 12px;color:var(--ink-2);font-size:13.5px}
+  .read ul{margin:0;padding-left:18px;color:var(--ink-2);font-size:13.5px}
+  .read li{margin:4px 0}
+  .read .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .read .next{margin-top:12px;padding:12px 14px;border-left:2px solid var(--orange);background:var(--panel-2);border-radius:0 8px 8px 0;font-size:13.5px}
+  .st-tag{font-size:12px;font-weight:600;padding:3px 8px;border-radius:5px;background:rgba(255,255,255,.06);white-space:nowrap}
+  .st-tag.Escalar{color:var(--ok)}.st-tag.Pausar{color:var(--red)}.st-tag.Reativar{color:var(--amber)}
+
   footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--mute);font-size:12.5px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
 
   @media (max-width:1000px){
     .grid{grid-template-columns:1fr}
     .kpis{grid-template-columns:repeat(3,1fr)}.kpi:nth-child(3){border-right:0}.kpi:nth-child(n+4){border-top:1px solid var(--line);padding-top:18px}.kpi:nth-child(4){padding-left:0}
-    .pipe{grid-template-columns:repeat(3,1fr);row-gap:10px}.pipe::before{display:none}
+    .pipe{grid-template-columns:repeat(4,1fr);row-gap:10px}.pipe::before{display:none}
   }
   @media (max-width:600px){
     .wrap{padding:0 16px 56px}
+    .rk{grid-template-columns:1fr 1fr}.rk > div{border-bottom:1px solid var(--line)}
+    .charts{grid-template-columns:1fr}.read .cols{grid-template-columns:1fr}
     .top{flex-direction:column;align-items:flex-start;gap:10px}
     .kpis{grid-template-columns:1fr 1fr}.kpi{border-right:0!important;padding-left:0!important}
     .camp-h{grid-template-columns:1fr auto;gap:10px}.camp-h .date{grid-column:1/-1;min-width:0}
@@ -137,7 +170,7 @@
 <div class="top">
   <div class="brand"><span class="mark" aria-hidden="true"></span><h1>Agente de Tráfego Pago <span>· painel interno</span></h1></div>
   <div class="status">
-    <span><i class="dot"></i>4 agentes ativos</span>
+    <span><i class="dot"></i>5 agentes ativos</span>
     <span><i class="dot warn"></i>Designer em construção</span>
     <span>Atualizado em <time datetime="2026-10-06">6 out 2026</time></span>
   </div>
@@ -153,9 +186,17 @@
       <div id="camps"></div>
     </div>
 
+    <div class="panel" id="resultados">
+      <div class="res-top">
+        <div><h2>Resultados</h2><p class="hint" style="margin:0">Métricas da campanha publicada, lidas pelo agente Dados de Campanhas a partir do export do Meta Ads.</p></div>
+        <div id="res-ctl" style="display:flex;gap:10px;align-items:center"></div>
+      </div>
+      <div id="res"></div>
+    </div>
+
     <div class="panel">
       <h2>Fluxo</h2>
-      <p class="hint">Cada etapa é um agente. O orquestrador passa o resultado inteiro adiante e para na aprovação humana.</p>
+      <p class="hint">Cada etapa é um agente. O orquestrador passa o resultado inteiro adiante, para na aprovação humana e, depois da campanha rodar, recebe a leitura do agente de Dados.</p>
       <div class="pipe">
         <div class="pst on"><h3>Estrategista</h3><p>Plano em 7 seções</p></div>
         <div class="pst on"><h3>Criativo</h3><p>2 anúncios por conjunto</p></div>
@@ -163,6 +204,7 @@
         <div class="pst on"><h3>Compliance</h3><p>Score 0–100 por peça</p></div>
         <div class="pst gate"><h3>Aprovação humana</h3><p>Aprovar ou devolver</p></div>
         <div class="pst soon"><h3>Publicar pausado</h3><p>Meta Ads, desligado</p></div>
+        <div class="pst on"><h3>Dados</h3><p>Export → painel → próximo ciclo</p></div>
       </div>
     </div>
   </div>
@@ -197,7 +239,7 @@
         <div class="agent"><div class="g">C</div><div><h3>Criativo de Anúncios</h3><p>Headlines, textos, descrição de link</p></div><span class="st"><i class="dot"></i>ativo</span></div>
         <div class="agent"><div class="g">D</div><div><h3>Designer de Anúncios</h3><p>Direção de arte, prompts, peças feed e stories</p></div><span class="st"><i class="dot warn"></i>em construção</span></div>
         <div class="agent"><div class="g">R</div><div><h3>Compliance de Anúncios</h3><p>Meta, LGPD, palavras proibidas, score</p></div><span class="st"><i class="dot"></i>ativo</span></div>
-        <div class="agent"><div class="g">A</div><div><h3>Dados de Campanhas</h3><p>Métricas e recomendações depois de rodar</p></div><span class="st"><i class="dot off"></i>aguardando 1ª campanha</span></div>
+        <div class="agent"><div class="g">A</div><div><h3>Dados de Campanhas</h3><p>Export do Meta Ads → painel + hipóteses para o próximo ciclo</p></div><span class="st"><i class="dot"></i>ativo · sem dados ainda</span></div>
       </div>
     </div>
 
@@ -208,6 +250,7 @@
         <li>Acesso ao Meta Business Manager<span>Gustavo</span></li>
         <li>Integração com a API do Meta (publicar pausado)<span>chave OpenAI · Gisele</span></li>
         <li>Agente Designer gerando as artes<span>em construção</span></li>
+        <li>Export do Meta Ads da 1ª campanha para o agente Dados<span>depois da publicação</span></li>
         <li>Score de risco com Jev (TypeSafe), segunda opinião<span>chave de API</span></li>
       </ul>
     </div>
@@ -222,7 +265,7 @@
 </div>
 
 <script>
-const CAMPANHAS = [
+const CAMPANHAS_FALLBACK = [
   {
     id:"demo-2", data:"6 out 2026", via:"Paperclip · 4 agentes", nome:"Matrícula trancada — agendar conversa",
     objetivo:"Ex-aluno com matrícula trancada agenda conversa com a instituição", publico:"22–40 anos, trancaram nos últimos 24 meses, RMSP",
@@ -253,41 +296,174 @@ const CAMPANHAS = [
   }
 ];
 
+const BENCH_FALLBACK = { ctr_pct:[0.8,1.5], cpl_brl:[25,70], conversao_pct:[10,25], frequencia_max:3.0 };
+let CAMPANHAS = CAMPANHAS_FALLBACK, BENCH = BENCH_FALLBACK, SIM = null;
+
 function cls(v){ return v==="aprovado" ? "ok" : (v==="reprovado" ? "red" : "amb"); }
 function bar(c){ if(c.score==null) return `<span class="v ${cls(c.v)}">${c.sev}</span>`;
   const k = c.score<=20?"ok":(c.score<=50?"amb":"red");
   return `<div class="sc"><div class="bar"><i class="${k}" style="width:${c.score}%"></i></div><b>${c.score}</b></div>`; }
 
-const total = CAMPANHAS.reduce((a,c)=>a+c.criativos.length,0);
-const aprov = CAMPANHAS.reduce((a,c)=>a+c.criativos.filter(x=>x.v==="aprovado").length,0);
-const reprov = CAMPANHAS.reduce((a,c)=>a+c.criativos.filter(x=>x.v==="reprovado").length,0);
-const media = Math.round(CAMPANHAS.reduce((a,c)=>a+c.score,0)/CAMPANHAS.length);
-document.getElementById('kpis').innerHTML = `
-  <div class="kpi"><b>${CAMPANHAS.length}</b><span>campanhas montadas</span></div>
-  <div class="kpi"><b>${total}</b><span>criativos produzidos</span></div>
-  <div class="kpi"><b class="o">${media}</b><span>score médio de risco (0–100)</span></div>
-  <div class="kpi"><b>${aprov}<small style="font:14px var(--sans);color:var(--mute)"> de ${total}</small></b><span>criativos aprovados sem ressalvas</span></div>
-  <div class="kpi"><b>${reprov}</b><span>reprovados pelo compliance</span></div>`;
+function renderKpis(){
+  const total = CAMPANHAS.reduce((a,c)=>a+c.criativos.length,0);
+  const aprov = CAMPANHAS.reduce((a,c)=>a+c.criativos.filter(x=>x.v==="aprovado").length,0);
+  const reprov = CAMPANHAS.reduce((a,c)=>a+c.criativos.filter(x=>x.v==="reprovado").length,0);
+  const media = Math.round(CAMPANHAS.reduce((a,c)=>a+c.score,0)/CAMPANHAS.length);
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><b>${CAMPANHAS.length}</b><span>campanhas montadas</span></div>
+    <div class="kpi"><b>${total}</b><span>criativos produzidos</span></div>
+    <div class="kpi"><b class="o">${media}</b><span>score médio de risco (0–100)</span></div>
+    <div class="kpi"><b>${aprov}<small style="font:14px var(--sans);color:var(--mute)"> de ${total}</small></b><span>criativos aprovados sem ressalvas</span></div>
+    <div class="kpi"><b>${reprov}</b><span>reprovados pelo compliance</span></div>`;
+}
 
-document.getElementById('camps').innerHTML = CAMPANHAS.map((c,i)=>`
-  <div class="camp ${i===0?'open':''}">
-    <button class="camp-h" aria-expanded="${i===0}" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))">
-      <span class="date">${c.data}</span>
-      <span class="name">${c.nome}<small>${c.via} · ${c.tempo} · ${c.status}</small></span>
-      <span class="score">${c.score}<small>${c.veredito}</small></span>
-      <span class="chev" aria-hidden="true"></span>
-    </button>
-    <div class="camp-b">
-      <div class="meta">
-        <div><b>Objetivo</b>${c.objetivo}</div><div><b>Público</b>${c.publico}</div><div><b>Orçamento</b>${c.orcamento}</div><div><b>Período</b>${c.periodo}</div>
+function renderCamps(){
+  document.getElementById('camps').innerHTML = CAMPANHAS.map((c,i)=>`
+    <div class="camp ${i===0?'open':''}">
+      <button class="camp-h" aria-expanded="${i===0}" onclick="this.parentElement.classList.toggle('open');this.setAttribute('aria-expanded',this.parentElement.classList.contains('open'))">
+        <span class="date">${c.data}</span>
+        <span class="name">${c.nome}<small>${c.via} · ${c.tempo} · ${c.status}</small></span>
+        <span class="score">${c.score}<small>${c.veredito}</small></span>
+        <span class="chev" aria-hidden="true"></span>
+      </button>
+      <div class="camp-b">
+        <div class="meta">
+          <div><b>Objetivo</b>${c.objetivo}</div><div><b>Público</b>${c.publico}</div><div><b>Orçamento</b>${c.orcamento}</div><div><b>Período</b>${c.periodo}</div>
+        </div>
+        <table>
+          <thead><tr><th>Criativo</th><th>Headline</th><th>Conjunto</th><th>Score</th><th>Parecer</th></tr></thead>
+          <tbody>${c.criativos.map(x=>`<tr><td class="id">${x.id}</td><td class="hl">${x.hl}<small>${x.fmt}</small></td><td>${x.conj}</td><td>${bar(x)}</td><td><span class="v ${cls(x.v)}">${x.v}</span></td></tr>`).join('')}</tbody>
+        </table>
+        <div class="links"><a href="${c.arquivo}">Relatório completo</a></div>
       </div>
-      <table>
-        <thead><tr><th>Criativo</th><th>Headline</th><th>Conjunto</th><th>Score</th><th>Parecer</th></tr></thead>
-        <tbody>${c.criativos.map(x=>`<tr><td class="id">${x.id}</td><td class="hl">${x.hl}<small>${x.fmt}</small></td><td>${x.conj}</td><td>${bar(x)}</td><td><span class="v ${cls(x.v)}">${x.v}</span></td></tr>`).join('')}</tbody>
-      </table>
-      <div class="links"><a href="${c.arquivo}">Relatório completo</a></div>
+    </div>`).join('');
+}
+
+/* ---------- Resultados ---------- */
+const fmtBRL = n => n==null ? '—' : 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fmtN = n => n==null ? '—' : n.toLocaleString('pt-BR');
+const fmtPct = n => n==null ? '—' : n.toLocaleString('pt-BR',{maximumFractionDigits:2}) + '%';
+const fmtDia = d => { const [y,m,dd] = d.split('-'); return `${+dd}/${+m}`; };
+const ctrOf = x => x.impressoes ? x.cliques/x.impressoes*100 : null;
+const cplOf = x => x.leads ? x.gasto/x.leads : null;
+const frqOf = x => x.alcance ? x.impressoes/x.alcance : null;
+const cnvOf = x => x.leads && x.conversoes!=null ? x.conversoes/x.leads*100 : null;
+function inRange(v,[lo,hi]){ return v==null ? '' : (v<lo ? 'amb' : (v>hi ? 'red' : 'ok')); }
+function judge(k,v){
+  if(v==null) return ['','sem dado'];
+  if(k==='ctr'){ const s=inRange(v,BENCH.ctr_pct); return [s==='ok'?'ok':(v<BENCH.ctr_pct[0]?'red':'ok'), v<BENCH.ctr_pct[0]?'abaixo da faixa':(v>BENCH.ctr_pct[1]?'acima da faixa':'dentro da faixa')]; }
+  if(k==='cpl'){ return [v>BENCH.cpl_brl[1]?'red':'ok', v>BENCH.cpl_brl[1]?'acima da faixa':(v<BENCH.cpl_brl[0]?'abaixo da faixa':'dentro da faixa')]; }
+  if(k==='frq'){ return [v>BENCH.frequencia_max?'red':(v>BENCH.frequencia_max-0.5?'amb':'ok'), v>BENCH.frequencia_max?'desgaste':'saudável']; }
+  if(k==='cnv'){ return [v<BENCH.conversao_pct[0]?'red':'ok', v<BENCH.conversao_pct[0]?'abaixo da faixa':'dentro da faixa']; }
+  return ['',''];
+}
+
+function svgDaily(d){
+  const W=640,H=220,L=44,R=36,T=14,B=30, iw=W-L-R, ih=H-T-B, n=d.length;
+  const mg=Math.max(...d.map(x=>x.gasto||0))*1.15||1, ml=Math.max(...d.map(x=>x.leads||0))*1.15||1;
+  const bw=Math.max(6, iw/n*0.56);
+  const x=i=>L+iw*(i+0.5)/n;
+  const bars=d.map((r,i)=>`<rect x="${x(i)-bw/2}" y="${T+ih-(r.gasto/mg)*ih}" width="${bw}" height="${(r.gasto/mg)*ih}" rx="2" fill="rgba(242,106,27,.28)"/>`).join('');
+  const pts=d.map((r,i)=>`${x(i)},${T+ih-(r.leads/ml)*ih}`).join(' ');
+  const dots=d.map((r,i)=>`<circle cx="${x(i)}" cy="${T+ih-(r.leads/ml)*ih}" r="3" fill="#F3EDE4"/>`).join('');
+  const grid=[0,.5,1].map(f=>`<line x1="${L}" x2="${W-R}" y1="${T+ih-f*ih}" y2="${T+ih-f*ih}" stroke="rgba(255,255,255,.08)"/>`).join('');
+  const yl=[0,.5,1].map(f=>`<text x="${L-8}" y="${T+ih-f*ih+4}" text-anchor="end" font-size="10.5" fill="#7C7770">${Math.round(f*mg/1.15)}</text>`).join('');
+  const yr=[0,.5,1].map(f=>`<text x="${W-R+8}" y="${T+ih-f*ih+4}" font-size="10.5" fill="#7C7770">${Math.round(f*ml/1.15)}</text>`).join('');
+  const step=Math.ceil(n/7);
+  const xl=d.map((r,i)=> i%step===0||i===n-1 ? `<text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="10.5" fill="#7C7770">${fmtDia(r.dia)}</text>` : '').join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto por dia (barras) e leads por dia (linha)">${grid}${bars}<polyline points="${pts}" fill="none" stroke="#F3EDE4" stroke-width="1.6"/>${dots}${yl}${yr}${xl}</svg>
+  <div class="legend"><span><i style="background:rgba(242,106,27,.5)"></i>gasto (R$) — eixo esq.</span><span><i style="background:#F3EDE4"></i>leads — eixo dir.</span></div>`;
+}
+
+function svgCreatives(cr){
+  const rows=cr.map(c=>({...c, cpl:cplOf(c), ctr:ctrOf(c)})).sort((a,b)=>(a.cpl??1e9)-(b.cpl??1e9));
+  const W=460, rh=30, T=8, H=T+rows.length*rh+22, L=44, R=60, iw=W-L-R;
+  const mx=Math.max(BENCH.cpl_brl[1]*1.2, ...rows.map(r=>r.cpl||0))*1.05;
+  const sx=v=>L+iw*v/mx;
+  const band=`<rect x="${sx(BENCH.cpl_brl[0])}" y="${T-4}" width="${sx(BENCH.cpl_brl[1])-sx(BENCH.cpl_brl[0])}" height="${rows.length*rh+8}" fill="rgba(123,196,127,.08)"/>
+    <text x="${sx(BENCH.cpl_brl[1])}" y="${H-6}" text-anchor="middle" font-size="10.5" fill="#7BC47F">faixa R$ ${BENCH.cpl_brl[0]}–${BENCH.cpl_brl[1]}</text>`;
+  const bars=rows.map((r,i)=>{
+    const y=T+i*rh, col = r.cpl==null?'#3a3a3a':(r.cpl>BENCH.cpl_brl[1]?'#E5533D':(r.status==='Escalar'?'#7BC47F':'#F26A1B'));
+    const w=r.cpl==null?0:sx(r.cpl)-L;
+    return `<text x="${L-8}" y="${y+rh/2+4}" text-anchor="end" font-size="12" fill="#F3EDE4">${r.id}</text>
+      <rect x="${L}" y="${y+7}" width="${w}" height="${rh-14}" rx="2" fill="${col}"/>
+      <text x="${L+w+8}" y="${y+rh/2+4}" font-size="11.5" fill="#B9B3A8">${r.cpl==null?'—':fmtBRL(r.cpl)} · CTR ${fmtPct(r.ctr)}</text>`;
+  }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="CPL por criativo">${band}${bars}</svg>
+  <div class="legend"><span><i style="background:#7BC47F"></i>escalar</span><span><i style="background:#F26A1B"></i>manter</span><span><i style="background:#E5533D"></i>acima da faixa</span></div>`;
+}
+
+function renderResults(){
+  const ctl=document.getElementById('res-ctl'), box=document.getElementById('res');
+  const withData = CAMPANHAS.filter(c=>c.resultados);
+  let camp = withData[0];
+  if(SIM){ camp = {...SIM.camp, resultados: SIM.res}; }
+  if(!camp){
+    ctl.innerHTML='';
+    box.innerHTML=`<div class="empty">
+      <p><b>Nenhuma campanha publicada ainda.</b></p>
+      <p>Quando a primeira rodar, o export do Meta Ads vai para o agente Dados de Campanhas. Ele atualiza <code>dados/campanhas.json</code> e os gráficos aparecem aqui — sem mexer no painel.</p>
+      <button class="btn ghost" type="button" onclick="loadSim()">Ver com dados simulados</button>
+    </div>`;
+    return;
+  }
+  const r=camp.resultados, t=r.totais||{};
+  const ctr=ctrOf(t), cpl=cplOf(t), frq=frqOf(t), cnv=cnvOf(t);
+  const J={ctr:judge('ctr',ctr), cpl:judge('cpl',cpl), frq:judge('frq',frq), cnv:judge('cnv',cnv)};
+  const opts = (SIM?[camp]:withData).map(c=>`<option value="${c.id}">${c.nome}</option>`).join('');
+  ctl.innerHTML = `${r.simulado?`<span class="badge">simulação · não são dados reais</span>`:`<span class="badge ok">${r.fonte||'Meta Ads'}</span>`}
+    ${(SIM?1:withData.length)>1?`<select class="sel" onchange="showCamp(this.value)">${opts}</select>`:''}
+    ${SIM?`<button class="btn ghost" type="button" style="margin:0;padding:8px 12px" onclick="SIM=null;renderResults()">Fechar simulação</button>`:''}`;
+  const rank=(r.criativos||[]).map(c=>({...c, cpl:cplOf(c), ctr:ctrOf(c), frq:frqOf(c)})).sort((a,b)=>(a.cpl??1e9)-(b.cpl??1e9));
+  const hl = id => (camp.criativos.find(x=>x.id===id)||{}).hl || '';
+  box.innerHTML = `
+    <p class="hint" style="margin:-4px 0 14px">${camp.nome} · ${fmtDia(r.periodo.inicio)} a ${fmtDia(r.periodo.fim)} · analisado em ${r.analisado_em} ${r.analisado_por?`· ${r.analisado_por}`:''}</p>
+    <div class="rk">
+      <div><b>${fmtBRL(t.gasto)}</b><span>gasto total</span><em>${camp.orcamento?`de ${camp.orcamento}`:''}</em></div>
+      <div><b>${fmtN(t.leads)}</b><span>leads</span><em>${t.conversoes!=null?`${fmtN(t.conversoes)} conversões`:''}</em></div>
+      <div><b>${fmtPct(ctr)}</b><span>CTR</span><em class="${J.ctr[0]}">${J.ctr[1]}</em></div>
+      <div><b>${fmtBRL(cpl)}</b><span>CPL</span><em class="${J.cpl[0]}">${J.cpl[1]}</em></div>
+      <div><b>${frq==null?'—':frq.toLocaleString('pt-BR',{maximumFractionDigits:1})}</b><span>frequência</span><em class="${J.frq[0]}">${J.frq[1]}</em></div>
     </div>
-  </div>`).join('');
+    <div class="charts">
+      <div class="chart"><h3>Gasto e leads por dia</h3><p class="hint">Barras = gasto; linha = leads.</p>${r.diario&&r.diario.length?svgDaily(r.diario):'<p class="hint">Sem série diária no export.</p>'}</div>
+      <div class="chart"><h3>CPL por criativo</h3><p class="hint">Ordenado do mais barato ao mais caro; faixa verde = benchmark.</p>${rank.length?svgCreatives(r.criativos):'<p class="hint">Sem dados por criativo.</p>'}</div>
+    </div>
+    ${rank.length?`<table style="margin-top:18px">
+      <thead><tr><th>Criativo</th><th>Headline</th><th>Gasto</th><th>CTR</th><th>CPL</th><th>Freq.</th><th>Ação</th></tr></thead>
+      <tbody>${rank.map(c=>`<tr><td class="id">${c.id}</td><td class="hl">${hl(c.id)}<small>${c.conj||''}</small></td><td>${fmtBRL(c.gasto)}</td><td>${fmtPct(c.ctr)}</td><td>${fmtBRL(c.cpl)}</td><td>${c.frq==null?'—':c.frq.toLocaleString('pt-BR',{maximumFractionDigits:1})}</td><td><span class="st-tag ${c.status||''}">${c.status||'—'}</span></td></tr>`).join('')}</tbody>
+    </table>`:''}
+    ${r.analise?`<div class="read">
+      <h3>Leitura do agente de Dados</h3>
+      <p>${r.analise.resumo||''}</p>
+      <div class="cols">
+        <div><h3 style="color:var(--ok)">Funcionando</h3><ul>${(r.analise.funcionando||[]).map(x=>`<li>${x}</li>`).join('')}</ul></div>
+        <div><h3 style="color:var(--red)">Não funcionando</h3><ul>${(r.analise.nao_funcionando||[]).map(x=>`<li>${x}</li>`).join('')}${(r.analise.anomalias||[]).map(x=>`<li><span style="color:var(--amber)">anomalia:</span> ${x}</li>`).join('')}</ul></div>
+      </div>
+      <h3 style="margin-top:14px">Hipóteses para o próximo ciclo</h3>
+      <ul>${(r.analise.hipoteses||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+      ${r.analise.recomendacao_orquestrador?`<div class="next"><b>Para o Orquestrador:</b> ${r.analise.recomendacao_orquestrador}</div>`:''}
+    </div>`:''}`;
+}
+function showCamp(id){ const c=CAMPANHAS.find(x=>x.id===id); if(!c) return; const i=CAMPANHAS.indexOf(c); CAMPANHAS.splice(i,1); CAMPANHAS.unshift(c); renderResults(); }
+async function loadSim(){
+  let res=null;
+  try { const r=await fetch('dados/exemplo-simulado.json',{cache:'no-store'}); if(r.ok) res=await r.json(); } catch(e){}
+  if(!res){ document.getElementById('res').innerHTML='<div class="empty"><p>Abra o painel pelo servidor (https) para carregar o exemplo simulado.</p></div>'; return; }
+  SIM={camp:CAMPANHAS[0], res}; renderResults();
+  document.getElementById('resultados').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- boot: dados/campanhas.json é a fonte; o inline é fallback ---------- */
+async function boot(){
+  try {
+    const r = await fetch('dados/campanhas.json',{cache:'no-store'});
+    if(r.ok){ const j=await r.json(); if(Array.isArray(j.campanhas)&&j.campanhas.length){ CAMPANHAS=j.campanhas; BENCH=Object.assign({},BENCH_FALLBACK,j.benchmarks||{});
+      const t=document.querySelector('.status time'); if(t&&j.atualizado_em){ t.dateTime=j.atualizado_em; const [y,m,d]=j.atualizado_em.split('-'); t.textContent=`${+d} ${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+m-1]} ${y}`; } } }
+  } catch(e){ /* file:// ou offline: usa o inline */ }
+  renderKpis(); renderCamps(); renderResults();
+}
+boot();
 
 const g = id => document.getElementById(id);
 g('gen').addEventListener('click', () => {
@@ -297,7 +473,8 @@ Público: ${g('pub').value || '—'}
 Orçamento: ${g('orc').value || '—'}
 Período: ${g('per').value || '—'}
 Restrições: ${g('res').value || 'nenhuma além das regras padrão'}
-Entrega esperada: plano → criativos → direção de arte → parecer de compliance com score → documento final no issue com AGUARDANDO APROVAÇÃO HUMANA e request_confirmation para o board. Não publicar nada.`;
+Entrega esperada: plano → criativos → direção de arte → parecer de compliance com score → documento final no issue com AGUARDANDO APROVAÇÃO HUMANA e request_confirmation para o board. Não publicar nada.
+Depois que a campanha rodar: o export do Meta Ads vai para o agente Dados de Campanhas, que atualiza dados/campanhas.json e devolve as hipóteses para o próximo ciclo.`;
   g('out').textContent = t; g('out').classList.add('show'); g('copy').style.display='inline-flex';
 });
 g('copy').addEventListener('click', async () => {

@@ -12,6 +12,8 @@ Contexto: Grupo DDM faz negociação de mensalidades para instituições de ensi
 Briefing com: objetivo de negócio (ação que o aluno deve tomar), público-alvo, orçamento, período, restrições.
 Se faltar algo essencial, responda apenas com `[incompleto]` seguido da lista do que falta. Não gere plano parcial.
 
+Opcional — `analise_dados` (vem do agente Dados de Campanhas via Orquestrador, a partir do 2º ciclo): hipóteses + recomendação com números da campanha anterior. Quando existir, o plano **tem que** citar na seção de conjuntos/orçamento o que mudou por causa dos dados (ex.: "realocado 20% de Fundo para Topo: CPL R$ 31 vs R$ 90") e qual hipótese cada conjunto testa. Não repita um criativo marcado como Pausar sem dizer o que mudou.
+
 ## Output obrigatório — exatamente estas 7 seções, nesta ordem
 1. **OBJETIVO DA CAMPANHA** — ação esperada do aluno (uma frase)
 2. **PÚBLICO-ALVO** — segmento, faixa etária, segmentação Meta sugerida (interesses, lookalike, geo)

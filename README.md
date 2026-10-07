@@ -6,13 +6,15 @@ Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrat
 
 | Parte | Onde | Status |
 |---|---|---|
-| 5 skills Hermes (`ddm-estrategista-trafego`, `ddm-criativo-anuncios`, `ddm-compliance-anuncios`, `ddm-dados-campanhas`, `ddm-orquestrador-trafego`) | `skills/trafego-pago/` | ✅ funcionando |
+| 6 skills Hermes (`ddm-orquestrador-trafego`, `ddm-estrategista-trafego`, `ddm-criativo-anuncios`, `ddm-designer-anuncios`, `ddm-compliance-anuncios`, `ddm-dados-campanhas`) | `skills/trafego-pago/` | ✅ funcionando |
 | Instalador das skills | `skills/install.sh` | ✅ |
 | Demo pelo terminal (plano + 6 criativos + compliance, score 20) | `exemplos/campanha-faculdade-teste-2026-10-01.md` | ✅ |
 | Demo pelo Paperclip (agente Orquestrador Hermes delegando por child issues, score 18) | `exemplos/demo-matricula-trancada-paperclip.md` | ✅ |
 | Dashboard React/Vite + Express (herdado do repo `Agente-Trafego`) | `dashboard/` | ⚠️ parcial — bridge Hermes corrigida em `dashboard/server/hermes-bridge.js` |
 | Prompts originais dos agentes (referência) | `AGENTES DE TRAFEGO PAGO/` | referência |
-| Agente Designer (artes) | — | ⏳ pendente (Gustavo) |
+| Painel interno (campanhas, criativos, scores, resultados com gráficos) | `index.html` + `dados/campanhas.json` → https://agente.trafego.grupoddm.ia.br | ✅ no ar |
+| Agente Designer (direção de arte + prompts) | `skills/trafego-pago/ddm-designer-anuncios` + Paperclip | ✅ skill pronta · ⏳ geração de imagem depende de ferramenta/chave |
+| Agente Dados (analisa export do Meta Ads, escreve `dados/campanhas.json`, devolve hipóteses ao Orquestrador) | `skills/trafego-pago/ddm-dados-campanhas` + Paperclip | ✅ pronto · ⏳ aguardando export da 1ª campanha |
 | Integração com a API do Meta Ads | — | ⏳ pendente (publicar PAUSADO após aprovação) |
 
 ## Como rodar as skills

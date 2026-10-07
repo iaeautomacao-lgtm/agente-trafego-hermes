@@ -1,0 +1,209 @@
+{
+  "simulado": true,
+  "aviso": "DADOS SIMULADOS para validar gráficos e o formato do arquivo. Nenhuma campanha foi publicada.",
+  "fonte": "exemplo gerado em 2026-10-06 (não é export do Meta Ads)",
+  "periodo": {
+    "inicio": "2026-10-07",
+    "fim": "2026-10-20"
+  },
+  "analisado_em": "2026-10-06",
+  "analisado_por": "exemplo manual (o agente Dados de Campanhas escreve este bloco)",
+  "totais": {
+    "gasto": 2987.4,
+    "impressoes": 169177,
+    "alcance": 69101,
+    "cliques": 2037,
+    "leads": 69,
+    "conversoes": 10
+  },
+  "diario": [
+    {
+      "dia": "2026-10-07",
+      "gasto": 121.71,
+      "impressoes": 6840,
+      "cliques": 88,
+      "leads": 2
+    },
+    {
+      "dia": "2026-10-08",
+      "gasto": 154.9,
+      "impressoes": 8529,
+      "cliques": 108,
+      "leads": 4
+    },
+    {
+      "dia": "2026-10-09",
+      "gasto": 188.1,
+      "impressoes": 10734,
+      "cliques": 126,
+      "leads": 5
+    },
+    {
+      "dia": "2026-10-10",
+      "gasto": 221.29,
+      "impressoes": 11963,
+      "cliques": 162,
+      "leads": 5
+    },
+    {
+      "dia": "2026-10-11",
+      "gasto": 243.42,
+      "impressoes": 13294,
+      "cliques": 153,
+      "leads": 5
+    },
+    {
+      "dia": "2026-10-12",
+      "gasto": 254.48,
+      "impressoes": 14867,
+      "cliques": 162,
+      "leads": 6
+    },
+    {
+      "dia": "2026-10-13",
+      "gasto": 243.42,
+      "impressoes": 13976,
+      "cliques": 162,
+      "leads": 6
+    },
+    {
+      "dia": "2026-10-14",
+      "gasto": 232.35,
+      "impressoes": 12583,
+      "cliques": 144,
+      "leads": 5
+    },
+    {
+      "dia": "2026-10-15",
+      "gasto": 177.03,
+      "impressoes": 10206,
+      "cliques": 119,
+      "leads": 4
+    },
+    {
+      "dia": "2026-10-16",
+      "gasto": 165.97,
+      "impressoes": 9479,
+      "cliques": 112,
+      "leads": 4
+    },
+    {
+      "dia": "2026-10-17",
+      "gasto": 221.29,
+      "impressoes": 12901,
+      "cliques": 157,
+      "leads": 5
+    },
+    {
+      "dia": "2026-10-18",
+      "gasto": 254.48,
+      "impressoes": 14519,
+      "cliques": 174,
+      "leads": 7
+    },
+    {
+      "dia": "2026-10-19",
+      "gasto": 265.55,
+      "impressoes": 15383,
+      "cliques": 173,
+      "leads": 7
+    },
+    {
+      "dia": "2026-10-20",
+      "gasto": 243.42,
+      "impressoes": 13258,
+      "cliques": 163,
+      "leads": 4
+    }
+  ],
+  "criativos": [
+    {
+      "id": "1-A",
+      "conj": "Topo",
+      "gasto": 657.23,
+      "impressoes": 36933,
+      "alcance": 17587,
+      "cliques": 598,
+      "leads": 21,
+      "conversoes": 3,
+      "status": "Escalar"
+    },
+    {
+      "id": "1-B",
+      "conj": "Topo",
+      "gasto": 537.73,
+      "impressoes": 28148,
+      "alcance": 8279,
+      "cliques": 296,
+      "leads": 10,
+      "conversoes": 1,
+      "status": "Pausar"
+    },
+    {
+      "id": "2-A",
+      "conj": "Meio",
+      "gasto": 507.86,
+      "impressoes": 27241,
+      "alcance": 11844,
+      "cliques": 349,
+      "leads": 13,
+      "conversoes": 2,
+      "status": "Manter"
+    },
+    {
+      "id": "2-B",
+      "conj": "Meio",
+      "gasto": 448.11,
+      "impressoes": 26782,
+      "alcance": 13391,
+      "cliques": 378,
+      "leads": 13,
+      "conversoes": 2,
+      "status": "Escalar"
+    },
+    {
+      "id": "3-A",
+      "conj": "Fundo",
+      "gasto": 477.98,
+      "impressoes": 28708,
+      "alcance": 10633,
+      "cliques": 264,
+      "leads": 8,
+      "conversoes": 1,
+      "status": "Manter"
+    },
+    {
+      "id": "3-B",
+      "conj": "Fundo",
+      "gasto": 358.49,
+      "impressoes": 21365,
+      "alcance": 7367,
+      "cliques": 152,
+      "leads": 4,
+      "conversoes": 1,
+      "status": "Pausar"
+    }
+  ],
+  "analise": {
+    "resumo": "Campanha dentro do benchmark: CTR médio 1,2% (faixa 0,8–1,5%) e CPL médio R$ 43 (faixa R$ 25–70). O conjunto Topo concentra 40% do gasto e entrega os leads mais baratos via 1-A; 3-B está fora da faixa (CPL R$ 90) e 1-B começou a desgastar (frequência 3,4) nos dias 9–10, o que explica a queda de leads nesse trecho.",
+    "funcionando": [
+      "Headline afirmativa sobre disponibilidade da graduação (1-A, 2-B) — CTR acima de 1,4%",
+      "Carrossel supera imagem única no mesmo conjunto",
+      "Entrega concentrada em 18h–22h"
+    ],
+    "nao_funcionando": [
+      "Pergunta direta no fundo de funil (3-B) — CTR 0,7% e CPL R$ 90",
+      "Vídeo 15 s em Topo (1-B) desgastou em 8 dias — frequência 3,4"
+    ],
+    "anomalias": [
+      "Queda de 30% em leads nos dias 15–16/10 coincide com frequência > 3 em 1-B"
+    ],
+    "hipoteses": [
+      "Se testarmos a headline de 1-A no formato imagem única em Meio, esperamos CPL ≤ R$ 35, porque 1-A é o melhor CPL (R$ 31) e 2-A/2-B já respondem bem a mensagens afirmativas.",
+      "Se trocarmos 3-B por uma variação de 2-B com CTA de formulário, esperamos CPL ≤ R$ 60 no Fundo, porque 2-B tem CTR 1,4% e o Fundo hoje depende de 3-A (R$ 60).",
+      "Se limitarmos a frequência de 1-B a 2,5 com novo vídeo, esperamos recuperar leads de Topo para o nível dos dias 10–14 (≈ 6/dia), porque a queda coincidiu com o desgaste.",
+      "Se realocarmos 20% do orçamento de 3-B para 1-A, esperamos +8 a +10 leads no período com o mesmo gasto, porque a diferença de CPL é de R$ 59 por lead."
+    ],
+    "recomendacao_orquestrador": "Próximo ciclo: manter o Estrategista com o mesmo público; pedir ao Criativo 2 variações afirmativas para Fundo substituindo 3-B; Designer refaz 1-B com novo vídeo; Compliance reavalia só as peças novas. Orçamento: realocar 20% de 3-B para 1-A (risco: saturar Topo — monitorar frequência de 1-A, hoje 2,1)."
+  }
+}
