@@ -119,7 +119,7 @@
   .tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0 16px}
   .tabs a{padding:8px 12px;color:var(--ink-2);font-size:13px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-1px}
   .tabs a.on{color:var(--ink);border-color:var(--orange)}
-  .steps{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+  .steps{display:grid;grid-template-columns:repeat(8,1fr);gap:8px}
   .step{background:var(--panel-2);border-radius:8px;padding:10px 12px;border-left:2px solid var(--mute)}
   .step.on{border-left-color:var(--orange)}.step.gate{border-left-color:var(--ok)}.step.soon{border-left-color:transparent;opacity:.6}
   .step b{display:block;font-size:12.5px;font-weight:600}
@@ -166,10 +166,17 @@
   .modal .box{background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:20px 22px;width:min(420px,92vw)}
   .modal h2{margin:0 0 4px;font-family:var(--serif);font-weight:400;font-size:18px}
   .modal p{margin:0 0 6px;font-size:12.5px;color:var(--mute)}
+  .pipeline{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .pstage{display:block;background:var(--panel-2);border-radius:8px;padding:12px 14px;border-left:2px solid var(--mute)}
+  .pstage.amb{border-left-color:var(--amber)}.pstage.o{border-left-color:var(--orange)}.pstage.ok{border-left-color:var(--ok)}
+  .pstage.zero{opacity:.55}
+  .pstage b{display:block;font-family:var(--serif);font-weight:300;font-size:28px;line-height:1;letter-spacing:-.02em}
+  .pstage span{display:block;font-size:12px;color:var(--mute);margin-top:4px}
+  .pstage:hover{background:var(--hover)}
   .agent.row{cursor:pointer}
   .agent.row:hover{border-color:var(--line-2);background:var(--panel-2)}
   .hide{display:none!important}
-  @media (max-width:1100px){.ed{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}.steps{grid-template-columns:repeat(4,1fr)}.agents{grid-template-columns:1fr 1fr}}
+  @media (max-width:1100px){.ed{grid-template-columns:1fr}.steps{grid-template-columns:repeat(4,1fr)}.tiles{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}.steps{grid-template-columns:repeat(4,1fr)}.agents{grid-template-columns:1fr 1fr}}
   @media (max-width:760px){
     :root{--sidew:0px}
     .app{grid-template-columns:1fr}
@@ -177,7 +184,7 @@
     .side.open{transform:none}
     .main{padding:0 16px 40px}
     .burger{display:inline-flex}
-    .tiles{grid-template-columns:1fr 1fr}.kv{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.ed{grid-template-columns:1fr}.agents{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}
+    .tiles{grid-template-columns:1fr 1fr}.kv{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.ed{grid-template-columns:1fr}.agents{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.pipeline{grid-template-columns:1fr 1fr}
     .search{width:140px}
     .bar i{width:50px}
     .hm{display:none}
@@ -223,14 +230,15 @@ const AGENTES = [
   { k:"C", nome:"Criativo de Anúncios 2", papel:"2 anúncios por conjunto", skill:"ddm-criativo-anuncios", st:"ok", stl:"ativo", runtime:"Paperclip · Hermes" },
   { k:"D", nome:"Designer de Anúncios", papel:"Direção de arte + prompts feed/stories", skill:"ddm-designer-anuncios", st:"warn", stl:"sem gerador de imagem", runtime:"Paperclip · Hermes" },
   { k:"R", nome:"Compliance de Anúncios 2", papel:"Meta, LGPD, palavras proibidas, score 0–100", skill:"ddm-compliance-anuncios", st:"ok", stl:"ativo", runtime:"Paperclip · Hermes" },
+  { k:"P", nome:"Publicador Meta", papel:"Cria a campanha aprovada no Meta Ads, sempre em pausa", skill:"ddm-publicador-meta", st:"warn", stl:"sem acesso ao Meta", runtime:"Paperclip · Hermes" },
   { k:"A", nome:"Dados de Campanhas 2", papel:"Export do Meta Ads → painel + próximo ciclo", skill:"ddm-dados-campanhas", st:"ok", stl:"sem export ainda", runtime:"Paperclip · Hermes" },
 ];
 const PENDENCIAS = [
   ["Acesso ao Meta Business Manager","Gustavo","warn"],
-  ["Publicar pausado via API do Meta","chave OpenAI · Gisele","off"],
-  ["Gerador de imagem para o Designer","ferramenta / chave","off"],
+  ["Publicador Meta: script e skill prontos, falta token","META_ACCESS_TOKEN · Gustavo","warn"],
+  ["Gerador de imagem para o Designer","chave Google AI Studio · Gui","off"],
   ["Export da 1ª campanha para o agente Dados","depois da publicação","off"],
-  ["Score de risco com Jev (segunda opinião)","chave de API","off"],
+  ["Score de risco com Jev (segunda opinião)","chave TypeSafe · Gui","off"],
 ];
 let CAMPANHAS = CAMPANHAS_FALLBACK, BENCH = BENCH_FALLBACK, SIM = null, META = {};
 
@@ -258,7 +266,9 @@ function judge(k,v){
   return ['',''];
 }
 const scoreCell = c => c.score==null ? `<span class="tag ${vcls(c.v)}">${esc(c.sev||'—')}</span>` : `<span class="bar"><i style="--w:${c.score}%;--c:${col(scls(c.score))}"></i><b>${c.score}</b></span>`;
-const campStatus = c => c.resultados ? ['ok','com resultados'] : (/aprovad/i.test(c.status||'') ? ['o','aprovada · não publicada'] : ['amb','demo']);
+const ETAPAS = [['montada','Montada','amb'],['aprovada','Aprovada','o'],['publicada','Publicada','ok'],['analisada','Analisada','ok']];
+const etapaOf = c => c.etapa || (c.resultados ? 'analisada' : (/aprovad/i.test(c.status||'') ? 'aprovada' : 'montada'));
+const campStatus = c => { const e=ETAPAS.find(x=>x[0]===etapaOf(c))||ETAPAS[0]; return [e[2], e[1]]; };
 const allCreatives = () => CAMPANHAS.flatMap(c => c.criativos.map(x => ({...x, camp:c})));
 
 /* ---------------- charts ---------------- */
@@ -301,6 +311,7 @@ V.home = () => {
     <div class="tile"><b>${reprov}</b><span>reprovados</span></div>
     <div class="tile"><b>${comRes}</b><span>com resultados</span><em>${comRes?'':'aguardando 1ª publicação'}</em></div>
   </div>
+  <div class="card" style="margin-bottom:18px"><div class="hd"><h2>Pipeline</h2><a class="btn ghost sm" href="#/campanhas">Ver campanhas</a></div><div class="pipeline">${ETAPAS.map(e=>{ const n=CAMPANHAS.filter(c=>etapaOf(c)===e[0]).length; return `<a href="#/campanhas?st=${e[0]}" class="pstage ${e[2]} ${n?'':'zero'}"><b>${n}</b><span>${e[1]}</span></a>`; }).join('')}</div></div>
   <div class="card" style="margin-bottom:18px">
     <div class="hd"><h2>Fluxo</h2><span class="chip"><i class="dot"></i>5 agentes ativos</span></div>
     ${stepsHtml()}
@@ -317,7 +328,7 @@ V.home = () => {
   </div>`;
 };
 function stepsHtml(){
-  const s=[["Estrategista","plano","on"],["Criativo","2 por conjunto","on"],["Designer","direção de arte","on"],["Compliance","score 0–100","on"],["Aprovação","humana","gate"],["Publicar","pausado · Meta","soon"],["Dados","export → painel","on"]];
+  const s=[["Estrategista","plano","on"],["Criativo","2 por conjunto","on"],["Designer","direção de arte","on"],["Compliance","score 0–100","on"],["Aprovação","humana","gate"],["Publicador","em pausa · Meta","on"],["Ativar","humano · Ads Manager","gate"],["Dados","export → painel","on"]];
   return `<div class="steps">${s.map(x=>`<div class="step ${x[2]}"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}</div>`;
 }
 function campTable(list, compact){
@@ -333,11 +344,11 @@ function campTable(list, compact){
 }
 V.campanhas = (q) => {
   const f = (q.q||'').toLowerCase(), st = q.st||'';
-  let list = CAMPANHAS.filter(c => (!f || (c.nome+c.objetivo+c.publico+c.via).toLowerCase().includes(f)) && (!st || campStatus(c)[1].startsWith(st)));
+  let list = CAMPANHAS.filter(c => (!f || (c.nome+c.objetivo+c.publico+c.via).toLowerCase().includes(f)) && (!st || etapaOf(c)===st));
   return `<div class="card">
     <div class="hd"><h2>${list.length} campanha${list.length===1?'':'s'}</h2>
       <div class="r filters">
-        <select class="sel" onchange="setQ('st',this.value)"><option value="">Todos os status</option><option value="aprovada" ${st==='aprovada'?'selected':''}>Aprovadas</option><option value="com resultados" ${st==='com resultados'?'selected':''}>Com resultados</option><option value="demo" ${st==='demo'?'selected':''}>Demos</option></select>
+        <div class="seg">${[['','Todas'],...ETAPAS.map(e=>[e[0],e[1]+'s'])].map(o=>`<button class="${st===o[0]?'on':''}" onclick="setQ('st','${o[0]}')">${o[1]}</button>`).join('')}</div>
         <a class="btn sm" href="#/nova">+ Nova campanha</a>
       </div></div>
     ${campTable(list,false)}
@@ -353,6 +364,8 @@ V.campanha = (q, id, tab) => {
     <tbody>${c.criativos.map(x=>`<tr><td class="id">${x.id}</td><td>${esc(x.hl)}</td><td class="m hm">${esc(x.fmt)}</td><td>${esc(x.conj)}</td><td class="n">${scoreCell(x)}</td><td><span class="tag ${vcls(x.v)}">${esc(x.v)}</span></td></tr>`).join('')}</tbody></table>`;
   if(tab==='resumo') body = `<div class="kv"><div><b>Objetivo</b>${esc(c.objetivo)}</div><div><b>Público</b>${esc(c.publico)}</div><div><b>Orçamento</b>${esc(c.orcamento)}</div><div><b>Período</b>${esc(c.periodo)}</div></div>
     <div class="kv" style="margin-top:12px"><div><b>Montada via</b>${esc(c.via)}</div><div><b>Tempo da cadeia</b>${esc(c.tempo)}</div><div><b>Veredito do compliance</b>${esc(c.veredito)} · ${c.score}/100</div><div><b>Status</b>${esc(c.status)}</div></div>
+    ${(c.historico&&c.historico.length)?`<h3 style="margin:16px 0 6px;font-size:12.5px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;color:var(--mute)">Histórico</h3><table>${c.historico.map(h=>{const e=ETAPAS.find(x=>x[0]===h.etapa)||ETAPAS[0]; return `<tr><td style="width:120px"><span class="tag ${e[2]}">${e[1]}</span></td><td class="m">${esc((h.em||'').replace('T',' '))}</td><td>${esc(h.por||'')}</td></tr>`;}).join('')}</table>`:''}
+    ${c.publicacao?`<div class="kv" style="margin-top:12px"><div><b>Meta · campanha</b>${esc(c.publicacao.meta_campaign_id||'')}</div><div><b>Status no Meta</b>${esc(c.publicacao.status||'')}</div><div><b>Publicado em</b>${esc(c.publicacao.publicado_em||'')}</div><div><b>Anúncios</b>${(c.publicacao.ad_ids||[]).length}</div></div>`:''}
     <p style="margin:14px 0 0"><a class="btn ghost sm" href="${esc(c.arquivo)}">Abrir relatório completo</a></p>`;
   if(tab==='resultados') body = resultsBody(c, false);
   return `<div class="crumb"><a href="#/campanhas">Campanhas</a> / ${esc(c.nome)}</div>
@@ -523,7 +536,8 @@ V.nova = () => `<div class="two">
       <tr><td class="id">2</td><td>Nova tarefa no <a href="http://127.0.0.1:3100/GRU/" style="color:var(--orange)">Paperclip</a> para o Orquestrador Hermes · colar</td></tr>
       <tr><td class="id">3</td><td>Estrategista → Criativo → Designer → Compliance (≈ 20 min)</td></tr>
       <tr><td class="id">4</td><td>Aprovar ou devolver no card do board</td></tr>
-      <tr><td class="id">5</td><td>Publicar pausado no Meta · depois, export → agente Dados</td></tr>
+      <tr><td class="id">5</td><td>Publicador cria tudo no Meta <b>em pausa</b> (pede confirmação antes)</td></tr>
+      <tr><td class="id">6</td><td>Ativar no Ads Manager · depois de 3+ dias, export → agente Dados</td></tr>
     </table></div>
 </div>`;
 

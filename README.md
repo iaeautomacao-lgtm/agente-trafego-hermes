@@ -1,12 +1,12 @@
 # Agente de Tráfego Pago — Grupo DDM (Hermes + Paperclip)
 
-Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrategista → Criativo → Compliance → aprovação humana → Dados** roda como skills do Hermes Agent, orquestradas pelo Paperclip. **Nada é publicado no Meta Ads sem aprovação humana.**
+Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrategista → Criativo → Designer → Compliance → aprovação humana → Publicador (em pausa) → ativação humana → Dados** roda como skills do Hermes Agent, orquestradas pelo Paperclip. **Nada é publicado no Meta Ads sem aprovação humana.**
 
 ## Estado atual (out/2026)
 
 | Parte | Onde | Status |
 |---|---|---|
-| 6 skills Hermes (`ddm-orquestrador-trafego`, `ddm-estrategista-trafego`, `ddm-criativo-anuncios`, `ddm-designer-anuncios`, `ddm-compliance-anuncios`, `ddm-dados-campanhas`) | `skills/trafego-pago/` | ✅ funcionando |
+| 7 skills Hermes (`ddm-orquestrador-trafego`, `ddm-estrategista-trafego`, `ddm-criativo-anuncios`, `ddm-designer-anuncios`, `ddm-compliance-anuncios`, `ddm-publicador-meta`, `ddm-dados-campanhas`) | `skills/trafego-pago/` | ✅ funcionando |
 | Instalador das skills | `skills/install.sh` | ✅ |
 | Demo pelo terminal (plano + 6 criativos + compliance, score 20) | `exemplos/campanha-faculdade-teste-2026-10-01.md` | ✅ |
 | Demo pelo Paperclip (agente Orquestrador Hermes delegando por child issues, score 18) | `exemplos/demo-matricula-trancada-paperclip.md` | ✅ |
@@ -15,7 +15,8 @@ Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrat
 | Painel interno (campanhas, criativos, scores, resultados com gráficos) | `index.html` + `dados/campanhas.json` → https://agente.trafego.grupoddm.ia.br | ✅ no ar |
 | Agente Designer (direção de arte + prompts) | `skills/trafego-pago/ddm-designer-anuncios` + Paperclip | ✅ skill pronta · ⏳ geração de imagem depende de ferramenta/chave |
 | Agente Dados (analisa export do Meta Ads, escreve `dados/campanhas.json`, devolve hipóteses ao Orquestrador) | `skills/trafego-pago/ddm-dados-campanhas` + Paperclip | ✅ pronto · ⏳ aguardando export da 1ª campanha |
-| Integração com a API do Meta Ads | — | ⏳ pendente (publicar PAUSADO após aprovação) |
+| Agente Publicador Meta (cria campanha/conjuntos/anúncios **sempre em PAUSA** via `scripts/meta_publicar.py`; dry-run → confirmação → executar) | `skills/trafego-pago/ddm-publicador-meta` + `scripts/meta_publicar.py` + `dados/publicacoes/` | ✅ script e skill prontos (testado em `--mock` / `--dry-run`) · ⏳ falta `META_ACCESS_TOKEN` / conta / Página (Gustavo) |
+| Etapas da campanha no painel (montada → aprovada → publicada → analisada, com histórico) | `dados/campanhas.json` (`etapa`, `historico`, `publicacao`) + Pipeline no painel | ✅ |
 
 ## Como rodar as skills
 
@@ -27,7 +28,7 @@ bash skills/install.sh
 hermes chat --oneshot -s ddm-orquestrador-trafego -q "Objetivo: ... Público: ... Orçamento: ... Período: ... Restrições: ..."
 ```
 
-No Paperclip: criar uma tarefa para o agente **Orquestrador Hermes** com o briefing; ele cria as child issues para os agentes Estrategista/Criativo/Compliance e para no gate de aprovação humana.
+No Paperclip: criar uma tarefa para o agente **Orquestrador Hermes** com o briefing; ele cria as child issues para os agentes Estrategista/Criativo/Designer/Compliance e para no gate de aprovação humana; depois da aprovação, delega ao Publicador Meta (tudo nasce PAUSADO) e, após a ativação manual e 3+ dias, ao agente Dados.
 
 ## Publicação (processo DDM)
 

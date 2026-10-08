@@ -52,7 +52,7 @@ Status ∈ {Escalar, Manter, Pausar, Reativar}. Ordene do melhor para o pior CPL
 "Se testarmos [variável], esperamos [resultado numérico], porque [dado observado]."
 
 ## Output 2 — `dados/campanhas.json`
-Edite **só** o bloco `resultados` da campanha analisada (e `atualizado_em` / `atualizado_por` no topo). Formato completo em `dados/README.md`. Resumo:
+Edite **só** o bloco `resultados` da campanha analisada, mude `etapa` para `"analisada"`, acrescente `{ etapa: "analisada", em, por }` em `historico` (e `atualizado_em` / `atualizado_por` no topo). Formato completo em `dados/README.md`. Resumo:
 ```
 "resultados": {
   "simulado": false,

@@ -14,7 +14,7 @@ O painel (`index.html`) lê **`dados/campanhas.json`** ao carregar. Quem edita e
 }
 ```
 
-### `<campanha>` — escrita pelo Orquestrador / humano quando a campanha é montada
+### `<campanha>` — escrita pelo Orquestrador quando a campanha é montada (passo 5 da skill)
 
 | campo | tipo | exemplo |
 |---|---|---|
@@ -24,6 +24,9 @@ O painel (`index.html`) lê **`dados/campanhas.json`** ao carregar. Quem edita e
 | `veredito`, `status` | string | `"aprovado com ressalvas"` |
 | `arquivo` | caminho do relatório completo | `"exemplos/….md"` |
 | `criativos[]` | `{ id, conj, hl, fmt, score, v }` — `v` ∈ aprovado / com ressalvas / reprovado | — |
+| `etapa` | `montada` → `aprovada` → `publicada` → `analisada` (quem muda: Orquestrador / Orquestrador após o board / Publicador / Dados) | `"aprovada"` |
+| `historico[]` | `{ etapa, em (ISO), por }` — uma linha por mudança de etapa | — |
+| `publicacao` | escrito pelo Publicador: `{ meta_campaign_id, adset_ids[], ad_ids[], publicado_em, status: "PAUSED" }` | — |
 | `resultados` | `null` até a campanha rodar; depois o bloco abaixo | — |
 
 ### `resultados` — escrito SOMENTE pelo agente Dados de Campanhas
@@ -53,6 +56,10 @@ Regras:
 - Campo que o export não trouxe → omitir (o painel mostra `—`). Nunca estimar.
 - `id` dos criativos em `resultados.criativos` tem que bater com `criativos[].id` da campanha.
 - Validar o JSON antes do commit: `python3 -m json.tool dados/campanhas.json > /dev/null`.
+
+## `publicacoes/`
+
+Um arquivo por campanha publicada (`<id>.json`), no formato de `publicacoes/exemplo-demo-2.json`: é o que `scripts/meta_publicar.py` lê para criar a campanha **em pausa** no Meta. Gerado pelo agente Publicador; os `*.resultado-*.json` guardam os ids criados.
 
 ## `exemplo-simulado.json`
 

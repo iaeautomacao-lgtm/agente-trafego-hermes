@@ -1,0 +1,47 @@
+{
+  "campanha_id_painel": "demo-2",
+  "aprovacao_humana": { "aprovado": true, "por": "Gui", "em": "2026-10-06T14:03:00", "issue": "GRU-3" },
+  "campanha": {
+    "nome": "DDM · Matrícula trancada — agendar conversa · out/2026",
+    "objetivo": "OUTCOME_LEADS",
+    "special_ad_categories": []
+  },
+  "inicio": "2026-10-20T08:00:00-03:00",
+  "fim": "2026-11-03T23:59:00-03:00",
+  "conjuntos": [
+    {
+      "nome": "Topo — interesses educação 22-40 RMSP",
+      "orcamento_diario_brl": 85.0,
+      "otimizacao": "LEAD_GENERATION",
+      "segmentacao": {
+        "geo_locations": { "regions": [{ "key": "3860" }] },
+        "idade_min": 22, "idade_max": 40,
+        "interesses": [{ "id": "6003139266461", "name": "Educação superior" }]
+      },
+      "anuncios": [
+        { "id": "1-A", "headline": "Sua graduação ainda está disponível", "texto": "Trancou a matrícula e quer retomar? Dá para conversar sem compromisso e entender suas opções.", "descricao": "Converse com a instituição", "cta": "LEARN_MORE", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=1-A", "imagem": "artes/demo-2/1-A-feed.png" },
+        { "id": "1-B", "headline": "Quem parou os estudos pode recomeçar", "texto": "Milhares de alunos retomam a graduação todo semestre. O primeiro passo é uma conversa.", "descricao": "Saiba como retomar", "cta": "LEARN_MORE", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=1-B", "imagem": "artes/demo-2/1-B-feed.png" }
+      ]
+    },
+    {
+      "nome": "Meio — engajou 30d",
+      "orcamento_diario_brl": 70.0,
+      "otimizacao": "LEAD_GENERATION",
+      "segmentacao": { "geo_locations": { "regions": [{ "key": "3860" }] }, "idade_min": 22, "idade_max": 40 },
+      "anuncios": [
+        { "id": "2-A", "headline": "Retomar é mais simples do que parece", "texto": "Tire suas dúvidas em uma conversa rápida e veja o caminho para voltar a estudar.", "cta": "LEARN_MORE", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=2-A", "imagem": "artes/demo-2/2-A-feed.png" },
+        { "id": "2-B", "headline": "Entenda suas opções com uma conversa", "texto": "Cada situação tem um caminho. Fale com a instituição e descubra o seu.", "cta": "LEARN_MORE", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=2-B", "imagem": "artes/demo-2/2-B-feed.png" }
+      ]
+    },
+    {
+      "nome": "Fundo — visitou formulário 14d",
+      "orcamento_diario_brl": 60.0,
+      "otimizacao": "LEAD_GENERATION",
+      "segmentacao": { "geo_locations": { "regions": [{ "key": "3860" }] }, "idade_min": 22, "idade_max": 40 },
+      "anuncios": [
+        { "id": "3-A", "headline": "Preencha o formulário em 2 minutos", "texto": "Deixe seu contato e a instituição retorna para conversar sobre a retomada.", "cta": "SIGN_UP", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=3-A", "imagem": "artes/demo-2/3-A-feed.png" },
+        { "id": "3-B", "headline": "Viu suas opções. Hora de dar o passo?", "texto": "Você já conhece o caminho. Agende sua conversa quando fizer sentido para você.", "cta": "SIGN_UP", "link": "https://exemplo.grupoddm.ia.br/retomar?utm_source=meta&utm_campaign=demo-2&utm_content=3-B", "imagem": "artes/demo-2/3-B-feed.png" }
+      ]
+    }
+  ]
+}

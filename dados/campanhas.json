@@ -1,11 +1,20 @@
 {
   "versao": 1,
-  "atualizado_em": "2026-10-06",
-  "atualizado_por": "Gui (manual) — a partir daqui o agente Dados de Campanhas é quem edita este arquivo",
+  "atualizado_em": "2026-10-08",
+  "atualizado_por": "Gui (manual) — a partir daqui só os agentes editam: Orquestrador (montada/aprovada), Publicador (publicada), Dados (analisada)",
   "benchmarks": {
-    "ctr_pct": [0.8, 1.5],
-    "cpl_brl": [25, 70],
-    "conversao_pct": [10, 25],
+    "ctr_pct": [
+      0.8,
+      1.5
+    ],
+    "cpl_brl": [
+      25,
+      70
+    ],
+    "conversao_pct": [
+      10,
+      25
+    ],
     "frequencia_max": 3.0
   },
   "campanhas": [
@@ -22,14 +31,69 @@
       "score": 18,
       "veredito": "aprovado com ressalvas",
       "status": "aprovada por Gui em 06/10, 14:03",
+      "etapa": "aprovada",
+      "historico": [
+        {
+          "etapa": "montada",
+          "em": "2026-10-06T11:55",
+          "por": "Orquestrador Hermes · GRU-3"
+        },
+        {
+          "etapa": "aprovada",
+          "em": "2026-10-06T14:03",
+          "por": "Gui · board"
+        }
+      ],
       "arquivo": "exemplos/demo-matricula-trancada-paperclip.md",
       "criativos": [
-        { "id": "1-A", "conj": "Topo",  "hl": "Sua graduação ainda está disponível",   "fmt": "carrossel 3 frames", "score": 5,  "v": "aprovado" },
-        { "id": "1-B", "conj": "Topo",  "hl": "Quem parou os estudos pode recomeçar",   "fmt": "vídeo 15 s",         "score": 12, "v": "com ressalvas" },
-        { "id": "2-A", "conj": "Meio",  "hl": "Retomar é mais simples do que parece",   "fmt": "imagem única",       "score": 5,  "v": "aprovado" },
-        { "id": "2-B", "conj": "Meio",  "hl": "Entenda suas opções com uma conversa",   "fmt": "carrossel 2 frames", "score": 3,  "v": "aprovado" },
-        { "id": "3-A", "conj": "Fundo", "hl": "Preencha o formulário em 2 minutos",     "fmt": "imagem única",       "score": 10, "v": "com ressalvas" },
-        { "id": "3-B", "conj": "Fundo", "hl": "Viu suas opções. Hora de dar o passo?",  "fmt": "vídeo / cinemagraph","score": 22, "v": "com ressalvas" }
+        {
+          "id": "1-A",
+          "conj": "Topo",
+          "hl": "Sua graduação ainda está disponível",
+          "fmt": "carrossel 3 frames",
+          "score": 5,
+          "v": "aprovado"
+        },
+        {
+          "id": "1-B",
+          "conj": "Topo",
+          "hl": "Quem parou os estudos pode recomeçar",
+          "fmt": "vídeo 15 s",
+          "score": 12,
+          "v": "com ressalvas"
+        },
+        {
+          "id": "2-A",
+          "conj": "Meio",
+          "hl": "Retomar é mais simples do que parece",
+          "fmt": "imagem única",
+          "score": 5,
+          "v": "aprovado"
+        },
+        {
+          "id": "2-B",
+          "conj": "Meio",
+          "hl": "Entenda suas opções com uma conversa",
+          "fmt": "carrossel 2 frames",
+          "score": 3,
+          "v": "aprovado"
+        },
+        {
+          "id": "3-A",
+          "conj": "Fundo",
+          "hl": "Preencha o formulário em 2 minutos",
+          "fmt": "imagem única",
+          "score": 10,
+          "v": "com ressalvas"
+        },
+        {
+          "id": "3-B",
+          "conj": "Fundo",
+          "hl": "Viu suas opções. Hora de dar o passo?",
+          "fmt": "vídeo / cinemagraph",
+          "score": 22,
+          "v": "com ressalvas"
+        }
       ],
       "resultados": null
     },
@@ -46,16 +110,72 @@
       "score": 20,
       "veredito": "apta para publicação",
       "status": "demo técnica, não publicada",
+      "etapa": "montada",
+      "historico": [
+        {
+          "etapa": "montada",
+          "em": "2026-10-01",
+          "por": "Hermes · terminal"
+        }
+      ],
       "arquivo": "exemplos/campanha-faculdade-teste-2026-10-01.md",
       "criativos": [
-        { "id": "1-A", "conj": "Quente",      "hl": "Retome seus estudos com a gente",   "fmt": "imagem única", "sev": "risco médio", "v": "com ressalvas" },
-        { "id": "1-B", "conj": "Quente",      "hl": "Fale com a Faculdade Teste hoje",   "fmt": "imagem única", "sev": "risco médio", "v": "com ressalvas" },
-        { "id": "2-A", "conj": "Morno",       "hl": "Sua carreira começa com um passo",  "fmt": "imagem única", "sev": "risco baixo", "v": "aprovado" },
-        { "id": "2-B", "conj": "Morno",       "hl": "Graduação completa: seu futuro",    "fmt": "imagem única", "sev": "risco baixo", "v": "aprovado" },
-        { "id": "3-A", "conj": "Retargeting", "hl": "Sua próxima etapa começa aqui",     "fmt": "imagem única", "sev": "risco médio", "v": "com ressalvas" },
-        { "id": "3-B", "conj": "Retargeting", "hl": "Suas opções estão no portal",       "fmt": "imagem única", "sev": "risco médio", "v": "com ressalvas" }
+        {
+          "id": "1-A",
+          "conj": "Quente",
+          "hl": "Retome seus estudos com a gente",
+          "fmt": "imagem única",
+          "sev": "risco médio",
+          "v": "com ressalvas"
+        },
+        {
+          "id": "1-B",
+          "conj": "Quente",
+          "hl": "Fale com a Faculdade Teste hoje",
+          "fmt": "imagem única",
+          "sev": "risco médio",
+          "v": "com ressalvas"
+        },
+        {
+          "id": "2-A",
+          "conj": "Morno",
+          "hl": "Sua carreira começa com um passo",
+          "fmt": "imagem única",
+          "sev": "risco baixo",
+          "v": "aprovado"
+        },
+        {
+          "id": "2-B",
+          "conj": "Morno",
+          "hl": "Graduação completa: seu futuro",
+          "fmt": "imagem única",
+          "sev": "risco baixo",
+          "v": "aprovado"
+        },
+        {
+          "id": "3-A",
+          "conj": "Retargeting",
+          "hl": "Sua próxima etapa começa aqui",
+          "fmt": "imagem única",
+          "sev": "risco médio",
+          "v": "com ressalvas"
+        },
+        {
+          "id": "3-B",
+          "conj": "Retargeting",
+          "hl": "Suas opções estão no portal",
+          "fmt": "imagem única",
+          "sev": "risco médio",
+          "v": "com ressalvas"
+        }
       ],
       "resultados": null
     }
+  ],
+  "etapas": [
+    "montada",
+    "aprovada",
+    "publicada",
+    "analisada"
   ]
 }
