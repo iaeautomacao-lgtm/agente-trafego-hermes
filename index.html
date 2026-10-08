@@ -154,8 +154,22 @@
   .out{display:none;margin-top:14px;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:12px 14px;font-size:12.5px;white-space:pre-wrap;color:var(--ink-2)}
   .out.show{display:block}
 
+  /* editor */
+  .ed{display:grid;grid-template-columns:1.6fr 1fr;gap:18px;align-items:start}
+  .ed textarea{min-height:560px;font:12.5px/1.55 ui-monospace,SFMono-Regular,Menlo,monospace;tab-size:2;white-space:pre;overflow:auto}
+  .ed .meta td{padding:8px 10px 8px 0;font-size:13px}
+  .ed .meta td:first-child{color:var(--mute);white-space:nowrap;width:110px}
+  .toast{position:fixed;right:20px;bottom:20px;background:var(--panel-2);border:1px solid var(--line-2);border-left:3px solid var(--ok);border-radius:8px;padding:12px 16px;font-size:13px;max-width:420px;z-index:30;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .toast.err{border-left-color:var(--red)}
+  .toast a{color:var(--orange)}
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:grid;place-items:center;z-index:40}
+  .modal .box{background:var(--panel);border:1px solid var(--line-2);border-radius:10px;padding:20px 22px;width:min(420px,92vw)}
+  .modal h2{margin:0 0 4px;font-family:var(--serif);font-weight:400;font-size:18px}
+  .modal p{margin:0 0 6px;font-size:12.5px;color:var(--mute)}
+  .agent.row{cursor:pointer}
+  .agent.row:hover{border-color:var(--line-2);background:var(--panel-2)}
   .hide{display:none!important}
-  @media (max-width:1100px){.tiles{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}.steps{grid-template-columns:repeat(4,1fr)}.agents{grid-template-columns:1fr 1fr}}
+  @media (max-width:1100px){.ed{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}.steps{grid-template-columns:repeat(4,1fr)}.agents{grid-template-columns:1fr 1fr}}
   @media (max-width:760px){
     :root{--sidew:0px}
     .app{grid-template-columns:1fr}
@@ -163,7 +177,7 @@
     .side.open{transform:none}
     .main{padding:0 16px 40px}
     .burger{display:inline-flex}
-    .tiles{grid-template-columns:1fr 1fr}.kv{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.agents{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}
+    .tiles{grid-template-columns:1fr 1fr}.kv{grid-template-columns:1fr 1fr}.cols{grid-template-columns:1fr}.frow{grid-template-columns:1fr}.ed{grid-template-columns:1fr}.agents{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}
     .search{width:140px}
     .bar i{width:50px}
     .hm{display:none}
@@ -405,8 +419,94 @@ V.resultados = (q) => {
     ${resultsBody(camp || CAMPANHAS[0], true)}
   </div>`;
 };
-V.agentes = () => `<div class="agents">${AGENTES.map(a=>`<div class="agent"><div class="g">${a.k}</div><h3>${esc(a.nome)}</h3><p>${esc(a.papel)}</p><div class="meta"><span><i class="dot ${a.st==='ok'?'':a.st}" style="margin-right:7px"></i>${esc(a.stl)}</span><code>${esc(a.skill)}</code></div></div>`).join('')}</div>
-  <div class="card" style="margin-top:18px"><div class="hd"><h2>Fluxo</h2></div>${stepsHtml()}</div>`;
+V.agentes = () => `<div class="agents">${AGENTES.map(a=>`<div class="agent row" onclick="location.hash='#/agentes/${a.skill}'"><div class="g">${a.k}</div><h3>${esc(a.nome)}</h3><p>${esc(a.papel)}</p><div class="meta"><span><i class="dot ${a.st==='ok'?'':a.st}" style="margin-right:7px"></i>${esc(a.stl)}</span><code>${esc(a.skill)}</code></div></div>`).join('')}</div>
+  <div class="card" style="margin-top:18px"><div class="hd"><h2>Fluxo</h2><span class="chip" id="edstate">…</span></div>${stepsHtml()}</div>`;
+
+/* ---- editor de agente (SKILL.md → commit no GitHub via api/skill.php) ---- */
+const GH_RAW = 'https://raw.githubusercontent.com/iaeautomacao-lgtm/agente-trafego-hermes/main/skills/trafego-pago/';
+const GH_WEB = 'https://github.com/iaeautomacao-lgtm/agente-trafego-hermes';
+let ED = { skill:null, original:'', loading:false };
+V.agente = (q, skill) => {
+  const a = AGENTES.find(x=>x.skill===skill); if(!a) return `<div class="empty"><b>Agente não encontrado</b><a href="#/agentes">Voltar</a></div>`;
+  if(ED.skill!==skill){ ED={skill, original:'', loading:true}; loadSkill(skill); }
+  return `<div class="crumb"><a href="#/agentes">Agentes</a> / ${esc(a.nome)}</div>
+  <div class="ed">
+    <div class="card">
+      <div class="hd"><div><h2>${esc(a.nome)}</h2><span class="sub" style="color:var(--mute);font-size:12.5px"><code>skills/trafego-pago/${esc(skill)}/SKILL.md</code></span></div>
+        <div class="r"><span class="chip" id="edstat"><i class="dot off"></i>carregando…</span><button class="btn ghost sm" onclick="reloadSkill()">Recarregar</button><button class="btn sm" id="edsave" onclick="openSave()" disabled>Salvar</button></div></div>
+      <textarea id="edta" spellcheck="false" oninput="edChanged()" placeholder="carregando SKILL.md…"></textarea>
+    </div>
+    <div>
+      <div class="card"><div class="hd"><h2>Agente</h2></div>
+        <table class="meta">
+          <tr><td>Papel</td><td>${esc(a.papel)}</td></tr>
+          <tr><td>Status</td><td><i class="dot ${a.st==='ok'?'':a.st}" style="margin-right:7px"></i>${esc(a.stl)}</td></tr>
+          <tr><td>Runtime</td><td>${esc(a.runtime)}</td></tr>
+          <tr><td>Histórico</td><td><a href="${GH_WEB}/commits/main/skills/trafego-pago/${esc(skill)}/SKILL.md" target="_blank" rel="noopener" style="color:var(--orange)">commits desta skill ↗</a></td></tr>
+        </table>
+      </div>
+      <div class="card"><div class="hd"><h2>O que acontece ao salvar</h2></div>
+        <table class="meta">
+          <tr><td class="id">1</td><td>Commit no GitHub com seu nome (histórico completo, dá para voltar)</td></tr>
+          <tr><td class="id">2</td><td>Este painel já mostra a versão nova (lê direto do GitHub)</td></tr>
+          <tr><td class="id">3</td><td>Paperclip / Hermes pegam a versão nova no próximo <em>Check for updates</em> · <code>install.sh</code></td></tr>
+        </table>
+      </div>
+      <div class="card"><div class="hd"><h2>Regras da SKILL.md</h2></div>
+        <table class="meta">
+          <tr><td>Topo</td><td>Começa com <code>---</code> / <code>name: ${esc(skill)}</code> / <code>description:</code> / <code>---</code></td></tr>
+          <tr><td>Conteúdo</td><td>Markdown: papel, input, output obrigatório, regras invioláveis</td></tr>
+          <tr><td>Não mexer</td><td>No <code>name</code>. Mudar o nome quebra a cadeia do Orquestrador.</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>`;
+};
+async function loadSkill(skill){
+  let txt=null;
+  try{ const r=await fetch(GH_RAW+skill+'/SKILL.md?t='+Date.now(),{cache:'no-store'}); if(r.ok) txt=await r.text(); }catch(e){}
+  if(txt==null){ try{ const r=await fetch('skills/trafego-pago/'+skill+'/SKILL.md?t='+Date.now(),{cache:'no-store'}); if(r.ok) txt=await r.text(); }catch(e){} }
+  if(ED.skill!==skill || !$('#edta')) return;
+  const ta=$('#edta'), st=$('#edstat');
+  if(txt==null){ st.innerHTML='<i class="dot red"></i>não consegui carregar'; return; }
+  ED.original=txt; ED.loading=false; ta.value=txt; st.innerHTML='<i class="dot"></i>versão do GitHub · '+txt.split('\n').length+' linhas'; $('#edsave').disabled=true;
+}
+function reloadSkill(){ if($('#edta').value!==ED.original && !confirm('Descartar as alterações não salvas?')) return; ED.original=''; loadSkill(ED.skill); }
+function edChanged(){ const ch=$('#edta').value!==ED.original; $('#edsave').disabled=!ch; $('#edstat').innerHTML=ch?'<i class="dot warn"></i>alterado · não salvo':'<i class="dot"></i>sem alterações'; }
+const GH_API = 'https://api.github.com/repos/iaeautomacao-lgtm/agente-trafego-hermes/contents/skills/trafego-pago/';
+const b64utf8 = str => btoa(unescape(encodeURIComponent(str)));
+const getTok = () => sessionStorage.getItem('ddm_gh_token') || localStorage.getItem('ddm_gh_token') || '';
+function openSave(){
+  const content=$('#edta').value, skill=ED.skill;
+  if(!new RegExp('^---\\s*\\nname:\\s*'+skill.replace(/-/g,'\\-')+'\\s*\\n').test(content)){ toast('A SKILL.md precisa começar com "---" e "name: '+skill+'".', true); return; }
+  const author=localStorage.getItem('ddm_author')||'', tok=getTok();
+  const m=document.createElement('div'); m.className='modal'; m.innerHTML=`<div class="box"><h2>Salvar ${esc(skill)}</h2><p>Vira um commit no GitHub com seu nome.</p>
+    <label>Seu nome</label><input id="sv-author" value="${esc(author)}" placeholder="Gisele">
+    <label>Token do GitHub ${tok?'<span style="color:var(--ok)">· salvo neste navegador</span>':''}</label><input id="sv-tok" type="password" autocomplete="off" placeholder="${tok?'(usar o token salvo)':'github_pat_… ou ghp_…'}">
+    <p style="margin-top:6px">Fine-grained token em <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--orange)">github.com/settings/personal-access-tokens</a> → repositório <code>agente-trafego-hermes</code> → Contents: Read and write. Fica só no seu navegador.</p>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:8px"><input type="checkbox" id="sv-keep" style="width:auto" ${localStorage.getItem('ddm_gh_token')?'checked':''}> lembrar o token neste navegador</label>
+    <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" type="button" onclick="this.closest('.modal').remove()">Cancelar</button><button class="btn" type="button" id="sv-go">Salvar e publicar</button></div></div>`;
+  document.body.appendChild(m); (tok?$('#sv-author'):$('#sv-tok')).focus();
+  $('#sv-go').onclick=async()=>{ const btn=$('#sv-go'); btn.disabled=true; btn.textContent='Salvando…';
+    const author=$('#sv-author').value.trim()||'painel', token=$('#sv-tok').value.trim()||getTok();
+    if(!token){ toast('Falta o token do GitHub.', true); btn.disabled=false; btn.textContent='Salvar e publicar'; return; }
+    localStorage.setItem('ddm_author',author);
+    if($('#sv-keep').checked){ localStorage.setItem('ddm_gh_token',token); sessionStorage.removeItem('ddm_gh_token'); } else { localStorage.removeItem('ddm_gh_token'); sessionStorage.setItem('ddm_gh_token',token); }
+    const H={ 'Authorization':'Bearer '+token, 'Accept':'application/vnd.github+json', 'X-GitHub-Api-Version':'2022-11-28' };
+    const url=GH_API+skill+'/SKILL.md';
+    try{
+      const r1=await fetch(url+'?ref=main',{headers:H}); const cur=await r1.json().catch(()=>({}));
+      if(!r1.ok||!cur.sha){ throw new Error(r1.status===401?'token inválido':(r1.status===404?'token sem acesso ao repositório':(cur.message||r1.status))); }
+      const body={ message:'Agente '+skill+': editado por '+author+' via painel', content:b64utf8(content), sha:cur.sha, branch:'main' };
+      const r2=await fetch(url,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},H),body:JSON.stringify(body)}); const j=await r2.json().catch(()=>({}));
+      if(!r2.ok){ throw new Error(j.message||('GitHub '+r2.status)); }
+      m.remove(); ED.original=content; edChanged();
+      toast(`Salvo. Commit <a href="${esc(j.commit.html_url)}" target="_blank" rel="noopener">${j.commit.sha.slice(0,7)}</a> · o Paperclip pega no próximo <em>Check for updates</em>`);
+    }catch(e){ toast('Não salvou: '+e.message, true); btn.disabled=false; btn.textContent='Salvar e publicar'; }
+  };
+}
+function toast(html, err){ const t=document.createElement('div'); t.className='toast'+(err?' err':''); t.innerHTML=html; document.body.appendChild(t); setTimeout(()=>t.remove(), err?7000:9000); }
+function checkEditing(){ const el=$('#edstate'); if(el) el.innerHTML=getTok()?'<i class="dot"></i>edição habilitada · token salvo':'<i class="dot warn"></i>edição: precisa de um token do GitHub (pedido ao salvar)'; }
 V.nova = () => `<div class="two">
   <div class="card"><div class="hd"><h2>Briefing</h2></div>
     <form id="brief" onsubmit="return false">
@@ -428,17 +528,20 @@ V.nova = () => `<div class="two">
 </div>`;
 
 /* ---------------- router ---------------- */
-const TITLES = {home:'Visão geral', campanhas:'Campanhas', campanha:'Campanha', criativos:'Criativos', resultados:'Resultados', agentes:'Agentes', nova:'Nova campanha'};
+const TITLES = {home:'Visão geral', campanhas:'Campanhas', campanha:'Campanha', criativos:'Criativos', resultados:'Resultados', agentes:'Agentes', agente:'Agente', nova:'Nova campanha'};
 function parse(){ const h=location.hash.replace(/^#\/?/,''); const [path,qs]=h.split('?'); const seg=path.split('/').filter(Boolean); const q={}; new URLSearchParams(qs||'').forEach((v,k)=>q[k]=v); return {seg,q}; }
 function setQ(k,v){ const {seg,q}=parse(); if(v) q[k]=v; else delete q[k]; const qs=new URLSearchParams(q).toString(); location.hash='#/'+seg.join('/')+(qs?'?'+qs:''); }
 function render(){
   const {seg,q}=parse(); let name=seg[0]||'home', html='';
   if(name==='campanhas' && seg[1]){ name='campanha'; html=V.campanha(q,seg[1],seg[2]); }
+  else if(name==='agentes' && seg[1]){ name='agente'; html=V.agente(q,seg[1]); }
   else if(V[name]) html=V[name](q); else { name='home'; html=V.home(q); }
   $('#title').textContent = TITLES[name];
   $('#view').innerHTML = html;
   $('#topr').innerHTML = (name==='campanhas'||name==='criativos') ? `<input class="search" placeholder="Buscar…" value="${esc(q.q||'')}" oninput="clearTimeout(window._t);window._t=setTimeout(()=>setQ('q',this.value),250)">` : `<span class="chip"><i class="dot"></i>Paperclip local</span><span class="chip hm"><i class="dot warn"></i>Meta Ads não conectado</span>`;
-  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#/'+(name==='campanha'?'campanhas':name==='home'?'':name)));
+  document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#/'+(name==='campanha'?'campanhas':name==='agente'?'agentes':name==='home'?'':name)));
+  if(name==='agentes') checkEditing();
+  if(name!=='agente') ED={skill:null,original:'',loading:false};
   $('[data-n=camp]').textContent=CAMPANHAS.length; $('[data-n=cri]').textContent=allCreatives().length; $('[data-n=ag]').textContent=AGENTES.length;
   $('#side').classList.remove('open');
   if(name==='campanhas'||name==='criativos'){ const s=$('.search'); if(s && document.activeElement!==s && q.q){ } }
