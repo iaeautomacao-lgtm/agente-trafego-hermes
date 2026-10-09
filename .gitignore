@@ -14,3 +14,9 @@ dashboard/dist/
 *.key
 _hermes-session-raw.json
 dashboard/server/data/*.log
+
+# saídas de teste locais
+scripts/teste-chaves.resultado.json
+dados/publicacoes/*.resultado-*.json
+__pycache__/
+artes/teste/
