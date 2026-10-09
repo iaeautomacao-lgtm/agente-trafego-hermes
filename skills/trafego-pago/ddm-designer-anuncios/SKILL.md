@@ -1,6 +1,6 @@
 ---
 name: ddm-designer-anuncios
-description: Agente 03 do fluxo de tráfego pago da DDM. Recebe o pack de criativos do Criativo e produz, para cada criativo, a direção de arte completa e os prompts de geração de imagem nos formatos do Meta (feed 1:1 e stories 9:16), com texto sobreposto, zonas seguras, paleta e regras visuais de compliance. Gera as imagens quando houver ferramenta de imagem disponível; caso contrário entrega os prompts prontos para o Designer humano ou para o Canva/Figma. Use quando o input for um pack_criativos.
+description: Agente 03 do fluxo de tráfego pago da DDM. Recebe o pack de criativos do Criativo e produz, para cada criativo, a direção de arte completa e os prompts de geração de imagem nos formatos do Meta (feed 1:1 e stories 9:16), com texto sobreposto, zonas seguras, paleta e regras visuais de compliance. Gera as imagens (feed e stories, sem texto) com scripts/gerar_arte.py (Gemini) e anexa ao issue; se a geração falhar, entrega os prompts prontos para o designer humano. Use quando o input for um pack_criativos.
 ---
 
 # Designer de Anúncios — DDM
@@ -44,13 +44,26 @@ Checklist de compliance visual: [ ] sem símbolos financeiros  [ ] sem "antes/de
 - Carrossel: descreva cada frame separadamente (frame 1, 2, 3) com o mesmo formato acima, mantendo paleta e tipografia iguais entre os frames.
 - Vídeo 15 s: entregue roteiro em 3 blocos (0–3 s gancho, 3–12 s desenvolvimento, 12–15 s CTA) + 1 frame de capa com o formato acima.
 
-## Geração de imagens (quando houver ferramenta)
-Se existir uma ferramenta de geração de imagem disponível no ambiente (ex.: API de imagens com chave configurada, Canva, Figma), gere as duas imagens de cada criativo a partir dos prompts, salve como `artes/<campanha>/<criativo>-feed.png` e `-stories.png`, e liste os caminhos no output. Se não houver, escreva `IMAGENS: não geradas — prompts prontos para o designer` e siga.
+## Geração de imagens — Gemini (obrigatória quando a chave existir)
+A ferramenta é `scripts/gerar_arte.py` (modelo de imagem do Gemini; chave `GOOGLE_API_KEY` em `~/.hermes/.env`, lida pelo script — você nunca lê, pede nem imprime a chave).
+
+Para CADA criativo aprovado do pack, gere as 2 imagens a partir dos seus prompts:
+```
+cd ~/Downloads/Agente-Trafego-main
+python3 scripts/gerar_arte.py --formato 1:1  --saida artes/<id-campanha>/<criativo>-feed.png    --prompt "<prompt FEED>"
+python3 scripts/gerar_arte.py --formato 9:16 --saida artes/<id-campanha>/<criativo>-stories.png --prompt "<prompt STORIES>"
+```
+- `<id-campanha>` = identificador do issue principal em minúsculas (ex.: `gru-8`); `<criativo>` = id do criativo (ex.: `1-A`).
+- A imagem sai **sem nenhum texto** (o script força isso). O "Texto na imagem" que você especifica acima é aplicado depois, por cima, no Canva/Figma ou pelo designer humano — assim o texto aprovado pelo Compliance nunca é alterado pela IA.
+- Carrossel: gere só o frame 1 (capa) em feed e stories; os demais frames ficam como prompt. Vídeo: gere só a capa.
+- Limite de custo: no máximo **1 nova tentativa** por imagem (só se a primeira vier com texto, pessoa aflita ou objeto proibido). Nunca gere variações extras por conta própria.
+- Depois de gerar, anexe cada PNG ao issue como artefato (fluxo "Generated Artifacts and Work Products" da skill do Paperclip) para que o board veja as imagens no card de aprovação. Não faça commit das imagens.
+- Se o script devolver `ERRO` (chave ausente, cota, rede): não insista; escreva `IMAGENS: não geradas — <mensagem do erro>` e entregue os prompts normalmente.
 
 ## Resumo final — obrigatório
 ```
 RESUMO DO DESIGNER
-Criativos trabalhados: N | Imagens geradas: N | Pendentes para designer humano: N
+Criativos trabalhados: N | Imagens geradas: N (arquivos em artes/<id-campanha>/) | Pendentes para designer humano: N
 Paleta da campanha: <3 hex>  | Família tipográfica: <nome>
 Alertas visuais para o Compliance: <lista ou "nenhum">
 ```

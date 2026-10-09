@@ -13,9 +13,11 @@ Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrat
 | Dashboard React/Vite + Express (herdado do repo `Agente-Trafego`) | `dashboard/` | ⚠️ parcial — bridge Hermes corrigida em `dashboard/server/hermes-bridge.js` |
 | Prompts originais dos agentes (referência) | `AGENTES DE TRAFEGO PAGO/` | referência |
 | Painel interno (campanhas, criativos, scores, resultados com gráficos) | `index.html` + `dados/campanhas.json` → https://agente.trafego.grupoddm.ia.br | ✅ no ar |
-| Agente Designer (direção de arte + prompts) | `skills/trafego-pago/ddm-designer-anuncios` + Paperclip | ✅ skill pronta · ⏳ geração de imagem depende de ferramenta/chave |
+| Agente Designer (direção de arte + prompts) | `skills/trafego-pago/ddm-designer-anuncios` + Paperclip | ✅ gera as imagens feed 1:1 e stories 9:16 sem texto com `scripts/gerar_arte.py` (Gemini, chave `GOOGLE_API_KEY`) |
 | Agente Dados (analisa export do Meta Ads, escreve `dados/campanhas.json`, devolve hipóteses ao Orquestrador) | `skills/trafego-pago/ddm-dados-campanhas` + Paperclip | ✅ pronto · ⏳ aguardando export da 1ª campanha |
 | Agente Publicador Meta (cria campanha/conjuntos/anúncios **sempre em PAUSA** via `scripts/meta_publicar.py`; dry-run → confirmação → executar) | `skills/trafego-pago/ddm-publicador-meta` + `scripts/meta_publicar.py` + `dados/publicacoes/` | ✅ script e skill prontos (testado em `--mock` / `--dry-run`) · ⏳ falta `META_ACCESS_TOKEN` / conta / Página (Gustavo) |
+| Score de risco com Jev (TypeSafe) — segunda opinião do Compliance, sinaliza divergências para revisão humana | `scripts/jev_risk_score.py` | ✅ funcionando (teste: texto seguro 11 · arriscado 62) |
+| Teste das chaves (sem mostrar valores) | `scripts/testar_chaves.py` | ✅ |
 | Etapas da campanha no painel (montada → aprovada → publicada → analisada, com histórico) | `dados/campanhas.json` (`etapa`, `historico`, `publicacao`) + Pipeline no painel | ✅ |
 
 ## Como rodar as skills
