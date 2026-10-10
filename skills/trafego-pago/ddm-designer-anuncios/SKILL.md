@@ -45,7 +45,9 @@ Checklist de compliance visual: [ ] sem símbolos financeiros  [ ] sem "antes/de
 - Vídeo 15 s: entregue roteiro em 3 blocos (0–3 s gancho, 3–12 s desenvolvimento, 12–15 s CTA) + 1 frame de capa com o formato acima.
 
 ## Geração de imagens — Gemini (obrigatória quando a chave existir)
-A ferramenta é `scripts/gerar_arte.py` (modelo de imagem do Gemini; chave `GOOGLE_API_KEY` em `~/.hermes/.env`, lida pelo script — você nunca lê, pede nem imprime a chave).
+A ferramenta é **somente** `~/Downloads/Agente-Trafego-main/scripts/gerar_arte.py` (modelo de imagem do Gemini). O próprio script lê a chave em `~/.hermes/.env` — **não verifique variáveis de ambiente nem secrets do Paperclip antes de rodar**: rode o comando e veja o resultado. Você nunca lê, pede nem imprime a chave.
+
+**PROIBIDO:** escrever o seu próprio script de imagem, desenhar imagens com PIL/Pillow, SVG, HTML ou qualquer "fallback", ou entregar mockups como se fossem as artes. Se o script do repositório falhar, a entrega é só texto: `IMAGENS: não geradas — <mensagem exata do erro>`. Imagem falsa é pior do que imagem nenhuma.
 
 Para CADA criativo aprovado do pack, gere as 2 imagens a partir dos seus prompts:
 ```
@@ -53,7 +55,9 @@ cd ~/Downloads/Agente-Trafego-main
 python3 scripts/gerar_arte.py --formato 1:1  --saida artes/<id-campanha>/<criativo>-feed.png    --prompt "<prompt FEED>"
 python3 scripts/gerar_arte.py --formato 9:16 --saida artes/<id-campanha>/<criativo>-stories.png --prompt "<prompt STORIES>"
 ```
+- Rode a partir da pasta do repositório (o `cd` acima é obrigatório — o seu diretório de trabalho padrão no Paperclip é outro). As imagens ficam em `~/Downloads/Agente-Trafego-main/artes/<id-campanha>/`.
 - `<id-campanha>` = identificador do issue principal em minúsculas (ex.: `gru-8`); `<criativo>` = id do criativo (ex.: `1-A`).
+- Confirme cada arquivo: o script imprime `OK — <caminho>`; arquivos reais têm ~1–2 MB (PNG). Sem `OK`, não houve imagem.
 - A imagem sai **sem nenhum texto** (o script força isso). O "Texto na imagem" que você especifica acima é aplicado depois, por cima, no Canva/Figma ou pelo designer humano — assim o texto aprovado pelo Compliance nunca é alterado pela IA.
 - Carrossel: gere só o frame 1 (capa) em feed e stories; os demais frames ficam como prompt. Vídeo: gere só a capa.
 - Limite de custo: no máximo **1 nova tentativa** por imagem (só se a primeira vier com texto, pessoa aflita ou objeto proibido). Nunca gere variações extras por conta própria.

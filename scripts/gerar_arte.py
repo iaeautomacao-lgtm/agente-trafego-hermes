@@ -65,7 +65,7 @@ def main():
     ap.add_argument("--modelo", default=MODELO_PADRAO)
     a = ap.parse_args()
     carregar_env()
-    chave = os.environ.get("GOOGLE_API_KEY")
+    chave = os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
     if not chave:
         raise SystemExit("ERRO: GOOGLE_API_KEY não encontrada no ambiente nem em ~/.hermes/.env")
     print("OK —", gerar(a.prompt, a.saida, chave, a.formato, a.modelo))
