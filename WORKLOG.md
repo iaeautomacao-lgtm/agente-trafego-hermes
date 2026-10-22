@@ -14,3 +14,7 @@ Formato: `## YYYY-MM-DD (Weekday) — Work log (~total)` e linhas `HH:MM–HH:MM
 - Open: push + "Atualizar do remoto" no cPanel (login 401 — Gisele/Arthur) (Gui)
 - Open: Paperclip — atualizar 7 skills, importar 2 novas, criar agentes Público CRM e Resultados DDMP, limpar AGENTS.md antigos (Gui + Claude)
 - Open: formato dos exports do CRM e do DDMP (Jair) · acesso Meta, ids, base legal, verba (Gustavo)
+
+## 2026-10-22 (Thursday) — Paperclip no modelo novo + identidade visual (~20 min)
+- 13:00–13:08 (~8 min) — Paperclip: 7 skills atualizadas para 3e435e7, skills novas `ddm-audiencia-crm` e `ddm-resultados-ddmp` importadas, agentes **Público CRM** (34f4dcdf) e **Resultados DDMP** (5a084b5b) criados (Hermes, claude-sonnet-4-6, reportam ao Orquestrador); AGENTS.md dos 9 agentes reescritos para o modelo sempre ligado (revisões antigas guardadas no Paperclip) (Claude/Cowork)
+- 13:08–13:20 (~12 min) — Painel com a identidade do logo Grupo DDM: marca DDM (`assets/ddm-marca.png`) + "GRUPO" no menu, laranja em degradê #FF4500→#FF6108, Montserrat/Inter, fundo branco/cinza neutro (claro) e grafite (escuro), favicon

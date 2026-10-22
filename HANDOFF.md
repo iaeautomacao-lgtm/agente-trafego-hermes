@@ -32,17 +32,17 @@ Exemplo real mostrado pelo Gustavo: R$ 3.888 gastos → 2.291 pessoas no DDMP (�
 | # | Papel novo | Nome no Paperclip | ID | Skill |
 |---|---|---|---|---|
 | O | Orquestrador (ciclo diário + OK do dia) | Orquestrador Hermes | `65238a5e-9057-41f4-b766-baee06e31f3a` | ddm-orquestrador-trafego |
-| 1 | Público CRM | **a criar** | — | ddm-audiencia-crm |
+| 1 | Público CRM | Público CRM | `34f4dcdf-d58d-492b-a94d-eca831a356b4` | ddm-audiencia-crm |
 | 2 | Planejador de campanhas | Estrategista de Tráfego 2 | `69acc6b1-15fb-4e8c-b022-5cb45bb33da1` | ddm-estrategista-trafego |
 | 3 | Criativo (imagens) | Designer de Anúncios | `69f749f4-3853-47f5-8e75-ef31566d964b` | ddm-designer-anuncios |
 | 4 | Copy | Criativo de Anúncios 2 | `3bad73d5-d812-484b-aa1c-186ca22efc9f` | ddm-criativo-anuncios |
 | 5 | Compliance | Compliance de Anúncios 2 | `3754b591-b3f5-4921-bc80-4bbbe5c1ccf6` | ddm-compliance-anuncios |
 | 6 | Publicador Meta | Publicador Meta | `52b3283c-db52-492a-8f39-f9e972eed727` | ddm-publicador-meta |
-| 7 | Resultados DDMP | **a criar** | — | ddm-resultados-ddmp |
+| 7 | Resultados DDMP | Resultados DDMP | `5a084b5b-eab3-4dac-b8c6-881cc46a1ef8` | ddm-resultados-ddmp |
 | 8 | Análise de campanhas | Dados de Campanhas 2 | `08e580ad-297e-4053-9c1c-f1a023fb3f2a` | ddm-dados-campanhas |
 
-Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo. **Depois do push:** Skills → cada skill → **Check for updates → Install update**; importar as 2 skills novas do GitHub e criar os 2 agentes; renomear os agentes existentes para o papel novo é opcional.
-**AGENTS.md:** os do Compliance, Designer, Publicador e Orquestrador têm regras do modelo antigo (lista de palavras proibidas com "dívida", "nunca subir lista de alunos", fluxo por briefing). O AGENTS.md pesa mais que a skill — **trocar o texto antigo por "Siga a skill <nome> (versão 22/10/2026)"** ou o agente vai seguir a regra velha.
+Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo. Em 22/10: as 9 skills estão em `3e435e7` no Paperclip e os 2 agentes novos foram criados. **Depois de cada push que mude skill:** Skills → a skill → **Check for updates → Install update**.
+**AGENTS.md (22/10):** os 9 foram reescritos — modelo sempre ligado, "a skill prevalece", regras fixas (PAUSED, sem chaves, sem dado de aluno) + o Execution Contract do Paperclip. As versões antigas ficam no histórico de revisões de cada agente no Paperclip. O AGENTS.md pesa mais que a skill: se mudar regra, mude os dois.
 
 ## 4. Estado em 22/10/2026
 **Pronto (testado com dados falsos):** as 9 skills reescritas; `audiencia_sync.py` (dry-run, mock, trava de 30%, entraram/saíram, recusa sem base legal); `resultados_ddmp.py` (exports Meta + DDMP → custo por visita/acordo e sugestão); `utm.py`; `meta_publicar.py` no modo do dia (mock: 2 anúncios novos + 1 pausa); painel novo com tema claro/escuro.
@@ -50,7 +50,7 @@ Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo.
 **Ainda do modelo antigo, não validado:** Designer gerando imagens reais dentro do Paperclip (re-teste pendente, só com OK do Gui).
 
 ## 5. Próximos passos (em ordem)
-1. Push → Paperclip: atualizar as 7 skills, importar as 2 novas, criar os agentes Público CRM e Resultados DDMP, limpar os AGENTS.md antigos.
+1. ~~Paperclip: skills, agentes novos, AGENTS.md~~ (feito em 22/10).
 2. Rotina diária do Orquestrador no Paperclip (~08:00 Brasília) — só depois que houver dado real; até lá, rodar à mão.
 3. Com o Jair: formato do export do CRM (quem está em aberto, por cliente) e do DDMP (contagens por data/cliente/campanha/criativo). Ajustar `resultados_ddmp.py` se os nomes de coluna forem outros.
 4. Com o Gustavo: acesso ao Meta, ids do público e do conjunto de cada cliente, base legal, verba. Primeiro `audiencia_sync.py` em dry-run com a base real; depois `--executar`.
