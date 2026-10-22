@@ -1,0 +1,14 @@
+{
+  "_comentario": "EXEMPLO do ciclo diário: anúncios novos num conjunto que já existe na campanha ligada + pausa de anúncios. o adset_id real é lido de META_ADSET_INST_A no ~/.hermes/.env; os ad_ids em \"pausar\" vêm do resultado local de publicações anteriores. Ids reais do Meta nunca vão para o repositório público.",
+  "cliente": "inst-a",
+  "campanha_id_painel": "inst-a-sempre",
+  "aprovacao_humana": { "aprovado": true, "por": "Gui", "em": "2026-10-20T09:12:00", "issue": "GRU-xx (OK do dia 20/10)" },
+  "adicionar": {
+    "adset_id": "<META_ADSET_INST_A>",
+    "anuncios": [
+      { "id": "07", "headline": "Black Friday: condições especiais no DDMP", "texto": "Até 30/11, condições especiais para fechar seu acordo online.", "descricao": "Ver condições", "cta": "LEARN_MORE", "link": "https://ddmp.com.br/?utm_source=meta&utm_medium=paid_social&cliente=inst-a&campanha=black-friday&criativo=07", "imagem": "artes/inst-a/07-feed.png" },
+      { "id": "08", "headline": "Seu acordo pelo WhatsApp, sem fila", "texto": "Chame a DDM no WhatsApp e resolva em uma conversa.", "descricao": "Chamar no WhatsApp", "cta": "CONTACT_US", "link": "https://ddmp.com.br/?utm_source=meta&utm_medium=paid_social&cliente=inst-a&campanha=black-friday&criativo=08", "imagem": "artes/inst-a/08-feed.png" }
+    ]
+  },
+  "pausar": ["<AD_ID_DO_CRIATIVO_04>"]
+}

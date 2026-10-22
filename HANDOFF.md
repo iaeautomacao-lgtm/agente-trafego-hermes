@@ -1,63 +1,60 @@
 # HANDOFF — Agente de Tráfego Pago (Meta Ads) · Grupo DDM
 
-**Para:** o agente Claude no Cursor, que assume este projeto a partir de 19/10/2026.
-**De:** Claude (Cowork), que construiu tudo até aqui junto com o João Guilherme (Gui).
-**Leia este arquivo inteiro antes de mexer em qualquer coisa.** Depois mantenha o `WORKLOG.md` (formato no fim).
+**Para:** quem pega o projeto (agente do Cursor, Claude desktop, ou pessoa). **Leia inteiro antes de mexer.** Mantenha o `WORKLOG.md` (formato no fim).
+
+> **22/10/2026 — o escopo mudou.** Na reunião de 20/10 o Gustavo explicou o que ele quer de verdade, e é diferente do que estava montado (campanha nova a partir de briefing, aprovada uma a uma). As seções 1–5 abaixo já estão no modelo novo. A reestruturação de 22/10 foi feita pelo Claude desktop (Cowork), a pedido do Gui.
 
 ---
 
-## 1. O que é
-Um time de agentes de IA que monta campanhas de Meta Ads para a DDM (negociação de mensalidades com alunos/ex-alunos de faculdades). Público sensível: **nada pode constranger o aluno nem expor dívida** (LGPD + políticas Meta).
+## 1. O que é (modelo "sempre ligado", 20/10/2026)
+A DDM negocia dívidas de mensalidade de alunos para instituições de ensino (clientes). Cada cliente tem **uma campanha de Meta Ads sempre ligada**. Os agentes fazem o trabalho do dia:
+- **Público**: a base do CRM com os alunos em aberto daquele cliente (telefone + e-mail) **substitui todo dia** o público personalizado do cliente no Meta. Quem pagou sai. A campanha não muda.
+- **Criativos**: renovados quando a Análise pede ou quando muda o tema (Natal, Black Friday…). Primeiro a imagem, depois a copy "de acordo com o criativo".
+- **Rastreio**: todo link leva `cliente`, `campanha`, `criativo` (ex.: `?cliente=inst-a&campanha=natal&criativo=02`). O sistema da DDM (Jair) registra a visita no DDMP e o acordo, quando fechado lá.
+- **Resultado**: custo por visita e por acordo de cada criativo → escalar, manter, pausar.
+- **Humano**: **um OK por dia**, num horário fixo (padrão 09:00). Tudo que o Publicador cria nasce `PAUSED` (travado no código); uma pessoa liga no Ads Manager (o Gustavo já viu o Meta exigir isso).
 
-Cadeia: **Estrategista → Criativo → Designer → Compliance → [aprovação humana] → Publicador (sempre PAUSADO) → humano ativa no Ads Manager → Dados → próximo ciclo**, conduzida pelo **Orquestrador**.
-
-Regra de ouro: **nada é publicado nem ativado sem um humano.** O Publicador só cria objetos com `status: PAUSED` (travado no código).
+Exemplo real mostrado pelo Gustavo: R$ 3.888 gastos → 2.291 pessoas no DDMP (≈ R$ 1,70/visita); melhor criativo a R$ 1,52. Copy que rodou: "Resolva suas dívidas, fale conosco pelo WhatsApp" — por isso a regra de linguagem mudou: **pode falar de negociar dívidas**; não pode ameaçar, expor a pessoa, prometer ou criar urgência falsa.
 
 ## 2. Onde está cada coisa
 | O quê | Onde |
 |---|---|
-| Repo | `iaeautomacao-lgtm/agente-trafego-hermes` (público) · clone local no Mac: `~/Downloads/Agente-Trafego-main` |
-| Skills dos agentes (fonte da verdade) | `skills/trafego-pago/ddm-*/SKILL.md` (7 skills) |
-| Scripts | `scripts/meta_publicar.py` (publica PAUSADO; `--dry-run` padrão, `--mock`, `--executar`), `scripts/gerar_arte.py` (imagens Gemini, sem texto), `scripts/jev_risk_score.py` (score de risco Jev/TypeSafe 0–100), `scripts/testar_chaves.py` (testa as chaves sem mostrá-las), `scripts/_env.py` (lê `~/.hermes/.env`) |
-| Dados do painel | `dados/campanhas.json` (campanhas, etapas montada→aprovada→publicada→analisada, `historico`, `resultados`), schema em `dados/README.md`; specs de publicação em `dados/publicacoes/` |
-| Painel interno (CRM) | `index.html` (app de 1 arquivo, rotas por hash) → https://agente.trafego.grupoddm.ia.br |
-| Paperclip (orquestração) | local no Mac: http://127.0.0.1:3100/GRU/ · empresa `01b7e083-3ae7-4f29-bdcd-f2ceca73d9b9` |
-| Hermes (runtime dos agentes) | `~/.hermes/` no Mac; modelo `claude-sonnet-4-6` via OAuth Anthropic |
-| Chaves | `~/.hermes/.env`: `GOOGLE_API_KEY` ✅, `TYPESAFE_API_KEY` ✅, `META_ACCESS_TOKEN` / `META_AD_ACCOUNT_ID` / `META_PAGE_ID` ❌ (faltam) |
+| Repo | `iaeautomacao-lgtm/agente-trafego-hermes` (**público**) · clone no Mac: `~/Downloads/Agente-Trafego-main` |
+| Skills (fonte da verdade) | `skills/trafego-pago/ddm-*/SKILL.md` (9 skills) |
+| Scripts | `audiencia_sync.py` (troca o público: CSV → hash → `usersreplace`; dry-run/mock/executar; trava de 30%; exige base legal) · `resultados_ddmp.py` (gasto Meta + visitas/acordos DDMP por criativo) · `utm.py` (monta/confere links) · `meta_publicar.py` (spec `adicionar`/`pausar` do dia, ou campanha nova; sempre PAUSED; recusa link sem rastreio) · `gerar_arte.py` (Gemini) · `jev_risk_score.py` (Jev) · `testar_chaves.py` · `_env.py` |
+| Dados do painel | `dados/campanhas.json` v2 (clientes → público + campanha sempre ligada → criativos + resultados; `ok_diario`), schema em `dados/README.md`; simulação em `dados/exemplo-simulado.json` |
+| Bases e exports (fora do git) | `~/ddm-crm/<cliente>/<data>.csv` (CRM), `~/ddm-crm/ddmp/<data>.csv`, `~/ddm-crm/meta/<cliente>-<data>.csv` |
+| Painel | `index.html` → https://agente.trafego.grupoddm.ia.br · tema claro (padrão) / escuro no topo · `?sim=1` abre a simulação |
+| Paperclip | http://127.0.0.1:3100/GRU/ · empresa `01b7e083-3ae7-4f29-bdcd-f2ceca73d9b9` · iniciar com `npx paperclipai run` |
+| Chaves (`~/.hermes/.env`) | `GOOGLE_API_KEY` ✅ · `TYPESAFE_API_KEY` ✅ · `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_PAGE_ID`, `META_AUDIENCE_<CLIENTE>`, `META_ADSET_<CLIENTE>` ❌ (Gustavo) |
 
-## 3. Agentes no Paperclip (todos Hermes, claude-sonnet-4-6, reportam ao Orquestrador)
-| Agente | ID | Skill |
-|---|---|---|
-| Orquestrador Hermes | `65238a5e-9057-41f4-b766-baee06e31f3a` | ddm-orquestrador-trafego |
-| Estrategista de Tráfego 2 | `69acc6b1-15fb-4e8c-b022-5cb45bb33da1` | ddm-estrategista-trafego |
-| Criativo de Anúncios 2 | `3bad73d5-d812-484b-aa1c-186ca22efc9f` | ddm-criativo-anuncios |
-| Designer de Anúncios | `69f749f4-3853-47f5-8e75-ef31566d964b` | ddm-designer-anuncios |
-| Compliance de Anúncios 2 | `3754b591-b3f5-4921-bc80-4bbbe5c1ccf6` | ddm-compliance-anuncios |
-| Publicador Meta | `52b3283c-db52-492a-8f39-f9e972eed727` | ddm-publicador-meta |
-| Dados de Campanhas 2 | `08e580ad-297e-4053-9c1c-f1a023fb3f2a` | ddm-dados-campanhas |
+## 3. Agentes no Paperclip (Hermes, claude-sonnet-4-6, Reports to = Orquestrador Hermes)
+| # | Papel novo | Nome no Paperclip | ID | Skill |
+|---|---|---|---|---|
+| O | Orquestrador (ciclo diário + OK do dia) | Orquestrador Hermes | `65238a5e-9057-41f4-b766-baee06e31f3a` | ddm-orquestrador-trafego |
+| 1 | Público CRM | **a criar** | — | ddm-audiencia-crm |
+| 2 | Planejador de campanhas | Estrategista de Tráfego 2 | `69acc6b1-15fb-4e8c-b022-5cb45bb33da1` | ddm-estrategista-trafego |
+| 3 | Criativo (imagens) | Designer de Anúncios | `69f749f4-3853-47f5-8e75-ef31566d964b` | ddm-designer-anuncios |
+| 4 | Copy | Criativo de Anúncios 2 | `3bad73d5-d812-484b-aa1c-186ca22efc9f` | ddm-criativo-anuncios |
+| 5 | Compliance | Compliance de Anúncios 2 | `3754b591-b3f5-4921-bc80-4bbbe5c1ccf6` | ddm-compliance-anuncios |
+| 6 | Publicador Meta | Publicador Meta | `52b3283c-db52-492a-8f39-f9e972eed727` | ddm-publicador-meta |
+| 7 | Resultados DDMP | **a criar** | — | ddm-resultados-ddmp |
+| 8 | Análise de campanhas | Dados de Campanhas 2 | `08e580ad-297e-4053-9c1c-f1a023fb3f2a` | ddm-dados-campanhas |
 
-As skills vêm do GitHub. **Depois de cada push que muda uma skill:** Paperclip → Skills → a skill → **Check for updates → Install update** (senão o agente continua na versão antiga).
-Cada agente também tem um `AGENTS.md` no Paperclip (Agent → Instructions). Atenção: o do Compliance tem um texto antigo + uma seção **"Atualização out/2026 — prevalece"** no fim; o do Designer tem a regra "só o script do repo". O AGENTS.md pesa mais que a skill — se mudar regra, confira os dois.
+Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo. **Depois do push:** Skills → cada skill → **Check for updates → Install update**; importar as 2 skills novas do GitHub e criar os 2 agentes; renomear os agentes existentes para o papel novo é opcional.
+**AGENTS.md:** os do Compliance, Designer, Publicador e Orquestrador têm regras do modelo antigo (lista de palavras proibidas com "dívida", "nunca subir lista de alunos", fluxo por briefing). O AGENTS.md pesa mais que a skill — **trocar o texto antigo por "Siga a skill <nome> (versão 22/10/2026)"** ou o agente vai seguir a regra velha.
 
-## 4. Estado em 19/10/2026
-**Funcionando e validado**
-- Cadeia completa com delegação correta, loop de correção (Compliance reprova → Criativo refaz, máx. 2) e parada na aprovação humana (demos GRU-3, GRU-8, GRU-17).
-- Agente Dados: dry run com CSV simulado (`exemplos/export-meta-simulado-2026-10.csv`), números 100% corretos (GRU-7).
-- Publicador: testado em `--mock` (22 chamadas) e `--dry-run`; recusa spec sem aprovação humana.
-- Jev: funcionando no Compliance (ex.: GRU-21 → "JEV: 11 · maiores sinais: …"). Custo irrisório (~540 tokens por criativo).
-- Gemini: chave na conta Google correta com faturamento e teto mensal; `testar_chaves.py` gerou imagem real em 5,4 s.
-- Painel no ar com pipeline de etapas, editor de SKILL.md (salva direto no GitHub com token pessoal do usuário), resultados com gráficos.
-
-**Não validado ainda**
-- **Designer gerando imagens reais dentro do Paperclip.** No GRU-17 (09/10) ele *não* usou o Gemini: procurou uma chave com nome errado e desenhou mockups com PIL. Correção publicada em `66f829d` e instalada no Paperclip (skill + AGENTS.md: só `scripts/gerar_arte.py`, a partir da pasta do repo; proibido PIL/SVG/HTML/mockup; se falhar, escrever `IMAGENS: não geradas — <erro>`). **Falta um re-teste.**
-
-**Tarefas abertas no Paperclip:** GRU-8 e GRU-17 (demos) em revisão aguardando o Gui; GRU-1 (onboarding) pode ser ignorado.
+## 4. Estado em 22/10/2026
+**Pronto (testado com dados falsos):** as 9 skills reescritas; `audiencia_sync.py` (dry-run, mock, trava de 30%, entraram/saíram, recusa sem base legal); `resultados_ddmp.py` (exports Meta + DDMP → custo por visita/acordo e sugestão); `utm.py`; `meta_publicar.py` no modo do dia (mock: 2 anúncios novos + 1 pausa); painel novo com tema claro/escuro.
+**Falta de outras pessoas:** acesso ao Meta + ids (Gustavo) · export diário do CRM e export do DDMP por UTM (Jair/TI) · verba (Gustavo) · base legal do público registrada (Gustavo/jurídico) · login do cPanel/Dev Hub (Gisele/Arthur).
+**Ainda do modelo antigo, não validado:** Designer gerando imagens reais dentro do Paperclip (re-teste pendente, só com OK do Gui).
 
 ## 5. Próximos passos (em ordem)
-1. **Re-teste curto do Designer** (1 conjunto, 2 criativos, feed + stories = 4 imagens). Critério: PNGs reais de ~1–2 MB em `artes/<id>/`, anexados ao issue, sem texto na imagem; Compliance com linha `JEV:` em cada criativo. Mostre as imagens ao Gui.
-2. **Painel mostrar as artes** dos criativos (hoje só mostra textos/scores).
-3. **Quando o Gustavo liberar o Meta Business Manager:** Gui coloca `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_PAGE_ID` no `~/.hermes/.env` → rodar `meta_publicar.py` em `--dry-run` numa campanha aprovada → só então `--executar` (tudo PAUSADO) → humano ativa.
-4. Depois de 3+ dias rodando: export do Meta → agente Dados → `dados/campanhas.json` → painel.
+1. Push → Paperclip: atualizar as 7 skills, importar as 2 novas, criar os agentes Público CRM e Resultados DDMP, limpar os AGENTS.md antigos.
+2. Rotina diária do Orquestrador no Paperclip (~08:00 Brasília) — só depois que houver dado real; até lá, rodar à mão.
+3. Com o Jair: formato do export do CRM (quem está em aberto, por cliente) e do DDMP (contagens por data/cliente/campanha/criativo). Ajustar `resultados_ddmp.py` se os nomes de coluna forem outros.
+4. Com o Gustavo: acesso ao Meta, ids do público e do conjunto de cada cliente, base legal, verba. Primeiro `audiencia_sync.py` em dry-run com a base real; depois `--executar`.
+5. Re-teste do Designer (imagens reais) num pedido "tema novo" pequeno (2 criativos).
 
 ## 6. Como publicar mudanças
 1. Editar no repo → `git add -A && git commit -m "..." && git push` (o Mac já guarda o token no Keychain).
@@ -67,7 +64,8 @@ Cada agente também tem um `AGENTS.md` no Paperclip (Agent → Instructions). At
 ## 7. Regras que não se negociam
 - **Nunca** ler, imprimir, colar ou commitar chaves/tokens. Os scripts leem `~/.hermes/.env` sozinhos. Credenciais e logins são sempre do Gui.
 - Nada ativo no Meta: só `PAUSED`; ativação é humana no Ads Manager.
-- Sem públicos personalizados/listas de alunos sem base legal (LGPD art. 11). Lista de palavras proibidas no SKILL.md do Compliance.
+- Base de alunos (CRM) e exports do DDMP **nunca** entram no repositório, em issue ou em log: só contagens. O público só vai ao Meta em hash SHA-256 e só com `publico.base_legal` registrado. Lista de linguagem no SKILL.md do Compliance (versão 20/10).
+- Ids reais do Meta (conta, público, conjunto, anúncio) ficam no `~/.hermes/.env` ou em arquivos locais ignorados pelo git — o repo é público.
 - Imagem falsa é pior que nenhuma: se a ferramenta falhar, diga que falhou.
 - Ao testar, mantenha campanhas pequenas (custo de Claude + Gemini).
 
@@ -81,7 +79,7 @@ Cada agente também tem um `AGENTS.md` no Paperclip (Agent → Instructions). At
 - Sessão do cPanel cai se a aba navega ou fica ociosa.
 
 ## 9. Histórico (commits principais)
-c0ecc72 repo inicial · 5806f89/30d4a2c/b9dea42 painel v1 · a9b7b24 agente Dados + Resultados · 1d068e6 painel estilo CRM · 33860b4 editor de skills no painel · 32332f2 Publicador Meta + etapas · c59719a scripts Jev/Gemini/teste de chaves · 14601c1 Designer com Gemini + Compliance com Jev · 66f829d Designer sem imagens falsas.
+c0ecc72 repo inicial · 5806f89/30d4a2c/b9dea42 painel v1 · a9b7b24 agente Dados + Resultados · 1d068e6 painel estilo CRM · 33860b4 editor de skills no painel · 32332f2 Publicador Meta + etapas · c59719a scripts Jev/Gemini/teste de chaves · 14601c1 Designer com Gemini + Compliance com Jev · 66f829d Designer sem imagens falsas · 05b21c8 este HANDOFF · d57d251 WORKLOG takeover · (22/10) modelo sempre ligado + tema claro/escuro.
 
 ## 10. Log de trabalho (obrigatório)
 Mantenha `WORKLOG.md` na raiz deste repo, igual ao do Call-sandwich-Retell: cabeçalho `## YYYY-MM-DD (Weekday) — Work log (~total)` e linhas `HH:MM–HH:MM (~duração) — o que foi feito (commit/issue)`, horário de Nova York, commit + push ao fim de cada sessão. A tarefa diária do Dev Hub vai usar esse arquivo como fonte.

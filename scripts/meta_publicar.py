@@ -2,6 +2,11 @@
 """
 meta_publicar.py — publica uma campanha no Meta Ads SEMPRE EM PAUSA (status PAUSED).
 
+Dois tipos de spec:
+  1) campanha nova  — chaves "campanha" + "conjuntos" (cria campanha, conjuntos e anúncios)
+  2) dia a dia      — chave "adicionar" (anúncios novos num conjunto que JÁ EXISTE na campanha ligada)
+                      e/ou "pausar" (ids de anúncios que a Análise mandou pausar). É o modo do ciclo diário.
+
 Uso:
   python3 scripts/meta_publicar.py dados/publicacoes/<campanha>.json --dry-run   # só mostra as chamadas (padrão)
   python3 scripts/meta_publicar.py dados/publicacoes/<campanha>.json --mock      # simula respostas (teste do fluxo)
@@ -18,7 +23,11 @@ Garantias:
   - Nada é criado sem `aprovacao_humana.aprovado = true` no arquivo de publicação.
   - Sem bibliotecas externas: só stdlib (urllib).
 """
-import json, os, sys, time, urllib.request, urllib.parse, urllib.error
+import json, os, re, sys, time, urllib.request, urllib.parse, urllib.error
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from _env import carregar_env  # noqa: E402
+import utm  # noqa: E402
 
 STATUS_FIXO = "PAUSED"
 
@@ -28,20 +37,35 @@ def die(msg, code=2):
     sys.exit(code)
 
 
+def conferir_links(anuncios):
+    for an in anuncios:
+        ok, _, problemas = utm.conferir(an.get("link", ""))
+        if not ok:
+            die(f"anúncio {an.get('id')}: link sem rastreio completo — {'; '.join(problemas)}. "
+                "Monte com: python3 scripts/utm.py montar --cliente … --campanha … --criativo …")
+
+
 def carregar_spec(caminho):
     with open(caminho, encoding="utf-8") as f:
         spec = json.load(f)
-    for k in ("campanha", "conjuntos"):
-        if k not in spec:
-            die(f"spec sem a chave obrigatória '{k}'")
     ap = spec.get("aprovacao_humana") or {}
     if ap.get("aprovado") is not True:
-        die("aprovacao_humana.aprovado não é true — a campanha não foi aprovada por um humano; nada será criado")
+        die("aprovacao_humana.aprovado não é true — nada foi aprovado por um humano; nada será criado")
+    if "adicionar" in spec or "pausar" in spec:
+        ad = spec.get("adicionar") or {}
+        if ad and not (ad.get("adset_id") and ad.get("anuncios")):
+            die("'adicionar' precisa de adset_id e anuncios")
+        conferir_links(ad.get("anuncios", []))
+        return spec
+    for k in ("campanha", "conjuntos"):
+        if k not in spec:
+            die(f"spec sem a chave obrigatória '{k}' (ou use 'adicionar'/'pausar' para o ciclo diário)")
     if not spec["conjuntos"]:
         die("nenhum conjunto de anúncios no spec")
     for c in spec["conjuntos"]:
         if not c.get("anuncios"):
             die(f"conjunto '{c.get('nome')}' sem anúncios")
+        conferir_links(c["anuncios"])
     return spec
 
 
@@ -51,6 +75,7 @@ class Cliente:
         self.chamadas = []
         self._seq = 1000
         if modo == "executar":
+            carregar_env()
             self.token = os.environ.get("META_ACCESS_TOKEN") or die("META_ACCESS_TOKEN ausente")
             self.conta = os.environ.get("META_AD_ACCOUNT_ID") or die("META_AD_ACCOUNT_ID ausente")
             self.pagina = os.environ.get("META_PAGE_ID") or die("META_PAGE_ID ausente")
@@ -136,35 +161,56 @@ def publicar(spec, cli):
         saida_conj = {"nome": conj["nome"], "adset_id": conj_id, "anuncios": []}
 
         for an in conj["anuncios"]:
-            img_hash = None
-            if an.get("imagem"):
-                if not os.path.exists(an["imagem"]) and cli.modo == "executar":
-                    die(f"imagem não encontrada: {an['imagem']}")
-                r = cli.post(f"{conta}/adimages", {"filename": an["imagem"]})
-                imgs = r.get("images", {})
-                img_hash = next(iter(imgs.values()))["hash"] if imgs else None
-            link_data = {
-                "link": an["link"],
-                "message": an["texto"],
-                "name": an["headline"],
-                "description": an.get("descricao", ""),
-                "call_to_action": {"type": an.get("cta", "LEARN_MORE"), "value": {"link": an["link"]}},
-            }
-            if img_hash:
-                link_data["image_hash"] = img_hash
-            r = cli.post(f"{conta}/adcreatives", {
-                "name": f"{an['id']} — {an['headline']}",
-                "object_story_spec": {"page_id": cli.pagina, "link_data": link_data},
-            })
-            creative_id = r["id"]
-            r = cli.post(f"{conta}/ads", {
-                "name": f"{an['id']} — {an['headline']}",
-                "adset_id": conj_id,
-                "creative": {"creative_id": creative_id},
-                "status": STATUS_FIXO,
-            })
-            saida_conj["anuncios"].append({"id": an["id"], "ad_id": r["id"], "creative_id": creative_id})
+            saida_conj["anuncios"].append(criar_anuncio(cli, conta, conj_id, an))
         resultado["conjuntos"].append(saida_conj)
+    return resultado
+
+
+def criar_anuncio(cli, conta, adset_id, an):
+    img_hash = None
+    if an.get("imagem"):
+        if not os.path.exists(an["imagem"]) and cli.modo == "executar":
+            die(f"imagem não encontrada: {an['imagem']}")
+        r = cli.post(f"{conta}/adimages", {"filename": an["imagem"]})
+        imgs = r.get("images", {})
+        img_hash = next(iter(imgs.values()))["hash"] if imgs else None
+    link_data = {
+        "link": an["link"],
+        "message": an["texto"],
+        "name": an["headline"],
+        "description": an.get("descricao", ""),
+        "call_to_action": {"type": an.get("cta", "LEARN_MORE"), "value": {"link": an["link"]}},
+    }
+    if img_hash:
+        link_data["image_hash"] = img_hash
+    r = cli.post(f"{conta}/adcreatives", {
+        "name": f"{an['id']} — {an['headline']}",
+        "object_story_spec": {"page_id": cli.pagina, "link_data": link_data},
+    })
+    creative_id = r["id"]
+    r = cli.post(f"{conta}/ads", {
+        "name": f"{an['id']} — {an['headline']}",
+        "adset_id": adset_id,
+        "creative": {"creative_id": creative_id},
+        "status": STATUS_FIXO,
+    })
+    return {"id": an["id"], "ad_id": r["id"], "creative_id": creative_id}
+
+
+def ciclo_diario(spec, cli):
+    """Anúncios novos (PAUSED) num conjunto que já existe + pausa dos que a Análise mandou pausar."""
+    conta = f"act_{cli.conta}"
+    resultado = {"tipo": "ciclo_diario", "status": STATUS_FIXO, "criados": [], "pausados": []}
+    ad = spec.get("adicionar") or {}
+    adset = ad.get("adset_id", "")
+    m = re.match(r"^<(META_ADSET_[A-Z0-9_]+)>$", adset)
+    if m and cli.modo == "executar":
+        adset = os.environ.get(m.group(1)) or die(f"{m.group(1)} ausente em ~/.hermes/.env")
+    for an in ad.get("anuncios", []):
+        resultado["criados"].append(criar_anuncio(cli, conta, adset, an))
+    for ad_id in spec.get("pausar", []):
+        cli.post(str(ad_id), {"status": STATUS_FIXO})
+        resultado["pausados"].append(str(ad_id))
     return resultado
 
 
@@ -178,8 +224,13 @@ def main():
     if "--executar" in args: modo = "executar"
     spec = carregar_spec(spec_path)
     cli = Cliente(modo)
-    print(f"Modo: {modo} · campanha: {spec['campanha']['nome']} · conjuntos: {len(spec['conjuntos'])} · anúncios: {sum(len(c['anuncios']) for c in spec['conjuntos'])} · status: {STATUS_FIXO}")
-    res = publicar(spec, cli)
+    if "adicionar" in spec or "pausar" in spec:
+        n_add = len((spec.get("adicionar") or {}).get("anuncios", []))
+        print(f"Modo: {modo} · ciclo diário · anúncios novos: {n_add} · pausar: {len(spec.get('pausar', []))} · status: {STATUS_FIXO}")
+        res = ciclo_diario(spec, cli)
+    else:
+        print(f"Modo: {modo} · campanha: {spec['campanha']['nome']} · conjuntos: {len(spec['conjuntos'])} · anúncios: {sum(len(c['anuncios']) for c in spec['conjuntos'])} · status: {STATUS_FIXO}")
+        res = publicar(spec, cli)
     res["modo"] = modo
     res["chamadas"] = len(cli.chamadas)
     res["publicado_em"] = time.strftime("%Y-%m-%dT%H:%M:%S")
@@ -188,7 +239,10 @@ def main():
         json.dump(res, f, ensure_ascii=False, indent=2)
     print(f"\nOK — {res['chamadas']} chamadas ({modo}). Resultado em {saida}")
     if modo == "executar":
-        print(f"Campanha {res['campanha_id']} criada em PAUSA. Ative manualmente no Ads Manager depois de conferir.")
+        if res.get("tipo") == "ciclo_diario":
+            print(f"{len(res['criados'])} anúncio(s) criado(s) em PAUSA e {len(res['pausados'])} pausado(s). Ligue os novos no Ads Manager depois de conferir.")
+        else:
+            print(f"Campanha {res['campanha_id']} criada em PAUSA. Ative manualmente no Ads Manager depois de conferir.")
 
 
 if __name__ == "__main__":

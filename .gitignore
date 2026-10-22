@@ -20,3 +20,10 @@ scripts/teste-chaves.resultado.json
 dados/publicacoes/*.resultado-*.json
 __pycache__/
 artes/teste/
+
+# ciclo diário: specs com ids reais do Meta e bases de alunos NUNCA vão para o git (repo público)
+dados/publicacoes/*-20*.json
+dados/crm/
+dados/**/*.csv
+artes/*/
+!artes/.gitkeep

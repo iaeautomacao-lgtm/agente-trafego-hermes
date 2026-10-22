@@ -1,23 +1,36 @@
 {
-  "versao": 1,
-  "atualizado_em": "2026-10-08",
-  "atualizado_por": "Gui (manual) — a partir daqui só os agentes editam: Orquestrador (montada/aprovada), Publicador (publicada), Dados (analisada)",
-  "benchmarks": {
-    "ctr_pct": [
-      0.8,
-      1.5
-    ],
-    "cpl_brl": [
-      25,
-      70
-    ],
-    "conversao_pct": [
-      10,
-      25
-    ],
-    "frequencia_max": 3.0
+  "versao": 2,
+  "modelo": "sempre-ligado",
+  "atualizado_em": "2026-10-22",
+  "atualizado_por": "Claude (reestruturação para o escopo da reunião de 20/10)",
+  "ok_diario": {
+    "horario": "09:00",
+    "fuso": "America/Sao_Paulo",
+    "pendente": null,
+    "historico": []
   },
-  "campanhas": [
+  "utm": {
+    "destino": "https://ddmp.com.br/",
+    "parametros": {
+      "cliente": "cliente",
+      "campanha": "campanha",
+      "criativo": "criativo"
+    },
+    "fixos": {
+      "utm_source": "meta",
+      "utm_medium": "paid_social"
+    }
+  },
+  "benchmarks": {
+    "custo_visita_brl": [
+      1.0,
+      2.5
+    ],
+    "frequencia_max": 3.0,
+    "gasto_minimo_para_decidir_brl": 50
+  },
+  "clientes": [],
+  "pilotos": [
     {
       "id": "demo-2",
       "nome": "Matrícula trancada — agendar conversa",
@@ -95,7 +108,8 @@
           "v": "com ressalvas"
         }
       ],
-      "resultados": null
+      "resultados": null,
+      "modelo": "briefing (out/2026, antes da reunião de 20/10)"
     },
     {
       "id": "demo-1",
@@ -169,13 +183,8 @@
           "v": "com ressalvas"
         }
       ],
-      "resultados": null
+      "resultados": null,
+      "modelo": "briefing (out/2026, antes da reunião de 20/10)"
     }
-  ],
-  "etapas": [
-    "montada",
-    "aprovada",
-    "publicada",
-    "analisada"
   ]
 }

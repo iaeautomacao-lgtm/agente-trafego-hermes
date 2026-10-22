@@ -1,36 +1,46 @@
 # Agente de Tráfego Pago — Grupo DDM (Hermes + Paperclip)
 
-Agente autônomo de tráfego pago (Meta Ads) para o Grupo DDM. A cadeia **Estrategista → Criativo → Designer → Compliance → aprovação humana → Publicador (em pausa) → ativação humana → Dados** roda como skills do Hermes Agent, orquestradas pelo Paperclip. **Nada é publicado no Meta Ads sem aprovação humana.**
+Time de agentes que mantém as campanhas de Meta Ads da DDM **sempre ligadas** e falando com quem precisa: os alunos com mensalidades em aberto de cada cliente (instituição). Escopo definido pelo Gustavo na reunião de **20/10/2026**:
 
-## Estado atual (out/2026)
+- **Público** = base do CRM da DDM com quem ainda está em aberto, **trocada todo dia** no público personalizado do cliente no Meta (quem pagou sai). A campanha não muda.
+- **Anúncio** leva ao **DDMP** (ddmp.com.br) ou ao WhatsApp, com `cliente`, `campanha` e `criativo` no link.
+- **Resultado** = visitas e acordos no DDMP por criativo → qual criativo dá o melhor retorno.
+- **Humano**: um **OK por dia**, num horário fixo. Tudo que é criado no Meta nasce em pausa; uma pessoa liga no Ads Manager.
+
+## Ciclo diário
+
+```
+~08:00  Público CRM ─▶ Resultados DDMP ─▶ Análise ─┬─▶ (se precisar) Planejador ─▶ Criativo (imagens) ─▶ Copy ─▶ Compliance
+                                                    │
+09:00   OK DO DIA (1 pessoa, 1 vez) ◀───────────────┘
+depois  Publicador: anúncios novos EM PAUSA + pausa dos fracos ─▶ pessoa liga no Ads Manager
+```
+
+## Estado (22/10/2026)
 
 | Parte | Onde | Status |
 |---|---|---|
-| 7 skills Hermes (`ddm-orquestrador-trafego`, `ddm-estrategista-trafego`, `ddm-criativo-anuncios`, `ddm-designer-anuncios`, `ddm-compliance-anuncios`, `ddm-publicador-meta`, `ddm-dados-campanhas`) | `skills/trafego-pago/` | ✅ funcionando |
-| Instalador das skills | `skills/install.sh` | ✅ |
-| Demo pelo terminal (plano + 6 criativos + compliance, score 20) | `exemplos/campanha-faculdade-teste-2026-10-01.md` | ✅ |
-| Demo pelo Paperclip (agente Orquestrador Hermes delegando por child issues, score 18) | `exemplos/demo-matricula-trancada-paperclip.md` | ✅ |
-| Dashboard React/Vite + Express (herdado do repo `Agente-Trafego`) | `dashboard/` | ⚠️ parcial — bridge Hermes corrigida em `dashboard/server/hermes-bridge.js` |
-| Prompts originais dos agentes (referência) | `AGENTES DE TRAFEGO PAGO/` | referência |
-| Painel interno (campanhas, criativos, scores, resultados com gráficos) | `index.html` + `dados/campanhas.json` → https://agente.trafego.grupoddm.ia.br | ✅ no ar |
-| Agente Designer (direção de arte + prompts) | `skills/trafego-pago/ddm-designer-anuncios` + Paperclip | ✅ gera as imagens feed 1:1 e stories 9:16 sem texto com `scripts/gerar_arte.py` (Gemini, chave `GOOGLE_API_KEY`) |
-| Agente Dados (analisa export do Meta Ads, escreve `dados/campanhas.json`, devolve hipóteses ao Orquestrador) | `skills/trafego-pago/ddm-dados-campanhas` + Paperclip | ✅ pronto · ⏳ aguardando export da 1ª campanha |
-| Agente Publicador Meta (cria campanha/conjuntos/anúncios **sempre em PAUSA** via `scripts/meta_publicar.py`; dry-run → confirmação → executar) | `skills/trafego-pago/ddm-publicador-meta` + `scripts/meta_publicar.py` + `dados/publicacoes/` | ✅ script e skill prontos (testado em `--mock` / `--dry-run`) · ⏳ falta `META_ACCESS_TOKEN` / conta / Página (Gustavo) |
-| Score de risco com Jev (TypeSafe) — segunda opinião do Compliance, sinaliza divergências para revisão humana | `scripts/jev_risk_score.py` | ✅ funcionando (teste: texto seguro 11 · arriscado 62) |
-| Teste das chaves (sem mostrar valores) | `scripts/testar_chaves.py` | ✅ |
-| Etapas da campanha no painel (montada → aprovada → publicada → analisada, com histórico) | `dados/campanhas.json` (`etapa`, `historico`, `publicacao`) + Pipeline no painel | ✅ |
+| 9 skills: `ddm-orquestrador-trafego`, `ddm-audiencia-crm` (novo), `ddm-estrategista-trafego` (Planejador), `ddm-designer-anuncios` (Criativo — imagens), `ddm-criativo-anuncios` (Copy), `ddm-compliance-anuncios`, `ddm-publicador-meta`, `ddm-resultados-ddmp` (novo), `ddm-dados-campanhas` (Análise) | `skills/trafego-pago/` | ✅ reescritas para o modelo sempre ligado · ⏳ instalar as 2 novas no Paperclip |
+| Troca diária do público (CSV do CRM → hash SHA-256 → `usersreplace` no Meta; trava de 30%; exige base legal registrada) | `scripts/audiencia_sync.py` | ✅ testado com base falsa (dry-run/mock) · ⏳ export do CRM (Jair/TI) + acesso Meta (Gustavo) |
+| Links com rastreio (`cliente`/`campanha`/`criativo`) | `scripts/utm.py` | ✅ |
+| Resultados por criativo (gasto Meta + visitas/acordos DDMP → custo por visita/acordo + sugestão) | `scripts/resultados_ddmp.py` | ✅ testado com exports falsos · ⏳ formato real do export do DDMP (Jair) |
+| Publicador: anúncios novos num conjunto existente + pausar, sempre PAUSED; recusa link sem rastreio | `scripts/meta_publicar.py` | ✅ `--mock`/`--dry-run` · ⏳ token Meta |
+| Imagens (Gemini) | `scripts/gerar_arte.py` | ✅ |
+| Segunda opinião de risco (Jev/TypeSafe), perguntas ajustadas ao novo modelo | `scripts/jev_risk_score.py` | ✅ |
+| Painel: visão geral, OK do dia, campanhas por cliente, criativos com custo por visita/acordo, links, públicos, resultados, agentes; **tema claro (padrão) e escuro** | `index.html` + `dados/campanhas.json` → https://agente.trafego.grupoddm.ia.br | ✅ local · ⏳ deploy (login do cPanel) |
+| Pilotos do modelo anterior (briefing → campanha) | `exemplos/`, `dados/campanhas.json → pilotos` | histórico |
+| Dashboard React/Vite + Express (herdado) | `dashboard/` | referência |
 
-## Como rodar as skills
+## Como rodar
 
 ```bash
-# 1. instalar as skills no Hermes
-bash skills/install.sh
-
-# 2. rodar a cadeia completa a partir de um briefing
-hermes chat --oneshot -s ddm-orquestrador-trafego -q "Objetivo: ... Público: ... Orçamento: ... Período: ... Restrições: ..."
+cd ~/Downloads/Agente-Trafego-main
+python3 scripts/utm.py montar --cliente inst-a --campanha natal --criativo 02
+python3 scripts/audiencia_sync.py --cliente inst-a --base ~/ddm-crm/inst-a/2026-10-22.csv            # dry-run
+python3 scripts/resultados_ddmp.py --cliente inst-a --campanha inst-a-sempre --ddmp <ddmp.csv> --meta <meta.csv>
+python3 scripts/meta_publicar.py dados/publicacoes/exemplo-ciclo-diario.json --dry-run
 ```
-
-No Paperclip: criar uma tarefa para o agente **Orquestrador Hermes** com o briefing; ele cria as child issues para os agentes Estrategista/Criativo/Designer/Compliance e para no gate de aprovação humana; depois da aprovação, delega ao Publicador Meta (tudo nasce PAUSADO) e, após a ativação manual e 3+ dias, ao agente Dados.
+No Paperclip: o Orquestrador roda o ciclo do dia (rotina diária) e abre um único pedido de OK. Pedidos avulsos ("tema novo", "cliente novo") saem da tela **Novo tema / cliente** do painel.
 
 ## Publicação (processo DDM)
 

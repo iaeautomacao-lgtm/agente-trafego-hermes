@@ -9,6 +9,8 @@ Uso:
 
 Lê TYPESAFE_API_KEY do ambiente ou de ~/.hermes/.env. Nunca imprime a chave.
 Score: 0 = sem risco, 100 = risco máximo. Mesmo sentido do score do agente Compliance.
+Perguntas ajustadas em 22/10/2026 ao modelo "sempre ligado": falar de negociar dívidas em geral é permitido
+(o público é a própria base de alunos em aberto); o risco é ameaça, exposição da pessoa, promessa e urgência falsa.
 """
 import argparse, json, os, sys, urllib.request, urllib.error
 
@@ -22,12 +24,12 @@ MODELO = "jev-latest"
 PERGUNTAS = {
     "promessa_garantida": (18, "O texto promete um resultado garantido (desconto certo, aprovação certa, nome limpo, quitação garantida)?"),
     "ameaca_coercao": (18, "O texto contém ameaça, intimidação ou pressão coercitiva (processo, negativação, consequências) contra o leitor?"),
-    "exposicao_divida": (16, "O texto expõe, insinua ou menciona a dívida ou a situação financeira do leitor de forma que terceiros perceberiam?"),
+    "exposicao_divida": (16, "O texto afirma ou insinua que ESTE leitor específico deve algo (valor, instituição, nome, 'você está devendo', 'sua dívida de R$'), de forma que terceiros perceberiam? Falar de negociar dívidas de forma geral NÃO conta."),
     "constrangimento": (12, "O tom do texto é humilhante, culpabilizante ou constrangedor para o leitor?"),
     "urgencia_artificial": (10, "O texto cria urgência artificial (últimas horas, só hoje, última chance) sem prazo real?"),
     "dado_sensivel": (10, "O texto usa ou sugere dados pessoais sensíveis do leitor (saúde, renda, situação familiar, nome da instituição de ensino)?"),
     "informacao_enganosa": (10, "O texto contém afirmação enganosa ou que não pode ser comprovada?"),
-    "linguagem_cobranca": (6, "O texto usa linguagem típica de cobrança (débito, dívida, pendência financeira, quitar, negociar dívida)?"),
+    "tom_cobranca_agressivo": (6, "O texto usa tom de cobrança agressivo ou de exigência (intimar, exigir, 'regularize já', 'pague agora')? Convidar a negociar ou resolver dívidas NÃO conta."),
 }
 
 
@@ -69,12 +71,13 @@ def main():
         resultados.append({"id": "texto", **pontuar(a.texto, chave)})
     elif a.pack:
         spec = json.load(open(a.pack, encoding="utf-8"))
-        for conj in spec.get("conjuntos", []):
-            for an in conj.get("anuncios", []):
-                t = f"{an.get('headline','')}. {an.get('texto','')} {an.get('descricao','')}".strip()
-                r = pontuar(t, chave)
-                resultados.append({"id": an.get("id"), "headline": an.get("headline"), **r})
-                print(f"{an.get('id'):>4}  score {r['score']:>3}  {an.get('headline','')}")
+        anuncios = [an for conj in spec.get("conjuntos", []) for an in conj.get("anuncios", [])]
+        anuncios += (spec.get("adicionar") or {}).get("anuncios", [])
+        for an in anuncios:
+            t = f"{an.get('headline','')}. {an.get('texto','')} {an.get('descricao','')}".strip()
+            r = pontuar(t, chave)
+            resultados.append({"id": an.get("id"), "headline": an.get("headline"), **r})
+            print(f"{an.get('id'):>4}  score {r['score']:>3}  {an.get('headline','')}")
     else:
         ap.error("use --texto ou --pack")
     if a.texto:
