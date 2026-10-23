@@ -24,7 +24,7 @@ Privacidade (LGPD):
 Variáveis (só para --executar), em ~/.hermes/.env:
   META_ACCESS_TOKEN               token com ads_management
   META_AUDIENCE_<CLIENTE>         id do público personalizado do cliente (ex.: META_AUDIENCE_INST_A)
-  META_API_VERSION                opcional, padrão v21.0
+  META_API_VERSION                opcional, padrão em scripts/_env.py (v26.0)
 
 Travas:
   - --executar só roda se dados/campanhas.json → clientes[<cliente>].publico.base_legal estiver preenchido (LGPD).
@@ -35,7 +35,7 @@ Travas:
 import argparse, csv, hashlib, io, json, os, random, re, sys, time, urllib.error, urllib.parse, urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _env import carregar_env  # noqa: E402
+from _env import carregar_env, meta_versao  # noqa: E402
 
 RAIZ = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ESTADO_DIR = os.path.expanduser("~/.hermes/audiencias")
@@ -174,7 +174,7 @@ def enviar(cliente, linhas, modo):
     token = os.environ.get("META_ACCESS_TOKEN") or die("META_ACCESS_TOKEN ausente")
     var = "META_AUDIENCE_" + cliente.upper().replace("-", "_")
     aud = os.environ.get(var) or die(f"{var} ausente em ~/.hermes/.env")
-    versao = os.environ.get("META_API_VERSION", "v21.0")
+    versao = meta_versao()
     url = f"https://graph.facebook.com/{versao}/{aud}/usersreplace"
     sessao = int(time.time() * 1000) * 1000 + random.randint(0, 999)
     lotes = [linhas[i:i + LOTE] for i in range(0, len(linhas), LOTE)] or [[]]

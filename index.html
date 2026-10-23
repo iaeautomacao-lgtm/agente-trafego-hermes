@@ -286,22 +286,21 @@ function markTheme(){ const t=document.documentElement.getAttribute('data-theme'
 const VAZIO = { versao:2, clientes:[], pilotos:[], ok_diario:{horario:'09:00',pendente:null,historico:[]}, utm:{destino:'https://ddmp.com.br/',parametros:{cliente:'cliente',campanha:'campanha',criativo:'criativo'},fixos:{utm_source:'meta',utm_medium:'paid_social'}}, benchmarks:{custo_visita_brl:[1,2.5],frequencia_max:3,gasto_minimo_para_decidir_brl:50} };
 const AGENTES = [
   { k:"O", nome:"Orquestrador Hermes", papel:"Roda o ciclo todo dia antes do horário do OK e junta tudo num único pedido de OK", skill:"ddm-orquestrador-trafego", st:"ok", stl:"ativo", runtime:"Paperclip · Hermes" },
-  { k:"1", nome:"Público CRM", novo:true, papel:"Pega a base do CRM (quem está em aberto) e troca o público do cliente no Meta, todo dia", skill:"ddm-audiencia-crm", st:"warn", stl:"falta export do CRM + Meta", runtime:"a criar no Paperclip" },
+  { k:"1", nome:"Público CRM", novo:true, papel:"Pega a base do CRM (quem está em aberto) e troca o público do cliente no Meta, todo dia", skill:"ddm-audiencia-crm", st:"warn", stl:"base só na produção + token Meta", runtime:"Paperclip · Hermes" },
   { k:"2", nome:"Planejador de campanhas", papel:"Tema por cliente e época (Natal, Black Friday) e quando renovar criativos", skill:"ddm-estrategista-trafego", paperclip:"Estrategista de Tráfego 2", st:"ok", stl:"ativo", runtime:"Paperclip · Hermes" },
   { k:"3", nome:"Criativo (imagens)", papel:"Conceito visual e imagens feed/stories com o Gemini", skill:"ddm-designer-anuncios", paperclip:"Designer de Anúncios", st:"ok", stl:"Gemini ativo", runtime:"Paperclip · Hermes" },
   { k:"4", nome:"Copy", papel:"Texto de cada criativo + link para o DDMP com rastreio", skill:"ddm-criativo-anuncios", paperclip:"Criativo de Anúncios 2", st:"ok", stl:"ativo", runtime:"Paperclip · Hermes" },
   { k:"5", nome:"Compliance", papel:"Meta, LGPD e tom de cobrança; score 0–100 + segunda opinião do Jev", skill:"ddm-compliance-anuncios", paperclip:"Compliance de Anúncios 2", st:"ok", stl:"Jev ativo", runtime:"Paperclip · Hermes" },
-  { k:"6", nome:"Publicador Meta", papel:"Sobe anúncios novos na campanha ligada (sempre em pausa) e pausa os fracos", skill:"ddm-publicador-meta", st:"warn", stl:"sem acesso ao Meta", runtime:"Paperclip · Hermes" },
-  { k:"7", nome:"Resultados DDMP", novo:true, papel:"Visitas e acordos no DDMP por cliente / campanha / criativo (UTM)", skill:"ddm-resultados-ddmp", st:"warn", stl:"falta export do DDMP", runtime:"a criar no Paperclip" },
+  { k:"6", nome:"Publicador Meta", papel:"Sobe anúncios novos na campanha ligada (sempre em pausa) e pausa os fracos", skill:"ddm-publicador-meta", st:"warn", stl:"falta token Meta", runtime:"Paperclip · Hermes" },
+  { k:"7", nome:"Resultados DDMP", novo:true, papel:"Visitas e acordos no DDMP por cliente / campanha / criativo (UTM)", skill:"ddm-resultados-ddmp", st:"warn", stl:"falta export do DDMP", runtime:"Paperclip · Hermes" },
   { k:"8", nome:"Análise de campanhas", papel:"Custo por visita e por acordo de cada criativo → escalar, manter ou pausar", skill:"ddm-dados-campanhas", paperclip:"Dados de Campanhas 2", st:"ok", stl:"esperando dados", runtime:"Paperclip · Hermes" },
 ];
 const PENDENCIAS = [
-  ["Acesso ao Meta (Business Manager + token)","Gustavo","warn"],
-  ["Export diário da base do CRM (quem está em aberto)","Jair / TI","warn"],
+  ["Token do Meta (usuário do sistema) + ids do público e do conjunto","Gui · Gustavo","warn"],
+  ["Base legal do público registrada","Gustavo","warn"],
   ["Export do DDMP: visitas e acordos por UTM","Jair","warn"],
-  ["Verba para reativar as campanhas","Gustavo","warn"],
-  ["Login do cPanel / Dev Hub (401)","Gisele · Arthur","red"],
-  ["Criar os agentes Público CRM e Resultados DDMP no Paperclip","Gui · Claude","off"],
+  ["Base do CRM (quem está em aberto): só na ida para produção","Jair / TI","off"],
+  ["Decidir a linguagem dos criativos atuais (Compliance × o que já rodou)","Gui · Gustavo","warn"],
 ];
 let REAL = VAZIO, DATA = VAZIO, SIM = false;
 
@@ -388,13 +387,13 @@ function okCard(full){
 V.home = () => {
   const cs=camps(), lig=cs.filter(c=>c.status==='ligada').length, t=totals(), crs=allCreatives();
   const cv = t.has&&t.visitas_ddmp ? t.gasto/t.visitas_ddmp : null, ca = t.has&&t.acordos ? t.gasto/t.acordos : null;
-  const bench=DATA.benchmarks.custo_visita_brl||[1,2.5];
+  const bench=DATA.benchmarks.custo_visita_brl||[1,2.5], vb=DATA.verba||{};
   const pub=(DATA.clientes||[]).reduce((a,c)=>a+((c.publico&&c.publico.pessoas)||0),0);
   return `${simBanner()}
   <div class="tiles">
     <div class="tile"><b>${lig}</b><span>campanhas ligadas</span><em>${cs.length} no total · ${crs.filter(c=>c.status==='ligado').length} criativos rodando</em></div>
     <div class="tile"><b>${pub?fmtK(pub):'—'}</b><span>pessoas nos públicos</span><em>${(DATA.clientes||[]).length} cliente(s)</em></div>
-    <div class="tile"><b>${t.has?fmtBRL(t.gasto):'—'}</b><span>gasto no período</span><em>${t.has?fmtN(t.visitas_ddmp)+' visitas ao DDMP':'sem dados'}</em></div>
+    <div class="tile"><b>${t.has?fmtBRL(t.gasto):'—'}</b><span>gasto no período</span><em class="${vb.total_max_brl&&t.gasto>=0.8*vb.total_max_brl?'red':''}">${vb.total_max_brl?`de ${fmtBRL(vb.total_max_brl)} · até ${fmtBRL(vb.diaria_max_brl)}/dia`:(t.has?fmtN(t.visitas_ddmp)+' visitas ao DDMP':'sem dados')}</em></div>
     <div class="tile"><b class="o">${fmtBRL(cv,2)}</b><span>custo por visita</span><em class="${cv==null?'':(cv>bench[1]?'red':'ok')}">${cv==null?'sem dados':(cv>bench[1]?'acima da faixa':'dentro da faixa')}</em></div>
     <div class="tile"><b>${t.has?fmtN(t.acordos):'—'}</b><span>acordos rastreados</span><em>${ca!=null?fmtBRL(ca,2)+' por acordo':'só os fechados no DDMP'}</em></div>
   </div>

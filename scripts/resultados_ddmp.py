@@ -20,7 +20,12 @@ Export do DDMP — um dos dois formatos (nomes de coluna sem diferenciar maiúsc
 Export do Meta — CSV do Ads Manager no nível "Anúncio" (pt-BR ou inglês), com colunas como:
   Nome do anúncio | Ad name · Valor usado (BRL) | Amount spent (BRL) · Impressões | Impressions ·
   Alcance | Reach · Cliques no link | Link clicks · [Dia | Day]
-  O criativo é lido do começo do nome do anúncio ("02 — Resolva…" → 02), que é como o Publicador nomeia.
+  O criativo é lido do começo do nome do anúncio ("02 — Resolva…" → 02, como o Publicador nomeia;
+  "Criativo 06" → 06, como o Gustavo nomeia no Ads Manager).
+
+Acordos: só contam para a sugestão quando o cliente fecha acordo DENTRO do DDMP
+(clientes[].acordos_rastreados = true). Ex.: Cruzeiro fecha no sistema dela → acordos parciais → base = custo por visita.
+Verba: compara o gasto do período com dados/campanhas.json → verba.total_max_brl e avisa a partir de 80%.
 
 Sem o export do Meta, sai só visitas/acordos (sem custos). Sem o do DDMP, sai só o lado do Meta.
 Nada é estimado: campo ausente fica fora do JSON.
@@ -80,7 +85,7 @@ def dia_iso(v):
 
 
 def criativo_id(v):
-    v = slug(v)
+    v = re.sub(r"^(criativo|anuncio|ad)-", "", slug(v))
     m = re.match(r"^(\d{1,3})(?:-|$)", v)
     if m:
         return m.group(1).zfill(2)
@@ -140,9 +145,11 @@ def meta(caminho):
     return por, diario
 
 
-def sugerir(criativos):
+def sugerir(criativos, acordos_rastreados):
     """Regra simples; o agente de Análise confirma ou muda com justificativa."""
-    base = "custo_acordo" if sum(1 for c in criativos if c.get("custo_acordo")) >= 2 else "custo_visita"
+    base = "custo_visita"
+    if acordos_rastreados and sum(1 for c in criativos if c.get("custo_acordo")) >= 2:
+        base = "custo_acordo"
     vals = [c[base] for c in criativos if c.get(base)]
     if len(vals) < 2:
         return base, None
@@ -197,7 +204,7 @@ def main():
         if c.get("gasto") and c.get("acordos"):
             c["custo_acordo"] = round(c["gasto"] / c["acordos"], 2)
         criativos.append(c)
-    base, med = sugerir(criativos)
+    base, med = sugerir(criativos, cli.get("acordos_rastreados") is True)
 
     tot = {}
     for k in ("gasto", "impressoes", "alcance", "cliques", "visitas_ddmp", "acordos", "valor_acordos"):
@@ -219,6 +226,15 @@ def main():
         if dd in d_dia: x.update(d_dia[dd])
         diario.append(x)
 
+    alertas = []
+    if not cli.get("acordos_rastreados") and tot.get("acordos") is not None:
+        alertas.append("acordos parciais: este cliente fecha acordo fora do DDMP; a sugestão usa custo por visita")
+    teto = (dados.get("verba") or {}).get("total_max_brl")
+    if teto and tot.get("gasto"):
+        pct = tot["gasto"] / teto
+        if pct >= 0.8:
+            alertas.append(f"verba: R$ {tot['gasto']:.2f} gastos no período = {pct:.0%} do teto de R$ {teto:.2f}")
+
     res = {
         "simulado": False,
         "fonte": " + ".join(f for f in (("Meta Ads export" if a.meta else ""), ("DDMP export" if a.ddmp else "")) if f),
@@ -227,6 +243,8 @@ def main():
         "base_comparacao": base, "mediana": round(med, 2) if med else None,
         "totais": tot, "criativos": criativos, "diario": diario,
     }
+    if alertas:
+        res["alertas"] = alertas
     if not res["periodo"]:
         res.pop("periodo")
 
@@ -236,6 +254,8 @@ def main():
         print(f"{c['id']:<9}{c.get('gasto', 0):>10.2f}{c.get('visitas_ddmp', 0):>9}{c.get('acordos', 0):>9}"
               f"{(c.get('custo_visita') or 0):>11.2f}{(c.get('custo_acordo') or 0):>11.2f}  {c.get('sugestao', '—')} ({c.get('motivo', '')})")
     print("TOTAL " + json.dumps(tot, ensure_ascii=False))
+    for al in alertas:
+        print("ALERTA " + al)
 
     if a.gravar:
         anterior = camp.get("resultados") or {}

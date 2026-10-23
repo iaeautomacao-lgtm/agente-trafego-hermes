@@ -53,11 +53,12 @@ OK DO DIA — <AAAA-MM-DD> · resposta até <horário>
 ================================================================
 PÚBLICO      <cliente>: <pessoas> pessoas (−<saíram> pagaram, +<entraram> novos) · <trocado | parado na trava: motivo>
 ONTEM        <cliente/campanha>: R$ <gasto> · <visitas> visitas ao DDMP (R$ <x>/visita) · <acordos> acordos (R$ <y>/acordo)
+VERBA        R$ <gasto acumulado> de R$ <verba.total_max_brl> · até R$ <verba.diaria_max_brl>/dia (todas as campanhas)
 DECISÕES PARA APROVAR
   [1] Pausar <criativo> — <motivo com número>
   [2] Subir em pausa <criativos novos> (tema <tema>) — Compliance <score>, Jev <score>
   [3] Verba: <sugestão> (risco: <risco>)
-ALERTAS      <export que faltou, base legal pendente, trava do público, etc.> | nenhum
+ALERTAS      <export que faltou, base legal pendente, trava do público, verba ≥ 80% do teto, etc.> | nenhum
 ================================================================
 Responda: OK em tudo | OK só em [n] | recusar [n] porque …
 ================================================================

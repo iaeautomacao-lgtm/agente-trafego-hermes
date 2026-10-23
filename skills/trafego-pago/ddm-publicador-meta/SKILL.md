@@ -29,7 +29,7 @@ Você **nunca liga** nada. O script tem a trava no código: qualquer status dife
 **4. Registrar** — em `dados/campanhas.json`: criativos criados → `status: "em pausa"`; pausados → `status: "pausado"`. Commit: `git add dados/campanhas.json && git commit -m "Publicador <cliente> <data>: +<n> em pausa, <n> pausados" && git push`. Os ids devolvidos pelo Meta ficam só no `*.resultado-executar.json` local (ignorado pelo git).
 
 ## Campanha nova (só com pedido explícito do humano)
-O formato antigo (`campanha` + `conjuntos`, ver `exemplo-demo-2.json`) ainda funciona e cria tudo em pausa. No modelo atual, campanha e público de cliente novo são criados **uma vez pelo Gustavo** no Ads Manager (categoria especial de anúncio, se o Meta exigir, é definida lá).
+O formato antigo (`campanha` + `conjuntos`, ver `exemplo-demo-2.json`) ainda funciona e cria tudo em pausa. Padrão: objetivo tráfego otimizado para visualização da página de destino (o que rodou na campanha do Gustavo). O script recusa se a soma das verbas diárias passar de `verba.diaria_max_brl` em `dados/campanhas.json` (R$ 100/dia, 23/10) e cria a campanha com limite de gasto = `verba.total_max_brl` (R$ 3.000). No modelo atual, campanha e público de cliente novo são criados **uma vez pelo Gustavo** no Ads Manager (categoria especial de anúncio, se o Meta exigir, é definida lá).
 
 ## Output — exatamente este formato
 ```

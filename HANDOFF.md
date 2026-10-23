@@ -2,6 +2,8 @@
 
 **Para:** quem pega o projeto (agente do Cursor, Claude desktop, ou pessoa). **Leia inteiro antes de mexer.** Mantenha o `WORKLOG.md` (formato no fim).
 
+> **23/10/2026:** verba aprovada pelo Gustavo (R$ 100/dia somando as campanhas, teto R$ 3.000), login do Facebook entregue ao Gui, cPanel resolvido, base do CRM só na ida para produção. Primeiro cliente: **Cruzeiro** (campanha "DDMPay - Cruzeiro Base Ativos", hoje desativada). Veja a seção 4.
+>
 > **22/10/2026 — o escopo mudou.** Na reunião de 20/10 o Gustavo explicou o que ele quer de verdade, e é diferente do que estava montado (campanha nova a partir de briefing, aprovada uma a uma). As seções 1–5 abaixo já estão no modelo novo. A reestruturação de 22/10 foi feita pelo Claude desktop (Cowork), a pedido do Gui.
 
 ---
@@ -26,7 +28,8 @@ Exemplo real mostrado pelo Gustavo: R$ 3.888 gastos → 2.291 pessoas no DDMP (�
 | Bases e exports (fora do git) | `~/ddm-crm/<cliente>/<data>.csv` (CRM), `~/ddm-crm/ddmp/<data>.csv`, `~/ddm-crm/meta/<cliente>-<data>.csv` |
 | Painel | `index.html` → https://agente.trafego.grupoddm.ia.br · tema claro (padrão) / escuro no topo · `?sim=1` abre a simulação |
 | Paperclip | http://127.0.0.1:3100/GRU/ · empresa `01b7e083-3ae7-4f29-bdcd-f2ceca73d9b9` · iniciar com `npx paperclipai run` |
-| Chaves (`~/.hermes/.env`) | `GOOGLE_API_KEY` ✅ · `TYPESAFE_API_KEY` ✅ · `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_PAGE_ID`, `META_AUDIENCE_<CLIENTE>`, `META_ADSET_<CLIENTE>` ❌ (Gustavo) |
+| Chaves (`~/.hermes/.env`) | `GOOGLE_API_KEY` ✅ · `TYPESAFE_API_KEY` ✅ · `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID`, `META_PAGE_ID`, `META_AUDIENCE_CRUZEIRO`, `META_ADSET_CRUZEIRO` ❌ (Gui gera com o login do Gustavo, passo a passo na seção 5) · `META_API_VERSION` opcional (padrão v26.0 em `scripts/_env.py`) |
+| Verba | `dados/campanhas.json → verba`: R$ 100/dia somando as campanhas, teto R$ 3.000 (Gustavo, 23/10). `meta_publicar.py` recusa campanha nova acima disso e a cria com limite de gasto; `resultados_ddmp.py` avisa a partir de 80% |
 
 ## 3. Agentes no Paperclip (Hermes, claude-sonnet-4-6, Reports to = Orquestrador Hermes)
 | # | Papel novo | Nome no Paperclip | ID | Skill |
@@ -44,16 +47,23 @@ Exemplo real mostrado pelo Gustavo: R$ 3.888 gastos → 2.291 pessoas no DDMP (�
 Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo. Em 22/10: as 9 skills estão em `3e435e7` no Paperclip e os 2 agentes novos foram criados. **Depois de cada push que mude skill:** Skills → a skill → **Check for updates → Install update**.
 **AGENTS.md (22/10):** os 9 foram reescritos — modelo sempre ligado, "a skill prevalece", regras fixas (PAUSED, sem chaves, sem dado de aluno) + o Execution Contract do Paperclip. As versões antigas ficam no histórico de revisões de cada agente no Paperclip. O AGENTS.md pesa mais que a skill: se mudar regra, mude os dois.
 
-## 4. Estado em 22/10/2026
+## 4. Estado em 23/10/2026
+**Feito em 23/10 (testado sem rede, nada no Meta):** API v21 → v26 (a v21 saiu de suporte) · `meta_publicar.py` enviava só o nome da imagem ao Meta (falharia no primeiro `--executar`): agora envia o conteúdo em base64; campanha nova padrão = tráfego/visualização da página de destino, como a do Gustavo; travas de verba · `resultados_ddmp.py` entende anúncios `Criativo 06`, usa custo por visita quando o cliente fecha acordo fora do DDMP (`acordos_rastreados: false`, caso da Cruzeiro) e avisa verba · `testar_chaves.py --meta` (só leitura) confere token e ids sem mostrá-los · Cruzeiro em `dados/campanhas.json` (6 criativos do Gustavo, campanha pausada, R$ 30/dia hoje no Meta) · painel com verba e pendências novas.
+**Decisão aberta (Gui + Gustavo):** os criativos que já rodaram ("Atenção, aluno Cruzeiro do Sul! Evite restrições…", "Está com pendências na Cruzeiro do Sul?", "Regularizar agora") seriam REPROVADOS pela skill do Compliance (instituição + situação do leitor, consequência, imperativo). Jev: 57 no criativo 06, 29 no 02, 19 em "Resolva suas dívidas, fale conosco pelo WhatsApp". Ou a regra afrouxa (skill + AGENTS.md), ou os criativos novos seguem a regra e os antigos ficam como estão.
+**Risco Meta:** público de lista que não está em conjunto ativo pode ser marcado para expirar, e aí `usersreplace` falha (regra do Meta desde jan/2026). A campanha da Cruzeiro está desativada; conferir o status do público com `testar_chaves.py --meta` antes da primeira troca.
+
+### Estado em 22/10/2026
 **Pronto (testado com dados falsos):** as 9 skills reescritas; `audiencia_sync.py` (dry-run, mock, trava de 30%, entraram/saíram, recusa sem base legal); `resultados_ddmp.py` (exports Meta + DDMP → custo por visita/acordo e sugestão); `utm.py`; `meta_publicar.py` no modo do dia (mock: 2 anúncios novos + 1 pausa); painel novo com tema claro/escuro.
 **Falta de outras pessoas:** acesso ao Meta + ids (Gustavo) · export diário do CRM e export do DDMP por UTM (Jair/TI) · verba (Gustavo) · base legal do público registrada (Gustavo/jurídico) · login do cPanel/Dev Hub (Gisele/Arthur).
 **Ainda do modelo antigo, não validado:** Designer gerando imagens reais dentro do Paperclip (re-teste pendente, só com OK do Gui).
 
 ## 5. Próximos passos (em ordem)
-1. ~~Paperclip: skills, agentes novos, AGENTS.md~~ (feito em 22/10).
+1. ~~Paperclip: skills, agentes novos, AGENTS.md~~ (feito em 22/10). Depois do push de 23/10: **Check for updates → Install update** em `ddm-publicador-meta`, `ddm-resultados-ddmp`, `ddm-dados-campanhas`, `ddm-orquestrador-trafego` (Gui). A regra de verba (R$ 100/dia somando as campanhas, teto R$ 3.000) também precisa entrar no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2, senão o AGENTS.md antigo prevalece.
+1a. **Token do Meta (Gui, com o login do Gustavo; ninguém cola token em chat ou issue):** business.facebook.com → Configurações do negócio → Usuários → **Usuários do sistema** → Adicionar (admin) → **Atribuir ativos**: a conta de anúncios (gerenciar campanhas) e a Página "DDM Soluções em Cobrança" → **Gerar token** (precisa de um app do tipo Business; validade "nunca"; permissões `ads_management`, `ads_read`, `business_management`). No `~/.hermes/.env`: `META_ACCESS_TOKEN`, `META_AD_ACCOUNT_ID` (número depois de `act=` na URL do Ads Manager), `META_PAGE_ID`, `META_AUDIENCE_CRUZEIRO` (Públicos → público da Cruzeiro → ID), `META_ADSET_CRUZEIRO` (conjunto "DDM Pay - Cruzeiro" → ID). Conferir: `python3 scripts/testar_chaves.py --meta` (só leitura).
+1b. **No Ads Manager (Gustavo/Gui):** limite de gasto de R$ 3.000 na campanha "DDMPay - Cruzeiro Base Ativos" (ou na conta) e verba diária ≤ R$ 100 quando religar. É a trava que vale de verdade: os scripts não mexem em verba de campanha que já existe.
 2. Rotina diária do Orquestrador no Paperclip (~08:00 Brasília) — só depois que houver dado real; até lá, rodar à mão.
 3. Com o Jair: formato do export do CRM (quem está em aberto, por cliente) e do DDMP (contagens por data/cliente/campanha/criativo). Ajustar `resultados_ddmp.py` se os nomes de coluna forem outros.
-4. Com o Gustavo: acesso ao Meta, ids do público e do conjunto de cada cliente, base legal, verba. Primeiro `audiencia_sync.py` em dry-run com a base real; depois `--executar`.
+4. Com o Gustavo: base legal do público (antes da produção). Verba e login: recebidos em 23/10. A base do CRM só chega na ida para produção: aí `audiencia_sync.py` em dry-run com a base real, depois `--executar`.
 5. Re-teste do Designer (imagens reais) num pedido "tema novo" pequeno (2 criativos).
 
 ## 6. Como publicar mudanças
@@ -65,7 +75,8 @@ Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo.
 - **Nunca** ler, imprimir, colar ou commitar chaves/tokens. Os scripts leem `~/.hermes/.env` sozinhos. Credenciais e logins são sempre do Gui.
 - Nada ativo no Meta: só `PAUSED`; ativação é humana no Ads Manager.
 - Base de alunos (CRM) e exports do DDMP **nunca** entram no repositório, em issue ou em log: só contagens. O público só vai ao Meta em hash SHA-256 e só com `publico.base_legal` registrado. Lista de linguagem no SKILL.md do Compliance (versão 20/10).
-- Ids reais do Meta (conta, público, conjunto, anúncio) ficam no `~/.hermes/.env` ou em arquivos locais ignorados pelo git — o repo é público.
+- Ids reais do Meta (conta, público, conjunto, anúncio) ficam no `~/.hermes/.env` ou em arquivos locais ignorados pelo git — o repo é público. Isso vale também para URLs do Ads Manager (`act=`, `business_id=`) e prints de tela.
+- O login do Facebook é do Gui. Agente nenhum faz login no Meta; agentes só usam o token do `~/.hermes/.env` pelos scripts.
 - Imagem falsa é pior que nenhuma: se a ferramenta falhar, diga que falhou.
 - Ao testar, mantenha campanhas pequenas (custo de Claude + Gemini).
 

@@ -16,17 +16,19 @@ Variáveis de ambiente (só para --executar):
   META_ACCESS_TOKEN   token de usuário do sistema com ads_management
   META_AD_ACCOUNT_ID  id numérico da conta de anúncios (sem o prefixo act_)
   META_PAGE_ID        id da Página do Facebook que assina os anúncios
-  META_API_VERSION    opcional, padrão v21.0
+  META_API_VERSION    opcional, padrão em scripts/_env.py (v26.0)
 
 Garantias:
   - Todo objeto criado (campanha, conjuntos, anúncios) nasce com status PAUSED. Não existe opção para ACTIVE aqui.
   - Nada é criado sem `aprovacao_humana.aprovado = true` no arquivo de publicação.
+  - Campanha nova: a soma das verbas diárias não passa de dados/campanhas.json → verba.diaria_max_brl,
+    e a campanha nasce com limite de gasto (spend_cap) = verba.total_max_brl. O ciclo diário não mexe em verba.
   - Sem bibliotecas externas: só stdlib (urllib).
 """
-import json, os, re, sys, time, urllib.request, urllib.parse, urllib.error
+import base64, json, os, re, sys, time, urllib.request, urllib.parse, urllib.error
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from _env import carregar_env  # noqa: E402
+from _env import carregar_env, meta_versao, verba  # noqa: E402
 import utm  # noqa: E402
 
 STATUS_FIXO = "PAUSED"
@@ -62,6 +64,12 @@ def carregar_spec(caminho):
             die(f"spec sem a chave obrigatória '{k}' (ou use 'adicionar'/'pausar' para o ciclo diário)")
     if not spec["conjuntos"]:
         die("nenhum conjunto de anúncios no spec")
+    v = verba()
+    if not v.get("diaria_max_brl") or not v.get("total_max_brl"):
+        die("verba aprovada não registrada (dados/campanhas.json → verba.diaria_max_brl / total_max_brl)")
+    soma = sum(float(c.get("orcamento_diario_brl") or 0) for c in spec["conjuntos"])
+    if soma > v["diaria_max_brl"]:
+        die(f"verba diária somada R$ {soma:.2f} passa do aprovado (R$ {v['diaria_max_brl']:.2f}/dia)")
     for c in spec["conjuntos"]:
         if not c.get("anuncios"):
             die(f"conjunto '{c.get('nome')}' sem anúncios")
@@ -83,7 +91,7 @@ class Cliente:
             self.token = "<META_ACCESS_TOKEN>"
             self.conta = os.environ.get("META_AD_ACCOUNT_ID", "<META_AD_ACCOUNT_ID>")
             self.pagina = os.environ.get("META_PAGE_ID", "<META_PAGE_ID>")
-        self.versao = os.environ.get("META_API_VERSION", "v21.0")
+        self.versao = meta_versao()
         self.base = f"https://graph.facebook.com/{self.versao}"
 
     def post(self, caminho, dados):
@@ -122,23 +130,27 @@ class Cliente:
 def publicar(spec, cli):
     camp = spec["campanha"]
     conta = f"act_{cli.conta}"
-    objetivo = camp.get("objetivo", "OUTCOME_LEADS")
+    # padrão = o que rodou na campanha do Gustavo: tráfego otimizado para visualização da página de destino (DDMP)
+    objetivo = camp.get("objetivo", "OUTCOME_TRAFFIC")
     r = cli.post(f"{conta}/campaigns", {
         "name": camp["nome"],
         "objective": objetivo,
         "status": STATUS_FIXO,
         "special_ad_categories": camp.get("special_ad_categories", []),
         "buying_type": "AUCTION",
+        "spend_cap": int(round(verba()["total_max_brl"] * 100)),  # centavos; teto total aprovado
     })
     campanha_id = r["id"]
     resultado = {"campanha_id": campanha_id, "status": STATUS_FIXO, "conjuntos": []}
 
     for conj in spec["conjuntos"]:
         seg = conj.get("segmentacao", {})
+        com_publico = bool(seg.get("publicos_personalizados"))
         targeting = {
             "geo_locations": seg.get("geo_locations", {"countries": ["BR"]}),
-            "age_min": seg.get("idade_min", 22),
-            "age_max": seg.get("idade_max", 40),
+            # público do CRM: a lista já define quem vê; não corte por idade sem pedido
+            "age_min": seg.get("idade_min", 18 if com_publico else 22),
+            "age_max": seg.get("idade_max", 65 if com_publico else 40),
         }
         if seg.get("interesses"):
             targeting["flexible_spec"] = [{"interests": seg["interesses"]}]
@@ -151,7 +163,7 @@ def publicar(spec, cli):
             "status": STATUS_FIXO,
             "daily_budget": int(round(conj["orcamento_diario_brl"] * 100)),  # centavos
             "billing_event": "IMPRESSIONS",
-            "optimization_goal": conj.get("otimizacao", "LEAD_GENERATION" if objetivo == "OUTCOME_LEADS" else "LINK_CLICKS"),
+            "optimization_goal": conj.get("otimizacao", {"OUTCOME_LEADS": "LEAD_GENERATION", "OUTCOME_TRAFFIC": "LANDING_PAGE_VIEWS"}.get(objetivo, "LINK_CLICKS")),
             "bid_strategy": "LOWEST_COST_WITHOUT_CAP",
             "targeting": targeting,
             "start_time": conj.get("inicio") or spec.get("inicio"),
@@ -169,9 +181,15 @@ def publicar(spec, cli):
 def criar_anuncio(cli, conta, adset_id, an):
     img_hash = None
     if an.get("imagem"):
-        if not os.path.exists(an["imagem"]) and cli.modo == "executar":
-            die(f"imagem não encontrada: {an['imagem']}")
-        r = cli.post(f"{conta}/adimages", {"filename": an["imagem"]})
+        # a API quer o conteúdo do arquivo (base64 em `bytes`), não o nome
+        if cli.modo == "executar":
+            if not os.path.exists(an["imagem"]):
+                die(f"imagem não encontrada: {an['imagem']}")
+            with open(an["imagem"], "rb") as f:
+                conteudo = base64.b64encode(f.read()).decode()
+        else:
+            conteudo = f"<base64 de {an['imagem']}>"
+        r = cli.post(f"{conta}/adimages", {"bytes": conteudo})
         imgs = r.get("images", {})
         img_hash = next(iter(imgs.values()))["hash"] if imgs else None
     link_data = {

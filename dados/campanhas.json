@@ -1,13 +1,20 @@
 {
   "versao": 2,
   "modelo": "sempre-ligado",
-  "atualizado_em": "2026-10-22",
-  "atualizado_por": "Claude (reestruturação para o escopo da reunião de 20/10)",
+  "atualizado_em": "2026-10-23",
+  "atualizado_por": "Claude (verba aprovada + cliente Cruzeiro, reunião de 20/10)",
   "ok_diario": {
     "horario": "09:00",
     "fuso": "America/Sao_Paulo",
     "pendente": null,
     "historico": []
+  },
+  "verba": {
+    "diaria_max_brl": 100,
+    "total_max_brl": 3000,
+    "aprovada_por": "Gustavo",
+    "em": "2026-10-23",
+    "nota": "R$ 100/dia somando todas as campanhas, até R$ 3.000 no total. Campanha nova nasce com spend_cap = total (scripts/meta_publicar.py); na campanha que já existe, o limite de gasto é posto à mão no Ads Manager."
   },
   "utm": {
     "destino": "https://ddmp.com.br/",
@@ -29,7 +36,75 @@
     "frequencia_max": 3.0,
     "gasto_minimo_para_decidir_brl": 50
   },
-  "clientes": [],
+  "clientes": [
+    {
+      "id": "cruzeiro",
+      "nome": "Cruzeiro do Sul",
+      "utm_cliente": "cruzeiro",
+      "acordos_rastreados": false,
+      "nota_acordos": "o acordo é fechado no sistema da Cruzeiro; o DDMP só vê a visita (Gustavo, 20/10)",
+      "publico": {
+        "nome": "Público Cruzeiro (Meta)",
+        "base_legal": null,
+        "tamanho_informado": "40–43 mil contatos na última subida (Gustavo, 20/10)",
+        "status": "aguardando base de produção"
+      },
+      "campanhas": [
+        {
+          "id": "cruzeiro-sempre",
+          "nome": "DDMPay - Cruzeiro Base Ativos",
+          "utm_campanha": "base-ativos",
+          "tema": "base ativos",
+          "proximo_tema": "Natal",
+          "destino": "DDMP",
+          "objetivo_meta": "Tráfego · visualização da página de destino",
+          "orcamento_diario_brl": 30,
+          "nota_orcamento": "R$ 30/dia é o que está configurado hoje no Meta; o aprovado é até R$ 100/dia (verba)",
+          "status": "pausada",
+          "criativos": [
+            {
+              "id": "01",
+              "titulo": "Criativo 01",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes"
+            },
+            {
+              "id": "02",
+              "titulo": "Fim das pendências!",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes",
+              "copy": "Facilidade e rapidez para quitar seus débitos na Cruzeiro do Sul. · Regularizar agora"
+            },
+            {
+              "id": "03",
+              "titulo": "Criativo 03",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes"
+            },
+            {
+              "id": "04",
+              "titulo": "Criativo 04",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes"
+            },
+            {
+              "id": "05",
+              "titulo": "Criativo 05",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes"
+            },
+            {
+              "id": "06",
+              "titulo": "Atenção, aluno Cruzeiro do Sul!",
+              "status": "pausado",
+              "origem": "criado pelo Gustavo no Ads Manager, antes dos agentes",
+              "copy": "Está com pendências na Cruzeiro do Sul? · Evite restrições. Temos um acordo para você quitar suas mensalidades. · Regularizar agora"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "pilotos": [
     {
       "id": "demo-2",

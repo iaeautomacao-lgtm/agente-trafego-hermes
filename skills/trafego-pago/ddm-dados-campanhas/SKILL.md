@@ -14,7 +14,7 @@ Pergunta que você responde (Gustavo, 20/10): **qual criativo está dando o melh
 Se `resultados` não existir ou for de antes de ontem → `[insuficiente]` + o que falta. Não analise parcialmente.
 
 ## Métrica principal
-- **Custo por acordo** quando pelo menos 2 criativos têm acordos; senão **custo por visita ao DDMP**.
+- **Custo por acordo** só quando o cliente tem `acordos_rastreados: true` e pelo menos 2 criativos têm acordos; senão **custo por visita ao DDMP** (Cruzeiro: sempre por visita, o acordo é fechado no sistema dela).
 - Faixa de referência (até termos histórico próprio): R$ 1,00–2,50 por visita (`benchmarks.custo_visita_brl`). Exemplo real da reunião: R$ 3.888 → 2.291 visitas ≈ R$ 1,70/visita; o melhor criativo saiu a R$ 1,52.
 - Menos de R$ 50 gastos num criativo (`benchmarks.gasto_minimo_para_decidir_brl`) → não decida, "Manter (pouco gasto)".
 - Frequência > 3 (impressões ÷ alcance) → desgaste: pedir criativo novo no mesmo ângulo.
@@ -50,7 +50,7 @@ Valide e faça commit: `python3 -m json.tool dados/campanhas.json > /dev/null &&
 
 ## Regras invioláveis
 - Toda afirmação com um número do `resultados` ao lado. Nunca inventar nem estimar.
-- Toda sugestão de verba vem com o risco.
+- Toda sugestão de verba vem com o risco e respeita `verba` em `dados/campanhas.json`: a soma das verbas diárias de todas as campanhas não passa de `diaria_max_brl` (R$ 100) e o gasto total não passa de `total_max_brl` (R$ 3.000). A partir de 80% do total, diga quantos dias faltam no ritmo atual.
 - Nunca dado de aluno no texto ou no JSON.
 - Você não publica, não pausa e não mexe no Meta: só recomenda. Quem executa é o Publicador, depois do OK do dia.
 

@@ -12,6 +12,7 @@ O painel (`index.html`) lê **`dados/campanhas.json`** ao carregar. Commit + pus
   "modelo": "sempre-ligado",
   "atualizado_em": "AAAA-MM-DD", "atualizado_por": "quem/qual agente",
   "ok_diario": { "horario": "09:00", "fuso": "America/Sao_Paulo", "pendente": <ok> | null, "historico": [ { data, por, em, itens } ] },
+  "verba": { "diaria_max_brl": 100, "total_max_brl": 3000, "aprovada_por", "em", "nota" },   // somando todas as campanhas; os scripts leem daqui
   "utm": { "destino": "https://ddmp.com.br/", "parametros": { "cliente": "cliente", "campanha": "campanha", "criativo": "criativo" },
            "fixos": { "utm_source": "meta", "utm_medium": "paid_social" } },
   "benchmarks": { "custo_visita_brl": [1.0, 2.5], "frequencia_max": 3.0, "gasto_minimo_para_decidir_brl": 50 },
@@ -24,6 +25,7 @@ O painel (`index.html`) lê **`dados/campanhas.json`** ao carregar. Commit + pus
 | campo | quem escreve | exemplo |
 |---|---|---|
 | `id`, `nome`, `utm_cliente` | Orquestrador | `"inst-a"`, `"Instituição A"`, `"inst-a"` |
+| `acordos_rastreados` | humano | `true` se o acordo é fechado dentro do DDMP; `false` se o cliente fecha no sistema dele (Cruzeiro) → a sugestão usa custo por visita |
 | `publico` | **Público CRM** (`scripts/audiencia_sync.py --gravar`) | `{ nome, base_legal, ultima_sync, pessoas, linhas, entraram, sairam, removidos_pagos, invalidas_crm, modo, status, historico[] }` |
 | `publico.base_legal` | humano (uma vez) | `"contrato DDM–cliente + LGPD art. 7º, X · confirmado por Gustavo em 2026-10-xx"` — sem isso o script não envia ao Meta |
 | `campanhas[]` | Orquestrador | ver abaixo |

@@ -12,7 +12,7 @@ Como o rastreio funciona (Gustavo, 20/10): todo link de anúncio leva `cliente`,
 ## Input
 - `cliente` e `campanha` (ids de `dados/campanhas.json`).
 - Export do DDMP de ontem (ou do período): `~/ddm-crm/ddmp/<AAAA-MM-DD>.csv` — só contagens por data/cliente/campanha/criativo (formato em `scripts/resultados_ddmp.py`).
-- Export do Meta, nível **Anúncio**, por dia: `~/ddm-crm/meta/<cliente>-<AAAA-MM-DD>.csv`.
+- Export do Meta, nível **Anúncio**, por dia: `~/ddm-crm/meta/<cliente>-<AAAA-MM-DD>.csv`. Nomes como `Criativo 06` (padrão do Gustavo) ou `06 — …` (padrão do Publicador) viram o criativo `06`.
 - Faltou um dos dois → rode com o que tem e diga o que faltou. Faltaram os dois → `RESULTADOS: sem export de hoje` (o Orquestrador põe como ALERTA).
 
 ## Método
@@ -24,6 +24,8 @@ python3 -m json.tool dados/campanhas.json > /dev/null && git add dados/campanhas
 ```
 - Use o período acumulado da campanha/tema (não só ontem) para o ranking; o export do dia pode ser somado aos anteriores se o Meta/DDMP exportarem só o dia — guarde os CSVs em `~/ddm-crm/`, nunca no repositório.
 - Se o script recusar o export do DDMP por ter coluna de dado pessoal (nome, CPF, telefone, e-mail), **não contorne**: peça ao Jair um export só com contagens.
+- Cliente com `acordos_rastreados: false` (ex.: Cruzeiro, que fecha o acordo no sistema dela): o script compara por custo por visita e avisa "acordos parciais". Repita o aviso no output.
+- O script avisa quando o gasto do período chega a 80% de `verba.total_max_brl`. Repita em ALERTAS.
 - Criativo do Meta que não aparece no DDMP (ou o contrário): verifique o link com `python3 scripts/utm.py conferir "<link>"` e registre no output.
 
 ## Output — exatamente este formato
@@ -33,7 +35,7 @@ FONTES: Meta <ok|faltou> · DDMP <ok|faltou>
 TOTAL: R$ <gasto> · <visitas> visitas (R$ <x>/visita) · <acordos> acordos (R$ <y>/acordo)
 POR CRIATIVO (melhor → pior pela base do script):
   <id>  R$ <gasto>  <visitas> vis  R$ <x>/vis  <acordos> acordos  R$ <y>/acordo  → <sugestão do script>
-ALERTAS: <criativo sem rastreio, export faltando, acordos fora do DDMP> | nenhum
+ALERTAS: <criativo sem rastreio, export faltando, acordos parciais, verba ≥ 80% do teto> | nenhum
 ARQUIVO: dados/campanhas.json (commit <hash>)
 ```
 
