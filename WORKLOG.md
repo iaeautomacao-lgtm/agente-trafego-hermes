@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-10-28 15:05 by Claude Code (worklog rollout)
+Last updated: 2026-10-28 15:10 by Claude Code (sessão do Meta / cPanel)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -11,8 +11,9 @@ Last updated: 2026-10-28 15:05 by Claude Code (worklog rollout)
   - Scripts Python: `audiencia_sync.py` (CSV do CRM → hash SHA-256 → troca do público; trava de 30%; exige base legal), `resultados_ddmp.py`, `utm.py`, `meta_publicar.py` (tudo nasce `PAUSED`; recusa link sem rastreio; travas de verba), `gerar_arte.py`, `jev_risk_score.py`, `testar_chaves.py`. Graph API v26. Chaves em `~/.hermes/.env`, fora do repo.
   - Painel: `index.html` + `dados/campanhas.json`, publicado no servidor da DDM por cPanel ("Atualizar do remoto" manual depois do push). O dashboard React/Express em `dashboard/` é herdado, só referência.
   - Histórico até 19/10/2026 está resumido no `HANDOFF.md` (seção 9); detalhe de tudo em `HANDOFF.md` e `README.md`.
-- **Estado atual (28/10/2026, último trabalho em 23/10):**
-  - Nada no Meta ainda. Scripts testados só offline (dry-run, mock, exports falsos).
+- **Estado atual (28/10/2026):**
+  - Nada no Meta ainda. Scripts testados só offline (dry-run, mock, exports falsos). Gui começou em 28/10 a criar o usuário do sistema e o token do Meta (passo a passo dado na sessão; não concluído).
+  - Painel no ar com o commit d50fe5b (cPanel atualizado pelo Gui em 27/10; verificado: `dados/campanhas.json` no site traz verba e Cruzeiro).
   - Primeiro cliente: Cruzeiro (campanha existente, hoje desativada; 6 criativos do Gustavo em `dados/campanhas.json`).
   - Paperclip: 9 skills e 2 agentes novos (Público CRM, Resultados DDMP) instalados em 22/10; as mudanças de 23/10 em 4 skills ainda precisam de "Check for updates" (não verificado se foi feito).
   - Falta para ligar: token do Meta + ids, limite de gasto no Ads Manager, exports do CRM e do DDMP, base legal do público. Re-teste do Designer (imagens reais no Paperclip) pendente.
@@ -39,16 +40,15 @@ Last updated: 2026-10-28 15:05 by Claude Code (worklog rollout)
 | Item | Waiting on (who) | Since | Last follow-up | What happens when it arrives |
 |---|---|---|---|---|
 | Formato do export diário do CRM (quem está em aberto, por cliente) e do export do DDMP (por data/cliente/campanha/criativo) | Jair (TI) | 2026-10-22 | not recorded | `audiencia_sync.py` em dry-run com a base real; `resultados_ddmp.py` ajustado |
-| Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` | Jair | 2026-10-23 | not recorded | links e resultados por criativo confiáveis |
+| Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` | Jair | 2026-10-23 | 2026-10-26: mensagem rascunhada para o Gui enviar (envio não confirmado) | links e resultados por criativo confiáveis |
 | Base legal do público registrada | Gustavo (jurídico) | 2026-10-22 | not recorded | troca diária do público pode ir para produção |
 | Confirmar que R$ 100/dia é a soma das campanhas | Gustavo | 2026-10-23 | not recorded | travas de verba confirmadas |
 
 ### Needs Gui's decision
-- Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com o login do Gustavo; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23 — bloqueia qualquer coisa no Meta.
+- Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com o login do Gustavo; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 (Business Suite → Configurações → Usuários do sistema) — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
 - Paperclip: "Check for updates" nas 4 skills alteradas em 23/10 + regra de verba no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2 — desde 2026-10-23.
 - Repo público: antes do primeiro export real, decidir se o repo vira privado ou se os resultados da Cruzeiro ficam só locais — desde 2026-10-23.
 - Regra de linguagem × criativos que já rodaram (afrouxar a regra ou só os novos seguem) — Gui + Gustavo — desde 2026-10-23.
-- cPanel "Atualizar do remoto" depois do push de 23/10 (não verificado se foi feito).
 - Re-teste do Designer (imagens reais, 2 criativos) — só com OK do Gui — desde 2026-10-19.
 
 ### Next up (agent can do now)
@@ -62,6 +62,7 @@ Last updated: 2026-10-28 15:05 by Claude Code (worklog rollout)
 - Modelo "sempre ligado": scripts `utm.py`, `audiencia_sync.py`, `resultados_ddmp.py`, `meta_publicar.py` com spec do dia; painel claro/escuro; 9 skills reescritas (2026-10-22)
 - Paperclip atualizado (9 skills, agentes Público CRM e Resultados DDMP, AGENTS.md dos 9); painel com a identidade do Grupo DDM (2026-10-22)
 - Verba, Graph API v26, upload de imagem corrigido, travas de verba, cliente Cruzeiro, `testar_chaves.py --meta` (commit d50fe5b) (2026-10-23)
+- Push de d50fe5b + cPanel "Atualizar do remoto"; painel no ar verificado (2026-10-27)
 
 ## 3. Log
 
@@ -90,13 +91,24 @@ Last updated: 2026-10-28 15:05 by Claude Code (worklog rollout)
 - Open: confirmar com o Jair o domínio do DDMP (`utm.destino` = https://ddmp.com.br/, tirado da transcrição) e que ele grava `cliente`/`campanha`/`criativo`; confirmar com o Gustavo que R$ 100/dia é a soma das campanhas
 - Open: decidir a regra de linguagem × criativos que já rodaram (Gui + Gustavo) · base legal do público (Gustavo) · export do DDMP (Jair) · cPanel "Atualizar do remoto" depois do push (Gui)
 
-## 2026-10-28 (Wednesday) — Formato do worklog (~5 min)
+## 2026-10-26 (Monday) — Plano de ação + mensagem ao Jair (~10 min)
+- (time not recorded, ~10 min) — Recap do que foi feito e do que falta; plano passo a passo por tarefa para o Gui; mensagem em português para o Jair (domínio do DDMP, parâmetros `cliente`/`campanha`/`criativo`, export diário só com contagens, base do CRM só na produção) (Claude Code)
+- Open: enviar a mensagem ao Jair (Gui) · token do Meta (Gui)
+
+## 2026-10-27 (Tuesday) — Painel atualizado no servidor (~10 min)
+- (time not recorded, ~10 min) — Push de d50fe5b confirmado no GitHub (commit de 23/10 com emenda: pendências de AGENTS.md, repo público e confirmações do Jair/Gustavo). Gui rodou "Atualizar do remoto" no cPanel (Gerenciar → Extrair ou Implantar) no repo `agente-trafego (site)`, que estava parado em 14601c1 de 09/10. Verificado no ar: `dados/campanhas.json` com atualizado_em 2026-10-23, teto R$ 3.000 e cliente Cruzeiro; painel com as pendências novas (Claude Code + Gui)
+
+## 2026-10-28 (Wednesday) — Formato do worklog + token do Meta (~20 min)
 - (time unknown, ~5 min) — WORKLOG no formato do skill project-worklog (visão geral, pendências, log, resumo); parte do rollout registrado em Call-sandwich-Retell.
+- (time not recorded, ~10 min) — Passo a passo para o Gui criar, no Business Suite do portfólio Grupo DDM, o usuário do sistema `agente-trafego`, atribuir conta de anúncios e a Página "DDM Soluções em Cobrança" (os anúncios rodam nela, não na página grupoddm), criar/atribuir um app Business, gerar o token e preencher as 5 variáveis no `~/.hermes/.env`. Em andamento pelo Gui; nada verificado ainda (Claude Code)
+- ~15:05–15:10 (~5 min, est.) — Passada do fim do dia no WORKLOG (dias 26–28/10, pendências) (Claude Code)
+- Open: token do Meta + `testar_chaves.py --meta` (Gui) · mensagem ao Jair (Gui) · Paperclip check for updates + AGENTS.md (Gui) · decisões de linguagem e repo público (Gui + Gustavo)
 
 ## 4. Summary (2026-10-19 → today)
-- Total time: ~1 h 35 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
+- Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
 - Main deliverables / decisions:
   - Handoff do projeto ao agente do Cursor; HANDOFF.md e WORKLOG.md (19/10)
   - Escopo novo "sempre ligado" (reunião de 20/10 com o Gustavo); decisões do Gui em 22/10: Claude desktop implementa, base do CRM por CSV diário até o Jair definir, painel claro por padrão
   - Scripts, 9 skills, painel e Paperclip no modelo novo; identidade visual do Grupo DDM (22/10)
   - Verba aprovada (R$ 100/dia, teto R$ 3.000), Cruzeiro como primeiro cliente, correções antes do Meta (23/10)
+  - Painel no ar com d50fe5b (27/10); criação do token do Meta iniciada pelo Gui (28/10)
