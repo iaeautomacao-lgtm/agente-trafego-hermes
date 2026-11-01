@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-10-28 15:10 by Claude Code (sessão do Meta / cPanel)
+Last updated: 2026-11-01 by Claude Code (sessão do Meta / cPanel)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -45,7 +45,7 @@ Last updated: 2026-10-28 15:10 by Claude Code (sessão do Meta / cPanel)
 | Confirmar que R$ 100/dia é a soma das campanhas | Gustavo | 2026-10-23 | not recorded | travas de verba confirmadas |
 
 ### Needs Gui's decision
-- Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com o login do Gustavo; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 (Business Suite → Configurações → Usuários do sistema) — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
+- Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com a conta dele, admin do portfólio desde 2026-11-01; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
 - Paperclip: "Check for updates" nas 4 skills alteradas em 23/10 + regra de verba no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2 — desde 2026-10-23.
 - Repo público: antes do primeiro export real, decidir se o repo vira privado ou se os resultados da Cruzeiro ficam só locais — desde 2026-10-23.
 - Regra de linguagem × criativos que já rodaram (afrouxar a regra ou só os novos seguem) — Gui + Gustavo — desde 2026-10-23.
@@ -63,6 +63,7 @@ Last updated: 2026-10-28 15:10 by Claude Code (sessão do Meta / cPanel)
 - Paperclip atualizado (9 skills, agentes Público CRM e Resultados DDMP, AGENTS.md dos 9); painel com a identidade do Grupo DDM (2026-10-22)
 - Verba, Graph API v26, upload de imagem corrigido, travas de verba, cliente Cruzeiro, `testar_chaves.py --meta` (commit d50fe5b) (2026-10-23)
 - Push de d50fe5b + cPanel "Atualizar do remoto"; painel no ar verificado (2026-10-27)
+- Gui administrador do portfólio do Grupo DDM no Meta, no lugar do login compartilhado (2026-11-01)
 
 ## 3. Log
 
@@ -105,6 +106,11 @@ Last updated: 2026-10-28 15:10 by Claude Code (sessão do Meta / cPanel)
 - 17:30–18:50 (~1 h 20 min, est.) — Revisão cruzada Grok + GPT no Cursor Automations (infra compartilhada, `agent-playbook`): 6 automações ativas, entre elas `Grok/GPT cross-reviewer - agente-trafego` neste repo (só gatilho por rótulo `review:grok` / `review:gpt`, porque o repo é público). Teste ponta a ponta feito em outro repo (pluris-lms, PR de teste já fechado): os dois revisores postaram em ~2 min, o Grok confirmou os achados do GPT e ambos deram AGREE. Neste repo ainda falta criar os rótulos (a conta `joaoguilherme-ops` só tem leitura; precisa da conta dona) e testar com um PR (Cursor)
 - 2026-10-29 (time not recorded, ~1 h est.) — Revisão cruzada para repos sem o app do Cursor: espelhos privados em `joaoguilherme-ops` (`winko-apresentacao-xr-mirror`, `ddm-chat-agents-xr-mirror`), script `xr-mirror.sh` copia o PR para o espelho e devolve as reviews ao PR real; automações específicas Grok/GPT para `ddm-chat-agents`. Testado com PRs descartáveis nos dois repos (REVIEW x2, CONCLUSION, AGREE x2), todos fechados sem mesclar. Pendente: push do `agent-playbook` (aguardando o OK do Gui) (Cursor)
 - Open: token do Meta + `testar_chaves.py --meta` (Gui) · mensagem ao Jair (Gui) · Paperclip check for updates + AGENTS.md (Gui) · decisões de linguagem e repo público (Gui + Gustavo) · criar rótulos `review:gpt`/`review:grok` neste repo com a conta dona (Gui)
+
+## 2026-11-01 (Sunday) — Acesso ao Meta pela conta do Gui (~10 min)
+- (time not recorded, ~5 min) — O login compartilhado que o Gustavo passou parou na verificação por chave de acesso (passkey), que fica no aparelho do dono da conta. Recomendado não insistir (risco de bloqueio da conta e da conta de anúncios) e pedir ao Gustavo que adicionasse o Facebook do Gui como administrador do portfólio; mensagem rascunhada (Claude Code)
+- (time not recorded, ~5 min) — Gui adicionado como administrador do portfólio do Grupo DDM. Passo a passo do token refeito a partir da conta do Gui (conferir controle total, app Business, usuário do sistema, ativos, token, `.env`, teste). Token ainda não gerado; nada verificado (Claude Code)
+- Open: token do Meta + `testar_chaves.py --meta` (Gui) · demais itens de 28/10 sem mudança
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
