@@ -112,6 +112,9 @@ Last updated: 2026-11-01 by Claude Code (sessão do Meta / cPanel)
 - (time not recorded, ~5 min) — Gui adicionado como administrador do portfólio do Grupo DDM. Passo a passo do token refeito a partir da conta do Gui (conferir controle total, app Business, usuário do sistema, ativos, token, `.env`, teste). Token ainda não gerado; nada verificado (Claude Code)
 - Open: token do Meta + `testar_chaves.py --meta` (Gui) · demais itens de 28/10 sem mudança
 
+## 2026-11-04 (Wednesday) — Skill genérica a partir deste kit (~1 h 30 min, est.)
+- (time not recorded, ~1 h 30 min est.) — Skill `meta-ads-launch` criada em `~/agent-playbook/skills/` (fora deste repo): entrevista → repo pessoal do Gui → `project.json` → 7 skills + scripts derivados dos daqui (sem nada da DDM) → empresa própria no Paperclip. Scripts copiados leem as chaves do Meta só de `~/.hermes/projects/<slug>.env`, nunca do `~/.hermes/.env` da DDM. Nada mudou neste repo nem no Paperclip da DDM (Claude Code)
+
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
 - Main deliverables / decisions:
