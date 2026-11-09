@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-06 by Claude Code (sessão do Meta)
+Last updated: 2026-11-09 by Claude Code (sessão do Meta)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -118,6 +118,10 @@ Last updated: 2026-11-06 by Claude Code (sessão do Meta)
 ## 2026-11-06 (Friday) — Acesso do agente ao Meta montado (~40 min, est.)
 - (time not recorded, ~40 min est.) — Com o OK do Gui, Claude Code operou o Business Suite pelo Chrome (Gui digitou SMS e senha). Conta certa confirmada: portfólio Grupo DDM, conta de anúncios "Grupo DDM" com 5 campanhas da Cruzeiro, todas desativadas ("DDMPay - Cruzeiro Base Ativos", R$ 30/dia; conjunto "DDM Pay - Cruzeiro" com o público "Cruzeiro", lista de clientes, ~36–43 mil). Gui se registrou como desenvolvedor Meta; app próprio "DDM Trafego" criado (caso de uso API de Marketing, ligado ao Grupo DDM, não publicado, nível de acesso limitado). Usuário do sistema `agente-trafego` criado como **Employee** (não Admin: só enxerga o que foi atribuído) com: conta de anúncios (gerenciar campanhas), Página "DDM Soluções em Cobrança" (anúncios), app (desenvolver). Os 4 ids coletados; gravar no `.env` foi bloqueado pelo modo automático, ficou com o Gui. Achado: o público "Cruzeiro" mostra "Aceitar termos" (termos de público personalizado não aceitos na conta), o que bloqueia a troca diária pela API. Nada publicado, nada ligado (Claude Code)
 - Open: gerar o token e colar no `.env` junto com os 4 ids (Gui) · aceitar os termos de público personalizado (Gustavo/DDM, junto com a base legal) · limite de gasto R$ 3.000 (Gui, com OK)
+
+## 2026-11-09 (Monday) — Token do Meta funcionando (~20 min, est.)
+- (time not recorded, ~20 min est.) — Gustavo aprovou a geração do token (duas vezes: a primeira aprovação se perdeu numa nova verificação de conta). Gui gerou o token do `agente-trafego` e gravou as 5 variáveis no `.env`. `testar_chaves.py --meta`: token, conta "Grupo DDM", público "Cruzeiro" (pronto, ~36–43 mil) e conjunto "DDM Pay - Cruzeiro" (campanha pausada) OK; termos de público personalizado aceitos na conta (o "Aceitar termos" da tela era só do usuário). Teste ajustado: Página conferida por `promote_pages` em vez de ler a Página, mais alertas de termos e de limite de gasto. Achados: (1) o token não enxerga a Página (`promote_pages`, `assigned_pages` vazios), então publicar anúncio pode falhar sem permissão de Página; (2) a conta tem limite de gasto de ~R$ 5.052 com ~R$ 4.921 já gastos: sobram ~R$ 132 antes de parar de veicular (Claude Code)
+- Open: decidir validação sem criar nada × novo token com permissões de Página (Gui) · redefinir o limite de gasto da conta para R$ 3.000 (Gui, com OK do Gustavo) · push dos commits locais (Gui)
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)

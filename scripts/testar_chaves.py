@@ -47,9 +47,7 @@ def testar_meta():
     checagens = [("token", "me", "name")]
     if os.environ.get("META_AD_ACCOUNT_ID"):
         checagens.append(("conta", f"act_{os.environ['META_AD_ACCOUNT_ID']}",
-                          "name,currency,account_status,amount_spent,spend_cap,timezone_name"))
-    if os.environ.get("META_PAGE_ID"):
-        checagens.append(("pagina", os.environ["META_PAGE_ID"], "name"))
+                          "name,currency,account_status,amount_spent,spend_cap,timezone_name,user_tos_accepted"))
     for c in sufixos:
         if os.environ.get(f"META_AUDIENCE_{c}"):
             checagens.append((f"publico_{c.lower()}", os.environ[f"META_AUDIENCE_{c}"],
@@ -66,6 +64,27 @@ def testar_meta():
                 r["campaign"].pop("id", None)
         out["leituras"][nome] = {"ok": ok, ("dados" if ok else "erro"): r}
         print(f"{'OK  ' if ok else 'ERRO'} {nome}: {json.dumps(r, ensure_ascii=False) if ok else r}")
+    # Página: ler o nó da Página pede pages_read_engagement, que o token não precisa ter.
+    # Para anunciar basta a conta de anúncios poder promover a Página: confere em promote_pages.
+    if os.environ.get("META_PAGE_ID") and os.environ.get("META_AD_ACCOUNT_ID"):
+        ok, r = meta_get(f"act_{os.environ['META_AD_ACCOUNT_ID']}/promote_pages", "id,name")
+        if ok:
+            achada = [p for p in r.get("data", []) if p.get("id") == os.environ["META_PAGE_ID"]]
+            ok = bool(achada)
+            r = {"name": achada[0].get("name")} if ok else "a conta de anúncios não pode promover essa Página"
+        out["leituras"]["pagina"] = {"ok": ok, ("dados" if ok else "erro"): r}
+        print(f"{'OK  ' if ok else 'ERRO'} pagina: {json.dumps(r, ensure_ascii=False) if ok else r}")
+    conta = out["leituras"].get("conta", {}).get("dados")
+    if conta:
+        alertas = []
+        if (conta.get("user_tos_accepted") or {}).get("custom_audience_tos") != 1:
+            alertas.append("termos de público personalizado não aceitos nesta conta: a troca diária do público vai falhar")
+        if conta.get("spend_cap") not in (None, "", "0"):
+            sobra = (int(conta["spend_cap"]) - int(conta.get("amount_spent") or 0)) / 100
+            alertas.append(f"limite de gasto da conta: sobram R$ {sobra:.2f} antes de a conta parar de veicular")
+        out["alertas"] = alertas
+        for a in alertas:
+            print("ALERTA", a)
     return out
 
 
