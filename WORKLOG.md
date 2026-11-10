@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-09 by Claude Code (sessão do Meta)
+Last updated: 2026-11-10 by Claude Code (sessão do Meta)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -122,6 +122,10 @@ Last updated: 2026-11-09 by Claude Code (sessão do Meta)
 ## 2026-11-09 (Monday) — Token do Meta funcionando (~20 min, est.)
 - (time not recorded, ~20 min est.) — Gustavo aprovou a geração do token (duas vezes: a primeira aprovação se perdeu numa nova verificação de conta). Gui gerou o token do `agente-trafego` e gravou as 5 variáveis no `.env`. `testar_chaves.py --meta`: token, conta "Grupo DDM", público "Cruzeiro" (pronto, ~36–43 mil) e conjunto "DDM Pay - Cruzeiro" (campanha pausada) OK; termos de público personalizado aceitos na conta (o "Aceitar termos" da tela era só do usuário). Teste ajustado: Página conferida por `promote_pages` em vez de ler a Página, mais alertas de termos e de limite de gasto. Achados: (1) o token não enxerga a Página (`promote_pages`, `assigned_pages` vazios), então publicar anúncio pode falhar sem permissão de Página; (2) a conta tem limite de gasto de ~R$ 5.052 com ~R$ 4.921 já gastos: sobram ~R$ 132 antes de parar de veicular (Claude Code)
 - Open: decidir validação sem criar nada × novo token com permissões de Página (Gui) · redefinir o limite de gasto da conta para R$ 3.000 (Gui, com OK do Gustavo) · push dos commits locais (Gui)
+
+## 2026-11-10 (Tuesday) — Agente liberado para publicar no Meta (~20 min, est.)
+- (time not recorded, ~20 min est.) — Validação "só validar" (`execution_options=validate_only`, não cria nada) de um anúncio no conjunto da Cruzeiro: primeiro falhou porque o app DDM Trafego estava em modo de desenvolvimento. Gustavo (WhatsApp): limite de gasto da conta ele vai aumentando, não mexer; política de privacidade é a do site do Grupo DDM. Gui preencheu no app a política (`grupoddm.tech/politica-de-privacidade`), termos (`grupoddm.tech/conformidade`), exclusão de dados e categoria, e publicou o app. Nova validação: `{"success": true}`; conferido que nenhum anúncio novo foi criado (6 anúncios, os do Gustavo). Token: system user, nunca expira, `ads_management`/`ads_read`/`business_management`. Plano B (novo token com permissão de Página) não foi necessário (Claude Code)
+- Open: teto de R$ 3.000 na campanha da Cruzeiro (spend_cap) com OK do Gui · Paperclip check for updates + AGENTS.md (Gui) · exports do Jair · base legal + base do CRM (Gustavo) · push dos commits locais (Gui)
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
