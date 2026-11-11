@@ -11,10 +11,17 @@ Uso:
   python3 scripts/audiencia_sync.py --cliente inst-a --base <csv> --excluir <pagos.csv>                    # tira quem pagou hoje
   python3 scripts/audiencia_sync.py --cliente inst-a --base <csv> --mock --gravar                          # simula + atualiza o painel
   python3 scripts/audiencia_sync.py --cliente inst-a --base <csv> --executar --gravar                      # troca de verdade no Meta
+  python3 scripts/audiencia_sync.py --cliente inst-a --api                                                 # base direto do sistema da DDM (dry-run)
 
 Base: CSV (vírgula ou ponto e vírgula) exportado do CRM. Colunas reconhecidas pelo nome:
   e-mail: email, e-mail, mail      telefone: telefone, celular, fone, phone, whatsapp, tel (pode ter várias)
 Outras colunas (nome, CPF, valor...) são IGNORADAS e nunca saem do computador.
+
+Base pela API do sistema da DDM (--api, no lugar de --base): GET em DDM_API_URL_<CLIENTE>.
+  Resposta aceita: CSV, lista JSON, ou objeto JSON com a lista em data/items/results/registros/devedores
+  (ou na chave DDM_API_LISTA). Campos aninhados valem pelo último nome (contato.email → email);
+  lista de telefones é aceita. Paginação: segue next/proxima/next_page_url só no mesmo servidor.
+  A resposta fica só na memória: nada é gravado em disco além das contagens.
 
 Privacidade (LGPD):
   - E-mail e telefone são normalizados e transformados em hash SHA-256 aqui; o Meta só recebe hashes.
@@ -25,6 +32,12 @@ Variáveis (só para --executar), em ~/.hermes/.env:
   META_ACCESS_TOKEN               token com ads_management
   META_AUDIENCE_<CLIENTE>         id do público personalizado do cliente (ex.: META_AUDIENCE_INST_A)
   META_API_VERSION                opcional, padrão em scripts/_env.py (v26.0)
+Variáveis (só para --api), em ~/.hermes/.env:
+  DDM_API_URL_<CLIENTE>           endereço que devolve quem está em aberto nesse cliente (https)
+  DDM_API_TOKEN                   credencial só de leitura (opcional se o endereço não pedir)
+  DDM_API_AUTH_HEADER             opcional, padrão Authorization
+  DDM_API_AUTH_ESQUEMA            opcional, padrão Bearer (vazio = manda só o token)
+  DDM_API_LISTA                   opcional, chave da lista na resposta JSON
 
 Travas:
   - --executar só roda se dados/campanhas.json → clientes[<cliente>].publico.base_legal estiver preenchido (LGPD).
@@ -71,30 +84,106 @@ def norm_fone(v):
     return None
 
 
+def colunas(cab, origem):
+    """Escolhe as colunas de e-mail e telefone pelo nome (para campo aninhado vale o último nome)."""
+    ult = lambda c: c.rsplit(".", 1)[-1]
+    c_email = [c for c in cab if ult(c) in COLS_EMAIL]
+    c_fone = [c for c in cab if ult(c) in COLS_FONE or ult(c).startswith(("telefone", "celular"))]
+    if not c_email and not c_fone:
+        die(f"nenhuma coluna de e-mail ou telefone reconhecida em {origem} (colunas: {', '.join(cab[:40])})")
+    return c_email, c_fone
+
+
+def linhas_de_csv(texto, origem):
+    amostra = texto[:4096]
+    sep = ";" if amostra.count(";") > amostra.count(",") else ","
+    leitor = csv.DictReader(io.StringIO(texto), delimiter=sep)
+    cab = [c.strip().lower() for c in (leitor.fieldnames or [])]
+    c_email, c_fone = colunas(cab, origem)
+    linhas = [{(k or "").strip().lower(): (v or "") for k, v in bruto.items() if isinstance(v, str)} for bruto in leitor]
+    return linhas, c_email, c_fone
+
+
 def ler_csv(caminho):
     caminho = os.path.expanduser(caminho)
     if not os.path.exists(caminho):
         die(f"arquivo não encontrado: {caminho}")
     with open(caminho, encoding="utf-8-sig", errors="replace") as f:
-        texto = f.read()
-    amostra = texto[:4096]
-    sep = ";" if amostra.count(";") > amostra.count(",") else ","
-    leitor = csv.DictReader(io.StringIO(texto), delimiter=sep)
-    cab = [c.strip().lower() for c in (leitor.fieldnames or [])]
-    c_email = [c for c in cab if c in COLS_EMAIL]
-    c_fone = [c for c in cab if c in COLS_FONE or c.startswith("telefone") or c.startswith("celular")]
-    if not c_email and not c_fone:
-        die(f"nenhuma coluna de e-mail ou telefone reconhecida em {os.path.basename(caminho)} (colunas: {', '.join(cab)})")
-    linhas = []
-    for bruto in leitor:
-        r = {(k or "").strip().lower(): (v or "") for k, v in bruto.items()}
-        linhas.append(r)
-    return linhas, c_email, c_fone
+        return linhas_de_csv(f.read(), os.path.basename(caminho))
 
 
-def pessoas(caminho):
+def achatar(reg, prefixo=""):
+    """{'contato': {'email': x, 'telefones': [a, b]}} → {'contato.email': x, 'contato.telefones': 'a/b'}."""
+    out = {}
+    for k, v in (reg or {}).items():
+        k = f"{prefixo}{str(k).strip().lower()}"
+        if isinstance(v, dict):
+            out.update(achatar(v, k + "."))
+        elif isinstance(v, list):
+            out[k] = "/".join(str(x) for x in v if isinstance(x, (str, int)))
+        elif v is not None:
+            out[k] = str(v)
+    return out
+
+
+def ler_api(cliente):
+    """Base do dia direto do sistema da DDM. Só GET; nada da resposta vai para disco ou para a tela."""
+    carregar_env()
+    var = "DDM_API_URL_" + cliente.upper().replace("-", "_")
+    url = os.environ.get(var) or die(f"{var} ausente em ~/.hermes/.env")
+    base = urllib.parse.urlsplit(url)
+    local = base.hostname in ("localhost", "127.0.0.1")
+    if base.scheme != "https" and not (base.scheme == "http" and local):
+        die(f"{var} precisa ser https")
+    cab = {"Accept": "application/json, text/csv"}
+    if os.environ.get("DDM_API_TOKEN"):
+        esquema = os.environ.get("DDM_API_AUTH_ESQUEMA", "Bearer")
+        cab[os.environ.get("DDM_API_AUTH_HEADER", "Authorization")] = \
+            f"{esquema} {os.environ['DDM_API_TOKEN']}".strip()
+    chave_lista = os.environ.get("DDM_API_LISTA")
+    registros, paginas, proxima = [], 0, url
+    while proxima:
+        alvo = urllib.parse.urlsplit(proxima)
+        if (alvo.scheme, alvo.netloc) != (base.scheme, base.netloc):
+            die("a paginação apontou para outro servidor; parado para não mandar a credencial para fora")
+        paginas += 1
+        if paginas > 500:
+            die("mais de 500 páginas na API; parado (confira a paginação)")
+        try:
+            with urllib.request.urlopen(urllib.request.Request(proxima, headers=cab, method="GET"), timeout=60) as r:
+                tipo, corpo = r.headers.get("Content-Type", ""), r.read().decode("utf-8-sig", errors="replace")
+        except urllib.error.HTTPError as e:
+            die(f"API da DDM respondeu HTTP {e.code} na página {paginas}")
+        except urllib.error.URLError as e:
+            die(f"API da DDM fora do ar ou inacessível: {e.reason}")
+        if "csv" in tipo or (corpo[:1] not in "[{" and paginas == 1):
+            return linhas_de_csv(corpo, "resposta da API (CSV)")
+        try:
+            j = json.loads(corpo)
+        except ValueError:
+            die(f"API da DDM devolveu algo que não é CSV nem JSON na página {paginas}")
+        atual, proxima = proxima, None
+        if isinstance(j, dict):
+            lista = j.get(chave_lista) if chave_lista else next(
+                (j[k] for k in ("data", "items", "results", "registros", "devedores", "resultado") if isinstance(j.get(k), list)), None)
+            if not isinstance(lista, list):
+                die(f"não achei a lista de pessoas na resposta da API (chaves: {', '.join(list(j)[:20])}); defina DDM_API_LISTA")
+            prox = next((j[k] for k in ("next", "proxima", "next_page_url") if isinstance(j.get(k), str) and j[k]), None)
+            proxima = urllib.parse.urljoin(atual, prox) if prox else None
+        elif isinstance(j, list):
+            lista = j
+        else:
+            die("resposta da API em formato inesperado")
+        registros.extend(achatar(x) for x in lista if isinstance(x, dict))
+    cab_todas = sorted({k for r in registros for k in r})
+    c_email, c_fone = colunas(cab_todas, "resposta da API")
+    print(f"API da DDM: {len(registros)} registros em {paginas} página(s)")
+    return registros, c_email, c_fone
+
+
+def pessoas(caminho=None, lido=None):
     """Lista de (email_hash|'', [fone_hash...]) por linha válida + contagens."""
-    linhas, c_email, c_fone = ler_csv(caminho)
+    linhas, c_email, c_fone = lido or ler_csv(caminho)
     saida, invalidas = [], 0
     for r in linhas:
         e = next((norm_email(r[c]) for c in c_email if norm_email(r.get(c))), None)
@@ -226,7 +315,9 @@ def gravar_painel(cliente, resumo):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--cliente", required=True, help="id do cliente em dados/campanhas.json (ex.: inst-a)")
-    ap.add_argument("--base", required=True, help="CSV do CRM com quem está em aberto hoje")
+    fonte = ap.add_mutually_exclusive_group(required=True)
+    fonte.add_argument("--base", help="CSV do CRM com quem está em aberto hoje")
+    fonte.add_argument("--api", action="store_true", help="puxa a base do dia do sistema da DDM (DDM_API_URL_<CLIENTE>)")
     ap.add_argument("--excluir", help="CSV com quem pagou/fechou acordo desde a exportação (opcional)")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--dry-run", action="store_true")
@@ -237,7 +328,7 @@ def main():
     a = ap.parse_args()
     modo = "executar" if a.executar else ("mock" if a.mock else "dry-run")
 
-    base, invalidas, total = pessoas(a.base)
+    base, invalidas, total = pessoas(lido=ler_api(a.cliente)) if a.api else pessoas(a.base)
     excl = pessoas(a.excluir)[0] if a.excluir else []
     linhas, pessoas_ok, removidos, ks = montar_linhas(base, excl)
 
@@ -274,7 +365,7 @@ def main():
             die("base legal do público não registrada (clientes[].publico.base_legal em dados/campanhas.json) — nada enviado")
     r = enviar(a.cliente, linhas, modo)
     resumo = {
-        "cliente": a.cliente, "modo": modo, "ultima_sync": time.strftime("%Y-%m-%dT%H:%M"),
+        "cliente": a.cliente, "modo": modo, "fonte": "api" if a.api else "csv", "ultima_sync": time.strftime("%Y-%m-%dT%H:%M"),
         "linhas_crm": total, "invalidas_crm": invalidas, "pessoas": pessoas_ok, "linhas": len(linhas),
         "removidos_pagos": removidos, "entraram": entraram, "sairam": sairam,
         "variacao_pct": round(variacao * 100, 1) if anterior else None, **r,
