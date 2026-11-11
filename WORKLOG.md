@@ -46,24 +46,23 @@ Last updated: 2026-11-11 by Claude Code (API da base)
 | Base legal do público registrada (LGPD) + se o contrato com o parceiro permite usar a base no Meta | Jurídico da DDM (Gustavo leva) | 2026-10-22 | 2026-11-11: Gustavo vai levar ao jurídico; os testes com a Cruzeiro foram feitos sem pedir autorização à Cruzeiro | `base_legal` em `dados/campanhas.json`; troca diária do público pode ir para produção |
 
 ### Needs Gui's decision
-- Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com a conta dele, admin do portfólio desde 2026-11-01; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
-- Paperclip: "Check for updates" nas 4 skills alteradas em 23/10 + regra de verba no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2 — desde 2026-10-23.
 - Repo público: antes do primeiro export real, decidir se o repo vira privado ou se os resultados da Cruzeiro ficam só locais — desde 2026-10-23.
 - Re-teste do Designer (imagens reais, 2 criativos) — só com OK do Gui — desde 2026-10-19.
 
 ### Next up (agent can do now)
-1. (nada sem o token do Meta ou os exports; ver Blocked / at risk)
+1. Quando o Jair mandar a API: `DDM_API_URL_CRUZEIRO` + `DDM_API_TOKEN` no `.env` (Gui) e `audiencia_sync.py --cliente cruzeiro --api` em dry-run — ~15 min
+2. Material de treino do planejamento (OK do dia, painel) — depois das respostas do planejamento
 
 ### Blocked / at risk
-- Primeira troca do público da Cruzeiro: conferir antes com `testar_chaves.py --meta` se o público não está marcado para expirar (regra do Meta desde jan/2026; a campanha está desativada) — bloqueado pelo token — Gui.
+- Primeira troca do público da Cruzeiro — bloqueada pela base legal e pela autorização da Cruzeiro (jurídico, via Gustavo); o público atual no Meta está pronto (~36–43 mil) — Gui/Gustavo.
 - Rotina diária do Orquestrador no Paperclip — só depois de haver dado real — Gui.
 
 ### Recently done (last 7 days)
-- Modelo "sempre ligado": scripts `utm.py`, `audiencia_sync.py`, `resultados_ddmp.py`, `meta_publicar.py` com spec do dia; painel claro/escuro; 9 skills reescritas (2026-10-22)
-- Paperclip atualizado (9 skills, agentes Público CRM e Resultados DDMP, AGENTS.md dos 9); painel com a identidade do Grupo DDM (2026-10-22)
-- Verba, Graph API v26, upload de imagem corrigido, travas de verba, cliente Cruzeiro, `testar_chaves.py --meta` (commit d50fe5b) (2026-10-23)
-- Push de d50fe5b + cPanel "Atualizar do remoto"; painel no ar verificado (2026-10-27)
 - Gui administrador do portfólio do Grupo DDM no Meta, no lugar do login compartilhado (2026-11-01)
+- Token do Meta (system user `agente-trafego`), app publicado, anúncio validado sem criar nada; limite de gasto na campanha da Cruzeiro (2026-11-10)
+- Paperclip: skills atualizadas e regra de verba nos AGENTS.md (2026-11-10)
+- Push resolvido (colaborador no repo certo), 13 commits enviados; `ddm-audiencia-crm` no Paperclip com o `--api` (2026-11-11)
+- `audiencia_sync.py --api` (2026-11-11)
 - Gustavo confirmou: R$ 100/dia é a soma de todas as campanhas ativas, igual à trava de `meta_publicar.py` e ao AGENTS.md (2026-11-11)
 
 ## 3. Log
@@ -129,12 +128,13 @@ Last updated: 2026-11-11 by Claude Code (API da base)
 - (time not recorded, ~15 min est.) — Com o "pode" do Gui: limite de gasto na campanha "DDMPay - Cruzeiro Base Ativos" = gasto vitalício (R$ 3.888,97) + R$ 3.000 = R$ 6.888,97; campanha continua PAUSED, diária R$ 30. Paperclip pela API local: skills atualizadas (as 4 de 23/10 em `2e44a94`, as outras 5 sem mudança) e regra de verba (R$ 100/dia somando, teto R$ 3.000, aviso em 80%) no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2, conferida depois de gravar. Push: a conta `joaoguilherme-ops` só tem leitura no repo (`push: false`); o remoto usa `iaeautomacao-lgtm`, cuja credencial no Mac falhou. Mensagens para Jair (exports, domínio) e Gustavo (R$ 100/dia somado, base legal, base do CRM, regra de linguagem) rascunhadas (Claude Code)
 - Open: acesso de escrita ao repo (dono `iaeautomacao-lgtm` adiciona `joaoguilherme-ops` como colaborador, ou token) · respostas do Jair e do Gustavo
 
-## 2026-11-11 (Wednesday) — Planejamento, respostas do Gustavo, base pela API (~45 min, est.)
+## 2026-11-11 (Wednesday) — Planejamento, respostas do Gustavo, base pela API (~1 h, est.)
 - (time not recorded, ~10 min est.) — Gui: a lista diária e os retornos são do time de **planejamento**, não do Jair (TI); o Gui monta a plataforma e treina o planejamento, não opera. Mensagem ao planejamento rascunhada; perguntas ao Gustavo (verba somada, base legal, base do CRM, regra de linguagem) enviadas pelo Gui. Push ainda pendente: `joaoguilherme-ops` segue sem escrita no repo e sem convite pendente (Claude Code)
 - (time not recorded, ~10 min est.) — Respostas do Gustavo: (1) R$ 100/dia é a soma das campanhas ativas, confirmado, nada a mudar; (2) base legal: respondeu que o público vai com telefone e e-mail e o Meta usa internamente, sem dizer a base legal; pergunta refeita (art. 7º da LGPD, contrato do parceiro); (3) base: um agente deve puxar a base do sistema via API e atualizar o Meta via API (o lado do Meta já existe em `audiencia_sync.py`; o lado do sistema é escopo novo, ROI mostrado ao Gui); (4) linguagem: se a regra for do parceiro não muda, se for da DDM ajustar. Achado: as proibições do Compliance vêm do Meta (atributos pessoais, situação financeira) e do CDC art. 42 (sem ameaça nem constrangimento), não da DDM; "suas dívidas" genérico já passa com ressalva (Claude Code)
 - (time not recorded, ~25 min est.) — Gui: trabalho da DDM não passa pelo cartão de ROI (é o emprego dele; memória salva). `audiencia_sync.py --api` (e515155): puxa a base do dia do sistema da DDM (CSV ou JSON, paginação só no mesmo servidor, https, resposta só na memória), mesmas travas de antes (base legal, mínimo 100, 30%); testado com API falsa local (250 registros em 3 páginas, CSV, 401, http remoto, paginação para outro servidor, base legal ausente) e o CSV antigo segue igual. Skill `ddm-audiencia-crm`: API primeiro, CSV do planejamento como reserva. `testar_chaves.py --meta`: Página vazia em `promote_pages` virou AVISO (anúncio já validou); rodado: tudo OK, sobram R$ 131,78 no limite da conta. Mensagens para o planejamento (critério de "em aberto", retornos, contato) e para o Jair (API) rascunhadas (Claude Code)
 - (time not recorded, ~5 min) — Gustavo: base legal vai para o jurídico; os testes com a Cruzeiro (o público que já está no Meta) foram feitos sem autorização da Cruzeiro. Linguagem: decisão do Gustavo de usar a comunicação que funcionar melhor e testar o que o Meta aprova. GitHub conferido de novo: `joaoguilherme-ops` sem escrita e sem convite neste repo (Claude Code)
-- Open: acesso de escrita ao repo (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo) · API do sistema (Jair) · respostas do planejamento · Paperclip "Check for updates" na skill `ddm-audiencia-crm` depois do push
+- (time not recorded, ~10 min) — Push resolvido: a conta do Grupo tem dois repos parecidos, `Agente-Trafego` (privado, antigo, de junho) e `agente-trafego-hermes` (o nosso); o Gui tinha se adicionado ao antigo. Adicionado ao certo, 13 commits enviados (2e44a94..97d455b); remoto sem usuário embutido e credencial pelo `gh` só neste repo. Paperclip: `ddm-audiencia-crm` atualizada para 97d455b (texto da API conferido); as outras 8 sem mudança de conteúdo (Claude Code + Gui)
+- Open: cPanel "Atualizar do remoto" (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo) · API do sistema (Jair) · respostas do planejamento · Paperclip "Check for updates" na skill `ddm-audiencia-crm` depois do push
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
