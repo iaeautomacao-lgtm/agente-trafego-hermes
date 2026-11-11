@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-10 by Claude Code (sessão do Meta)
+Last updated: 2026-11-11 by Claude Code (sessão do Meta)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -39,10 +39,10 @@ Last updated: 2026-11-10 by Claude Code (sessão do Meta)
 ### Waiting on others
 | Item | Waiting on (who) | Since | Last follow-up | What happens when it arrives |
 |---|---|---|---|---|
-| Formato do export diário do CRM (quem está em aberto, por cliente) e do export do DDMP (por data/cliente/campanha/criativo) | Jair (TI) | 2026-10-22 | not recorded | `audiencia_sync.py` em dry-run com a base real; `resultados_ddmp.py` ajustado |
-| Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` | Jair | 2026-10-23 | 2026-10-26: mensagem rascunhada para o Gui enviar (envio não confirmado) | links e resultados por criativo confiáveis |
-| Base legal do público registrada | Gustavo (jurídico) | 2026-10-22 | not recorded | troca diária do público pode ir para produção |
-| Confirmar que R$ 100/dia é a soma das campanhas | Gustavo | 2026-10-23 | not recorded | travas de verba confirmadas |
+| Lista diária de quem abordar (em aberto, por cliente) e retornos (visitas/acordos por cliente/campanha/criativo) | Planejamento (Gui corrigiu em 2026-11-11: não é com o Jair) | 2026-10-22 | 2026-11-11: mensagem para o planejamento rascunhada | `audiencia_sync.py` em dry-run com a base real; `resultados_ddmp.py` ajustado |
+| Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` (técnico) | Jair (TI), se o planejamento não souber | 2026-10-23 | 2026-10-26: mensagem rascunhada para o Gui enviar (envio não confirmado) | links e resultados por criativo confiáveis |
+| Base legal do público registrada + data da base do CRM | Gustavo (jurídico) | 2026-10-22 | 2026-11-11: perguntado por WhatsApp | troca diária do público pode ir para produção |
+| Confirmar que R$ 100/dia é a soma das campanhas; regra de linguagem × criativos antigos | Gustavo | 2026-10-23 | 2026-11-11: perguntado por WhatsApp | travas de verba confirmadas |
 
 ### Needs Gui's decision
 - Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com a conta dele, admin do portfólio desde 2026-11-01; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
@@ -127,6 +127,10 @@ Last updated: 2026-11-10 by Claude Code (sessão do Meta)
 - (time not recorded, ~20 min est.) — Validação "só validar" (`execution_options=validate_only`, não cria nada) de um anúncio no conjunto da Cruzeiro: primeiro falhou porque o app DDM Trafego estava em modo de desenvolvimento. Gustavo (WhatsApp): limite de gasto da conta ele vai aumentando, não mexer; política de privacidade é a do site do Grupo DDM. Gui preencheu no app a política (`grupoddm.tech/politica-de-privacidade`), termos (`grupoddm.tech/conformidade`), exclusão de dados e categoria, e publicou o app. Nova validação: `{"success": true}`; conferido que nenhum anúncio novo foi criado (6 anúncios, os do Gustavo). Token: system user, nunca expira, `ads_management`/`ads_read`/`business_management`. Plano B (novo token com permissão de Página) não foi necessário (Claude Code)
 - (time not recorded, ~15 min est.) — Com o "pode" do Gui: limite de gasto na campanha "DDMPay - Cruzeiro Base Ativos" = gasto vitalício (R$ 3.888,97) + R$ 3.000 = R$ 6.888,97; campanha continua PAUSED, diária R$ 30. Paperclip pela API local: skills atualizadas (as 4 de 23/10 em `2e44a94`, as outras 5 sem mudança) e regra de verba (R$ 100/dia somando, teto R$ 3.000, aviso em 80%) no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2, conferida depois de gravar. Push: a conta `joaoguilherme-ops` só tem leitura no repo (`push: false`); o remoto usa `iaeautomacao-lgtm`, cuja credencial no Mac falhou. Mensagens para Jair (exports, domínio) e Gustavo (R$ 100/dia somado, base legal, base do CRM, regra de linguagem) rascunhadas (Claude Code)
 - Open: acesso de escrita ao repo (dono `iaeautomacao-lgtm` adiciona `joaoguilherme-ops` como colaborador, ou token) · respostas do Jair e do Gustavo
+
+## 2026-11-11 (Wednesday) — Quem cuida do dia a dia (~10 min, est.)
+- (time not recorded, ~10 min est.) — Gui: a lista diária e os retornos são do time de **planejamento**, não do Jair (TI); o Gui monta a plataforma e treina o planejamento, não opera. Mensagem ao planejamento rascunhada; perguntas ao Gustavo (verba somada, base legal, base do CRM, regra de linguagem) enviadas pelo Gui. Push ainda pendente: `joaoguilherme-ops` segue sem escrita no repo e sem convite pendente (Claude Code)
+- Open: acesso de escrita ao repo (Gui) · respostas do planejamento e do Gustavo
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
