@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-11 by Claude Code (respostas do Gustavo)
+Last updated: 2026-11-11 by Claude Code (API da base)
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -41,6 +41,7 @@ Last updated: 2026-11-11 by Claude Code (respostas do Gustavo)
 | Item | Waiting on (who) | Since | Last follow-up | What happens when it arrives |
 |---|---|---|---|---|
 | Lista diária de quem abordar (em aberto, por cliente) e retornos (visitas/acordos por cliente/campanha/criativo) | Planejamento (Gui corrigiu em 2026-11-11: não é com o Jair) | 2026-10-22 | 2026-11-11: mensagem para o planejamento rascunhada | `audiencia_sync.py` em dry-run com a base real; `resultados_ddmp.py` ajustado |
+| API do sistema da DDM para a base do dia: endereço, autenticação, formato e uma credencial só de leitura (por cliente, só e-mail e telefone de quem está em aberto) | Jair (TI) | 2026-11-11 | 2026-11-11: mensagem rascunhada para o Gui enviar | `DDM_API_URL_<CLIENTE>` + `DDM_API_TOKEN` no `.env`; `audiencia_sync.py --api` em dry-run |
 | Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` (técnico) | Jair (TI), se o planejamento não souber | 2026-10-23 | 2026-10-26: mensagem rascunhada para o Gui enviar (envio não confirmado) | links e resultados por criativo confiáveis |
 | Base legal do público registrada (LGPD) + se o contrato com o parceiro permite usar a base no Meta | Gustavo / jurídico da DDM | 2026-10-22 | 2026-11-11: Gustavo respondeu sobre o hash, não sobre a base legal; pergunta refeita em linguagem simples | `base_legal` em `dados/campanhas.json`; troca diária do público pode ir para produção |
 | Regra de linguagem: o que vem do parceiro (não muda) × o que é da DDM (pode afrouxar) | Gustavo | 2026-10-23 | 2026-11-11: Gustavo: se for do parceiro não muda; se for da DDM, ajustar, porque comunicação direta funciona | Compliance ajustado se o contrato do parceiro não proibir |
@@ -49,7 +50,6 @@ Last updated: 2026-11-11 by Claude Code (respostas do Gustavo)
 - Token do Meta + ids no `~/.hermes/.env` e limite de gasto no Ads Manager (Gui, com a conta dele, admin do portfólio desde 2026-11-01; passo a passo no HANDOFF 5.1a/1b) — desde 2026-10-23; Gui em andamento desde 2026-10-28 — bloqueia qualquer coisa no Meta. Ao terminar: `python3 scripts/testar_chaves.py --meta`.
 - Paperclip: "Check for updates" nas 4 skills alteradas em 23/10 + regra de verba no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2 — desde 2026-10-23.
 - Repo público: antes do primeiro export real, decidir se o repo vira privado ou se os resultados da Cruzeiro ficam só locais — desde 2026-10-23.
-- Base pela API do sistema (Gustavo, 2026-11-11: um agente puxa a base via API e atualiza o Meta) — ROI mostrado 2026-11-11; recomendação: CSV diário primeiro, API depois de o Jair mandar a doc — go/shrink/park/skip do Gui — bloqueia: troca automática do público.
 - Re-teste do Designer (imagens reais, 2 criativos) — só com OK do Gui — desde 2026-10-19.
 
 ### Next up (agent can do now)
@@ -130,10 +130,11 @@ Last updated: 2026-11-11 by Claude Code (respostas do Gustavo)
 - (time not recorded, ~15 min est.) — Com o "pode" do Gui: limite de gasto na campanha "DDMPay - Cruzeiro Base Ativos" = gasto vitalício (R$ 3.888,97) + R$ 3.000 = R$ 6.888,97; campanha continua PAUSED, diária R$ 30. Paperclip pela API local: skills atualizadas (as 4 de 23/10 em `2e44a94`, as outras 5 sem mudança) e regra de verba (R$ 100/dia somando, teto R$ 3.000, aviso em 80%) no AGENTS.md do Orquestrador Hermes e do Dados de Campanhas 2, conferida depois de gravar. Push: a conta `joaoguilherme-ops` só tem leitura no repo (`push: false`); o remoto usa `iaeautomacao-lgtm`, cuja credencial no Mac falhou. Mensagens para Jair (exports, domínio) e Gustavo (R$ 100/dia somado, base legal, base do CRM, regra de linguagem) rascunhadas (Claude Code)
 - Open: acesso de escrita ao repo (dono `iaeautomacao-lgtm` adiciona `joaoguilherme-ops` como colaborador, ou token) · respostas do Jair e do Gustavo
 
-## 2026-11-11 (Wednesday) — Planejamento e respostas do Gustavo (~20 min, est.)
+## 2026-11-11 (Wednesday) — Planejamento, respostas do Gustavo, base pela API (~45 min, est.)
 - (time not recorded, ~10 min est.) — Gui: a lista diária e os retornos são do time de **planejamento**, não do Jair (TI); o Gui monta a plataforma e treina o planejamento, não opera. Mensagem ao planejamento rascunhada; perguntas ao Gustavo (verba somada, base legal, base do CRM, regra de linguagem) enviadas pelo Gui. Push ainda pendente: `joaoguilherme-ops` segue sem escrita no repo e sem convite pendente (Claude Code)
 - (time not recorded, ~10 min est.) — Respostas do Gustavo: (1) R$ 100/dia é a soma das campanhas ativas, confirmado, nada a mudar; (2) base legal: respondeu que o público vai com telefone e e-mail e o Meta usa internamente, sem dizer a base legal; pergunta refeita (art. 7º da LGPD, contrato do parceiro); (3) base: um agente deve puxar a base do sistema via API e atualizar o Meta via API (o lado do Meta já existe em `audiencia_sync.py`; o lado do sistema é escopo novo, ROI mostrado ao Gui); (4) linguagem: se a regra for do parceiro não muda, se for da DDM ajustar. Achado: as proibições do Compliance vêm do Meta (atributos pessoais, situação financeira) e do CDC art. 42 (sem ameaça nem constrangimento), não da DDM; "suas dívidas" genérico já passa com ressalva (Claude Code)
-- Open: acesso de escrita ao repo (Gui) · base legal + contrato do parceiro (Gustavo) · ROI da API (Gui) · respostas do planejamento
+- (time not recorded, ~25 min est.) — Gui: trabalho da DDM não passa pelo cartão de ROI (é o emprego dele; memória salva). `audiencia_sync.py --api` (e515155): puxa a base do dia do sistema da DDM (CSV ou JSON, paginação só no mesmo servidor, https, resposta só na memória), mesmas travas de antes (base legal, mínimo 100, 30%); testado com API falsa local (250 registros em 3 páginas, CSV, 401, http remoto, paginação para outro servidor, base legal ausente) e o CSV antigo segue igual. Skill `ddm-audiencia-crm`: API primeiro, CSV do planejamento como reserva. `testar_chaves.py --meta`: Página vazia em `promote_pages` virou AVISO (anúncio já validou); rodado: tudo OK, sobram R$ 131,78 no limite da conta. Mensagens para o planejamento (critério de "em aberto", retornos, contato) e para o Jair (API) rascunhadas (Claude Code)
+- Open: acesso de escrita ao repo (Gui) · base legal + contrato do parceiro (Gustavo) · API do sistema (Jair) · respostas do planejamento · Paperclip "Check for updates" na skill `ddm-audiencia-crm` depois do push
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
