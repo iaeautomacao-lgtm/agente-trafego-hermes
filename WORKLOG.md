@@ -51,6 +51,7 @@ Last updated: 2026-11-12 by Claude Code
 2. Material de treino do planejamento (OK do dia, painel) — quando o Gui pedir
 
 ### Blocked / at risk
+- Resultados por criativo: ainda não confirmado se o DDMP grava `cliente`/`campanha`/`criativo` do link; sem isso, custo por acordo por criativo não fecha — Gui (junto com a extração do sistema).
 - Primeira troca do público da Cruzeiro — bloqueada pela base legal e pela autorização da Cruzeiro (jurídico, via Gustavo); o público atual no Meta está pronto (~36–43 mil) — Gui/Gustavo.
 - Rotina diária do Orquestrador no Paperclip — só depois de haver dado real — Gui.
 
