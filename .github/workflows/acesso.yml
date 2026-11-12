@@ -1,0 +1,38 @@
+# Testa o login do painel num Apache de verdade, com o .htaccess, como no cPanel.
+# Sem ações de terceiros: só comandos do próprio runner.
+name: login do painel
+on:
+  push:
+    paths: ['acesso/**', '.htaccess', 'index.html', '.github/workflows/acesso.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apache:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Código
+        run: git clone --depth 1 --branch "$GITHUB_REF_NAME" "https://github.com/$GITHUB_REPOSITORY.git" repo
+      - name: Sintaxe no PHP 7.4 (servidores antigos)
+        run: docker run --rm -v "$PWD/repo:/app" php:7.4-cli sh -c 'for f in /app/acesso/*.php; do php -l "$f" || exit 1; done'
+      - name: Apache + PHP com o site
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq apache2 libapache2-mod-php > /dev/null
+          sudo a2enmod -q rewrite
+          sudo mkdir -p /var/www/painel
+          sudo cp -a repo/. /var/www/painel/
+          sudo chown -R www-data:www-data /var/www
+          printf '%s\n' '<VirtualHost *:80>' '  DocumentRoot /var/www/painel' '  <Directory /var/www/painel>' '    AllowOverride All' '    Require all granted' '  </Directory>' '</VirtualHost>' | sudo tee /etc/apache2/sites-available/000-default.conf > /dev/null
+          sudo systemctl restart apache2
+          php -v | head -1
+      - name: Teste ponta a ponta
+        env:
+          BASE: http://127.0.0.1
+          USUARIOS: sudo -u www-data php /var/www/painel/acesso/usuarios.php
+          LOG: /var/www/.ddm-trafego-acesso/acessos.jsonl
+        run: bash repo/acesso/teste/testar.sh
+      - name: Log do Apache (se falhar)
+        if: failure()
+        run: sudo tail -n 50 /var/log/apache2/error.log

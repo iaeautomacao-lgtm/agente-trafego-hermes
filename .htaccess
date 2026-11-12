@@ -1,0 +1,16 @@
+# Painel do tráfego DDM: todo pedido passa pelo login (acesso/portao.php).
+# Sem mod_rewrite, nega tudo (falha fechada). Para desfazer: apagar este arquivo no servidor.
+Options -Indexes
+
+<IfModule !mod_rewrite.c>
+  Require all denied
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # páginas de acesso e a marca da tela de login: abertas
+  RewriteRule ^acesso/(entrar|sair|senha|admin|eu)\.php$ - [END]
+  RewriteRule ^assets/ddm-marca\.png$ - [END]
+  # todo o resto, inclusive "/", vai para o portão
+  RewriteRule ^ acesso/portao.php [END]
+</IfModule>

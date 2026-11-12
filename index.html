@@ -262,6 +262,7 @@
       <a href="#/nova">Novo tema / cliente</a>
     </nav>
     <div class="foot">Dados: <code>dados/campanhas.json</code><br>Atualizado <span id="upd">—</span><br><a href="https://github.com/iaeautomacao-lgtm/agente-trafego-hermes">Repositório</a> · <a href="http://127.0.0.1:3100/GRU/">Paperclip</a></div>
+    <div class="foot" id="sessao" hidden style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"></div>
   </aside>
   <main class="main">
     <div class="top">
@@ -307,6 +308,13 @@ let REAL = VAZIO, DATA = VAZIO, SIM = false;
 /* ---------------- helpers ---------------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// Sessão do login (servidor): mostra quem está conectado, Senha, Sair e Acessos (admin). Aberto como arquivo local, não aparece.
+fetch('/acesso/eu.php',{cache:'no-store',headers:{Accept:'application/json'}}).then(r=>{
+  if(r.status===401){ location.href='/acesso/entrar.php?expirou=1&voltar='+encodeURIComponent(location.pathname+location.hash); return null; }
+  return r.ok?r.json():null;
+}).then(u=>{ if(!u) return; const el=document.getElementById('sessao');
+  el.innerHTML='Conectado: <strong>'+esc(u.nome)+'</strong><br>'+(u.admin?'<a href="/acesso/admin.php">Acessos</a> · ':'')+'<a href="/acesso/senha.php">Senha</a> · <a href="/acesso/sair.php">Sair</a>';
+  el.hidden=false; }).catch(()=>{});
 const fmtBRL = (n,d=0) => n==null||isNaN(n) ? '—' : 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmtN = n => n==null ? '—' : n.toLocaleString('pt-BR');
 const fmtK = n => n==null ? '—' : (n>=10000 ? (n/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil' : n.toLocaleString('pt-BR'));
