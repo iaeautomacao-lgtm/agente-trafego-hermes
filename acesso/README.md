@@ -33,7 +33,7 @@ php acesso/usuarios.php desativar email@...   # ou reativar
 php acesso/usuarios.php listar
 php acesso/usuarios.php conferir              # integridade do registro
 ```
-Depois do primeiro admin, o resto se faz pela página **Acessos** do painel (`/acesso/admin.php`). A senha temporária aparece uma vez; a pessoa cria a própria no primeiro acesso.
+Depois do primeiro admin, o resto se faz no painel: botão com o seu nome no canto inferior esquerdo → **Configurações** (abas Conta, Usuários, Registro de acessos, Sistema). A página fala com `acesso/api.php`. A senha temporária aparece uma vez; a pessoa cria a própria no primeiro acesso.
 
 ## Desfazer
 Apagar o `.htaccess` da raiz do site no cPanel (Gerenciador de Arquivos, com "mostrar ocultos") volta o site ao que era antes (aberto). Os dados em `~/.ddm-trafego-acesso/` continuam lá.

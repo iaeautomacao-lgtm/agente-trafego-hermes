@@ -83,6 +83,7 @@
   .ua{color:var(--mute);font-size:12.5px}
   .cfg-filtros{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
   .cfg-filtros label{margin-top:0}
+  .cfg-filtros select.in,.cfg-filtros input{height:40px}
   @media (max-width:760px){.cfg-filtros{grid-template-columns:1fr 1fr}}
   .main{min-width:0;padding:0 28px 48px}
   .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:22px}
@@ -902,7 +903,7 @@ function render(){
   $('#title').textContent = TITLES[name];
   $('#view').innerHTML = html;
   const busca = (name==='campanhas'||name==='criativos') ? `<input class="search" placeholder="Buscar…" value="${esc(q.q||'')}" oninput="clearTimeout(window._t);window._t=setTimeout(()=>setQ('q',this.value),250)">` : '';
-  $('#topr').innerHTML = busca + (SIM?'<span class="chip sim hm">simulação</span>':'') + (busca?'':`<span class="chip hm"><i class="dot"></i>Paperclip local</span><span class="chip hm"><i class="dot warn"></i>Meta não conectado</span>`);
+  $('#topr').innerHTML = busca + (SIM?'<span class="chip sim hm">simulação</span>':'') + (busca||name==='config'?'':`<span class="chip hm"><i class="dot"></i>Paperclip local</span><span class="chip hm"><i class="dot warn"></i>Meta não conectado</span>`);
   const navKey = name==='campanha'?'campanhas':(name==='agente'?'agentes':(name==='home'?'':name));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#/'+navKey));
   if(name==='agentes') checkEditing();
