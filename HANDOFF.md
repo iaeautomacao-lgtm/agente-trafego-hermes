@@ -70,6 +70,7 @@ Os nomes de skill não mudaram (para não quebrar o Paperclip); só o conteúdo.
 1. Editar no repo → `git add -A && git commit -m "..." && git push` (o Mac já guarda o token no Keychain).
 2. **Servidor:** o site não atualiza sozinho. Um humano logado no cPanel (`https://devhub.grupoddm.ia.br:2083/`) roda "Git Version Control → agente-trafego (site) → Atualizar do remoto" (repositório `/home/grpia/apps/agente-trafego`, branch `main`). Peça ao Gui. A sessão do cPanel expira rápido.
 3. **Paperclip:** Check for updates nas skills alteradas (seção 3).
+4. **Login do painel** (desde 12/11/2026): o site só abre com login; usuários e registro de acessos ficam fora do site, em `~/.ddm-trafego-acesso/` no servidor. Como criar usuários, o que é registrado (LGPD/Marco Civil) e como desfazer: `acesso/README.md`. Mudou algo em `acesso/`? O teste no GitHub Actions (`login do painel`) precisa passar antes do "Atualizar do remoto".
 
 ## 7. Regras que não se negociam
 - **Nunca** ler, imprimir, colar ou commitar chaves/tokens. Os scripts leem `~/.hermes/.env` sozinhos. Credenciais e logins são sempre do Gui.
