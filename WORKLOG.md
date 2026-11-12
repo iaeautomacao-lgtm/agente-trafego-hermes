@@ -40,18 +40,15 @@ Last updated: 2026-11-12 by Claude Code
 ### Waiting on others
 | Item | Waiting on (who) | Since | Last follow-up | What happens when it arrives |
 |---|---|---|---|---|
-| Lista diária de quem abordar (em aberto, por cliente) e retornos (visitas/acordos por cliente/campanha/criativo) | Planejamento (Gui corrigiu em 2026-11-11: não é com o Jair) | 2026-10-22 | 2026-11-11: mensagem para o planejamento rascunhada | `audiencia_sync.py` em dry-run com a base real; `resultados_ddmp.py` ajustado |
-| API do sistema da DDM para a base do dia: endereço, autenticação, formato e uma credencial só de leitura (por cliente, só e-mail e telefone de quem está em aberto) | Jair (TI) | 2026-11-11 | 2026-11-11: mensagem rascunhada para o Gui enviar | `DDM_API_URL_<CLIENTE>` + `DDM_API_TOKEN` no `.env`; `audiencia_sync.py --api` em dry-run |
-| Confirmar o domínio do DDMP e que ele grava `cliente`/`campanha`/`criativo` (técnico) | Jair (TI), se o planejamento não souber | 2026-10-23 | 2026-10-26: mensagem rascunhada para o Gui enviar (envio não confirmado) | links e resultados por criativo confiáveis |
-| Base legal do público registrada (LGPD) + se o contrato com o parceiro permite usar a base no Meta | Jurídico da DDM (Gustavo leva) | 2026-10-22 | 2026-11-11: Gustavo vai levar ao jurídico; os testes com a Cruzeiro foram feitos sem pedir autorização à Cruzeiro | `base_legal` em `dados/campanhas.json`; troca diária do público pode ir para produção |
+| Base legal do público registrada (LGPD) + autorização da Cruzeiro | Gui com Gustavo e o jurídico (o Gui cuida; não cobrar) | 2026-10-22 | 2026-11-12 | `base_legal` em `dados/campanhas.json`; troca diária do público pode ir para produção |
 
 ### Needs Gui's decision
 - Repo público: antes do primeiro export real, decidir se o repo vira privado ou se os resultados da Cruzeiro ficam só locais — desde 2026-10-23.
 - Re-teste do Designer (imagens reais, 2 criativos) — só com OK do Gui — desde 2026-10-19.
 
 ### Next up (agent can do now)
-1. Quando o Jair mandar a API: `DDM_API_URL_CRUZEIRO` + `DDM_API_TOKEN` no `.env` (Gui) e `audiencia_sync.py --cliente cruzeiro --api` em dry-run — ~15 min
-2. Material de treino do planejamento (OK do dia, painel) — depois das respostas do planejamento
+1. Quando o Gui trouxer a fonte do mailing (sistema da DDM): ligar em `audiencia_sync.py` (`--api` ou `--base`) e rodar em dry-run — ~15–30 min
+2. Material de treino do planejamento (OK do dia, painel) — quando o Gui pedir
 
 ### Blocked / at risk
 - Primeira troca do público da Cruzeiro — bloqueada pela base legal e pela autorização da Cruzeiro (jurídico, via Gustavo); o público atual no Meta está pronto (~36–43 mil) — Gui/Gustavo.
@@ -136,9 +133,10 @@ Last updated: 2026-11-12 by Claude Code
 - (time not recorded, ~10 min) — Push resolvido: a conta do Grupo tem dois repos parecidos, `Agente-Trafego` (privado, antigo, de junho) e `agente-trafego-hermes` (o nosso); o Gui tinha se adicionado ao antigo. Adicionado ao certo, 13 commits enviados (2e44a94..97d455b); remoto sem usuário embutido e credencial pelo `gh` só neste repo. Paperclip: `ddm-audiencia-crm` atualizada para 97d455b (texto da API conferido); as outras 8 sem mudança de conteúdo (Claude Code + Gui)
 - Open: cPanel "Atualizar do remoto" (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo) · API do sistema (Jair) · respostas do planejamento · Paperclip "Check for updates" na skill `ddm-audiencia-crm` depois do push
 
-## 2026-11-12 (Thursday) — Pendências do Gui (~5 min, est.)
+## 2026-11-12 (Thursday) — Pendências do Gui (~10 min, est.)
 - (time not recorded, ~5 min est.) — Rótulos `review:gpt` e `review:grok` criados no repo (agora com escrita). cPanel tentado pelo navegador: sessão expirada, pede login; fica com o Gui. Passo a passo das pendências entregue ao Gui (Claude Code)
-- Open: cPanel "Atualizar do remoto" (Gui) · mensagens ao planejamento e ao Jair (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo)
+- (time not recorded, ~5 min) — Gui rodou o cPanel "Atualizar do remoto"; conferido no ar (o WORKLOG do site já tem 2026-11-12). Gui: ele mesmo está montando a extração dos mailings direto do sistema, então as mensagens ao planejamento e ao Jair foram canceladas; base legal fica com ele e o Gustavo (Claude Code + Gui)
+- Open: fonte do mailing (Gui) · base legal + autorização da Cruzeiro (Gui com Gustavo e o jurídico)
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
