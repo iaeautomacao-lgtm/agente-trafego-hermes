@@ -63,6 +63,27 @@
   .nav .sep{height:1px;background:var(--line);margin:8px 6px}
   .side .foot{margin-top:auto;padding:12px 8px 0;font-size:11.5px;color:var(--mute);line-height:1.6}
   .side .foot a{color:var(--ink-2)}
+  .me{margin-top:auto;display:flex;align-items:center;gap:10px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;color:var(--ink);background:var(--panel)}
+  .me:hover{background:var(--hover);border-color:var(--line-2)}
+  .me.on{border-color:var(--orange);background:var(--orange-soft)}
+  .me .tx{display:flex;flex-direction:column;min-width:0;flex:1;line-height:1.3}
+  .me strong{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .me small{font-size:11.5px;color:var(--mute)}
+  .me svg{width:16px;height:16px;color:var(--mute);flex:none}
+  .av{width:32px;height:32px;border-radius:50%;background:var(--orange-soft);color:var(--orange);display:grid;place-items:center;font:700 12px var(--sans);letter-spacing:.02em;flex:none}
+  .av.lg{width:52px;height:52px;font-size:17px}
+  .cfg-perfil{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .cfg-perfil h3{margin:0;font-family:var(--serif);font-size:17px;font-weight:600}
+  .cfg-perfil p{margin:2px 0 0;color:var(--mute);font-size:13px}
+  .cfg-msg{font-size:12.5px;margin-top:10px;min-height:18px}
+  .cfg-msg.ok{color:var(--ok)}.cfg-msg.err{color:var(--red)}
+  .cfg-acts{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap}
+  .btn.sm{padding:6px 10px;font-size:12px;border-radius:7px}
+  .temp{font:600 19px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.05em;background:var(--panel-2);border:1px solid var(--line);padding:12px 14px;border-radius:8px;user-select:all;margin:10px 0 4px;text-align:center}
+  .ua{color:var(--mute);font-size:12.5px}
+  .cfg-filtros{display:grid;grid-template-columns:1.4fr 1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px}
+  .cfg-filtros label{margin-top:0}
+  @media (max-width:760px){.cfg-filtros{grid-template-columns:1fr 1fr}}
   .main{min-width:0;padding:0 28px 48px}
   .top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 0 14px;border-bottom:1px solid var(--line);margin-bottom:22px}
   .top h1{margin:0;font-family:var(--serif);font-weight:600;font-size:22px;letter-spacing:-.01em}
@@ -261,8 +282,11 @@
       <a href="#/agentes">Agentes<span class="n" data-n="ag"></span></a>
       <a href="#/nova">Novo tema / cliente</a>
     </nav>
-    <div class="foot">Dados: <code>dados/campanhas.json</code><br>Atualizado <span id="upd">—</span><br><a href="https://github.com/iaeautomacao-lgtm/agente-trafego-hermes">Repositório</a> · <a href="http://127.0.0.1:3100/GRU/">Paperclip</a></div>
-    <div class="foot" id="sessao" hidden style="margin-top:10px;padding-top:10px;border-top:1px solid var(--line)"></div>
+    <a class="me" id="me" href="#/config" hidden title="Configurações">
+      <span class="av" id="me-av"></span>
+      <span class="tx"><strong id="me-nome"></strong><small id="me-papel"></small></span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </a>
   </aside>
   <main class="main">
     <div class="top">
@@ -308,13 +332,6 @@ let REAL = VAZIO, DATA = VAZIO, SIM = false;
 /* ---------------- helpers ---------------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-// Sessão do login (servidor): mostra quem está conectado, Senha, Sair e Acessos (admin). Aberto como arquivo local, não aparece.
-fetch('/acesso/eu.php',{cache:'no-store',headers:{Accept:'application/json'}}).then(r=>{
-  if(r.status===401){ location.href='/acesso/entrar.php?expirou=1&voltar='+encodeURIComponent(location.pathname+location.hash); return null; }
-  return r.ok?r.json():null;
-}).then(u=>{ if(!u) return; const el=document.getElementById('sessao');
-  el.innerHTML='Conectado: <strong>'+esc(u.nome)+'</strong><br>'+(u.admin?'<a href="/acesso/admin.php">Acessos</a> · ':'')+'<a href="/acesso/senha.php">Senha</a> · <a href="/acesso/sair.php">Sair</a>';
-  el.hidden=false; }).catch(()=>{});
 const fmtBRL = (n,d=0) => n==null||isNaN(n) ? '—' : 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fmtN = n => n==null ? '—' : n.toLocaleString('pt-BR');
 const fmtK = n => n==null ? '—' : (n>=10000 ? (n/1000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil' : n.toLocaleString('pt-BR'));
@@ -643,8 +660,238 @@ Entrega: Planejador → Criativo (imagens) → Copy (com link utm.py) → Compli
 }
 async function copyPedido(){ try{ await navigator.clipboard.writeText($('#out').textContent); $('#copy').textContent='Copiado'; setTimeout(()=>$('#copy').textContent='Copiar',1500);}catch(e){} }
 
+/* ---------------- configurações (conta, usuários, registro de acessos) ---------------- */
+let EU=null, EU_ERRO=false;
+const iniciais = n => { const w=String(n||'?').trim().split(/\s+/).filter(Boolean); return ((w[0]||'?')[0]+(w.length>1?w[w.length-1][0]:'')).toUpperCase(); };
+const cfgQuando = iso => { if(!iso) return '—'; const d=new Date(iso); return isNaN(d)?'—':d.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}); };
+const cfgQuandoSeg = iso => { if(!iso) return '—'; const d=new Date(iso); return isNaN(d)?'—':d.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'}); };
+async function api(params, corpo){
+  const op = corpo
+    ? {method:'POST', headers:{'Content-Type':'application/json', Accept:'application/json', 'X-CSRF':(EU&&EU.csrf)||''}, body:JSON.stringify(corpo)}
+    : {cache:'no-store', headers:{Accept:'application/json'}};
+  const r = await fetch('/acesso/api.php'+(params?'?'+params:''), op);
+  if(r.status===401){ location.href='/acesso/entrar.php?expirou=1&voltar='+encodeURIComponent(location.pathname+location.hash); throw new Error('Sessão encerrada.'); }
+  const j = await r.json().catch(()=>({erro:'Resposta inválida do servidor.'}));
+  if(!r.ok) throw new Error(j.erro||('Erro '+r.status));
+  return j;
+}
+function cfgChip(){
+  const me=$('#me'); if(!me||!EU) return;
+  $('#me-av').textContent=iniciais(EU.nome); $('#me-nome').textContent=EU.nome; $('#me-papel').textContent=EU.admin?'Administrador':'Usuário';
+  me.hidden=false;
+}
+function cfgCarregarEu(){
+  return api('acao=eu').then(j=>{ EU=j; EU_ERRO=false; cfgChip(); }).catch(()=>{ EU=null; EU_ERRO=true; })
+    .then(()=>{ if(/^#\/config/.test(location.hash)) render(); });
+}
+
+const CFG_EVENTOS = {login_ok:'Entrou', login_falha:'Falha no login', logout:'Saiu', sessao_encerrada:'Sessão encerrada', ip_alterado:'IP mudou durante a sessão',
+  senha_trocada:'Trocou a senha', senha_troca_falha:'Erro ao trocar a senha', usuario_criado:'Criou acesso', senha_redefinida:'Gerou senha temporária',
+  usuario_desativado:'Desativou acesso', usuario_reativado:'Reativou acesso', registro_consultado:'Consultou o registro', registro_exportado:'Baixou o registro',
+  expurgo:'Apagou registros antigos', nome_alterado:'Mudou o nome'};
+const CFG_MOTIVOS = {senha_incorreta:'senha incorreta', usuario_desconhecido:'e-mail não cadastrado', usuario_desativado:'acesso desativado',
+  bloqueado_por_tentativas:'bloqueado por tentativas', formulario_expirado:'formulário expirado', ociosa:'30 min sem uso', tempo_maximo:'limite de 12 h',
+  senha_ou_acesso_alterado:'senha ou acesso alterado', senha_atual_incorreta:'senha atual incorreta'};
+const CFG_ALERTA = {login_falha:1, senha_troca_falha:1, ip_alterado:1, usuario_desativado:1};
+const navegadorCurto = ua => {
+  if(!ua) return '—';
+  const b=/Edg\//.test(ua)?'Edge':/OPR\//.test(ua)?'Opera':/Chrome\//.test(ua)?'Chrome':/Firefox\//.test(ua)?'Firefox':/Safari\//.test(ua)?'Safari':/^curl\//.test(ua)?'curl':'Outro';
+  const o=/iPhone|iPad/.test(ua)?'iOS':/Android/.test(ua)?'Android':/Mac OS X/.test(ua)?'macOS':/Windows/.test(ua)?'Windows':/Linux/.test(ua)?'Linux':'';
+  return b+(o?' · '+o:'');
+};
+
+const CFG_ABAS = {
+  conta: () => `<div class="two">
+    <div>
+      <div class="card">
+        <div class="cfg-perfil"><span class="av lg">${esc(iniciais(EU.nome))}</span><div><h3>${esc(EU.nome)}</h3><p>${esc(EU.email)} · ${EU.admin?'Administrador':'Usuário'}</p></div></div>
+        <form onsubmit="cfgNome(event)"><label for="cf-nome">Nome exibido</label>
+          <div style="display:flex;gap:8px"><input id="cf-nome" maxlength="80" required value="${esc(EU.nome)}"><button class="btn ghost" type="submit">Salvar</button></div>
+          <div class="cfg-msg" id="cf-nome-msg"></div></form>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Senha</h2></div>
+        <form onsubmit="cfgSenha(event)" autocomplete="on">
+          <input type="text" autocomplete="username" value="${esc(EU.email)}" hidden>
+          <label for="cf-atual" style="margin-top:0">Senha atual</label><input id="cf-atual" type="password" autocomplete="current-password" required>
+          <div class="frow"><div><label for="cf-nova">Senha nova</label><input id="cf-nova" type="password" autocomplete="new-password" minlength="12" required></div>
+            <div><label for="cf-conf">Repita a senha nova</label><input id="cf-conf" type="password" autocomplete="new-password" minlength="12" required></div></div>
+          <p class="ua" style="margin:10px 0 0">Mínimo de 12 caracteres, sem o seu e-mail. Outras sessões abertas com a sua conta são encerradas.</p>
+          <button class="btn" type="submit" style="margin-top:14px">Trocar senha</button>
+          <div class="cfg-msg" id="cf-senha-msg"></div>
+        </form>
+      </div>
+    </div>
+    <div>
+      <div class="card">
+        <div class="hd"><h2>Sessão</h2></div>
+        <div class="kv" style="grid-template-columns:1fr 1fr"><div><b>Entrou em</b>${cfgQuando(EU.ultimo_acesso)}</div><div><b>Senha trocada em</b>${cfgQuando(EU.senha_trocada_em)}</div></div>
+        <p class="ua" style="margin:12px 0 0">Horário de Brasília. A sessão termina sozinha depois de ${EU.ocioso_min} min sem uso ou ${EU.maximo_h} h no total.</p>
+        <a class="btn ghost" href="/acesso/sair.php" style="margin-top:14px">Sair do painel</a>
+      </div>
+      <div class="card">
+        <div class="hd"><h2>Privacidade</h2></div>
+        <p class="ua" style="margin:0">Cada acesso registra o e-mail, a data e a hora, o IP, a porta de origem e o navegador, para a segurança do painel e para cumprir o Marco Civil da Internet. Os registros ficam ${EU.retencao_dias} dias e depois são apagados. Só administradores veem.</p>
+        <a href="${esc(EU.politica)}" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;color:var(--orange);font-size:13px;font-weight:600">Política de privacidade</a>
+      </div>
+    </div></div>`,
+
+  usuarios: () => `<div class="card">
+      <div class="hd"><h2>Pessoas com acesso</h2><button class="btn" type="button" onclick="cfgNovo()">Adicionar pessoa</button></div>
+      <div id="cf-usuarios"><p class="ua">Carregando…</p></div>
+    </div>
+    <p class="ua" style="margin:12px 2px 0">Administradores também gerenciam acessos e veem o registro. Quem é adicionado recebe uma senha temporária e cria a própria no primeiro acesso.</p>`,
+
+  acessos: q => `<div class="card">
+      <div class="hd"><h2>Registro de acessos</h2><span class="chip" id="cf-integ">Conferindo…</span></div>
+      <form class="cfg-filtros" onsubmit="cfgFiltrar(event)">
+        <div><label for="cf-f-usuario">Pessoa</label><select class="in" id="cf-f-usuario"><option value="">Todas as pessoas</option></select></div>
+        <div><label for="cf-f-de">De</label><input id="cf-f-de" type="date" value="${esc(q.de||'')}"></div>
+        <div><label for="cf-f-ate">Até</label><input id="cf-f-ate" type="date" value="${esc(q.ate||'')}"></div>
+        <div style="display:flex;gap:8px"><button class="btn" type="submit">Filtrar</button><a class="btn ghost" id="cf-csv" href="#">Baixar CSV</a></div>
+      </form>
+      <div id="cf-registro"><p class="ua">Carregando…</p></div>
+    </div>
+    <p class="ua" style="margin:12px 2px 0">Horário de Brasília. Guardado por ${EU.retencao_dias} dias e apagado depois. Cada consulta e cada download deste registro também ficam registrados.</p>`,
+
+  sistema: () => `<div class="two">
+    <div class="card">
+      <div class="hd"><h2>Painel</h2></div>
+      <div class="kv" style="grid-template-columns:1fr 1fr">
+        <div><b>Dados</b><code>dados/campanhas.json</code></div>
+        <div><b>Atualizado em</b>${REAL&&REAL.atualizado_em?esc(REAL.atualizado_em.split('-').reverse().join('/')):'—'}</div>
+        <div><b>Repositório</b><a href="https://github.com/iaeautomacao-lgtm/agente-trafego-hermes" target="_blank" rel="noopener" style="color:var(--orange)">GitHub</a></div>
+        <div><b>Agentes</b><a href="http://127.0.0.1:3100/GRU/" target="_blank" rel="noopener" style="color:var(--orange)">Paperclip</a> <span class="ua">(só no computador do Gui)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="hd"><h2>Aparência</h2></div>
+      <div class="seg"><button type="button" onclick="setTheme('light');render()" class="${document.documentElement.getAttribute('data-theme')!=='dark'?'on':''}">Claro</button><button type="button" onclick="setTheme('dark');render()" class="${document.documentElement.getAttribute('data-theme')==='dark'?'on':''}">Escuro</button></div>
+      <p class="ua" style="margin:10px 0 0">Fica salvo neste navegador.</p>
+    </div></div>`,
+};
+
+V.config = q => {
+  if(!EU) return EU_ERRO
+    ? `<div class="card"><div class="empty">Abra o painel pelo endereço do servidor e entre com o seu e-mail para ver as configurações.</div></div>`
+    : `<div class="card"><p class="ua" style="margin:0">Carregando…</p></div>`;
+  const abas = [['conta','Conta']].concat(EU.admin?[['usuarios','Usuários'],['acessos','Registro de acessos']]:[]).concat([['sistema','Sistema']]);
+  const aba = abas.some(a=>a[0]===q.aba) ? q.aba : 'conta';
+  return `<div class="tabs" style="margin-top:0">${abas.map(([k,t])=>`<a href="#/config?aba=${k}" class="${k===aba?'on':''}">${t}</a>`).join('')}</div>
+    <div id="cfg" data-aba="${aba}">${CFG_ABAS[aba](q)}</div>`;
+};
+function cfgMontar(q){
+  const el=$('#cfg'); if(!el) return;
+  if(el.dataset.aba==='usuarios') cfgCarregarUsuarios();
+  if(el.dataset.aba==='acessos') cfgCarregarRegistro(q);
+}
+function cfgMsg(id, txt, ok){ const m=$(id); if(!m) return; m.className='cfg-msg '+(ok?'ok':'err'); m.textContent=txt; }
+
+async function cfgNome(e){
+  e.preventDefault(); const nome=$('#cf-nome').value.trim();
+  try{ await api('',{acao:'nome', nome}); EU.nome=nome; cfgChip(); render(); toast('Nome atualizado.'); }
+  catch(err){ cfgMsg('#cf-nome-msg', err.message); }
+}
+async function cfgSenha(e){
+  e.preventDefault(); const b=e.target.querySelector('[type=submit]'); b.disabled=true;
+  try{
+    await api('',{acao:'senha', atual:$('#cf-atual').value, nova:$('#cf-nova').value, confirma:$('#cf-conf').value});
+    e.target.reset(); cfgMsg('#cf-senha-msg','Senha trocada. As outras sessões da sua conta foram encerradas.', true);
+    cfgCarregarEu();
+  }catch(err){ cfgMsg('#cf-senha-msg', err.message); }
+  b.disabled=false;
+}
+
+function cfgModal(html){
+  const m=document.createElement('div'); m.className='modal'; m.innerHTML=`<div class="box">${html}</div>`;
+  m.addEventListener('click', e=>{ if(e.target===m) m.remove(); });
+  document.body.appendChild(m); return m;
+}
+function cfgNovo(){
+  const m=cfgModal(`<h2>Adicionar pessoa</h2><p>Ela recebe uma senha temporária e cria a própria no primeiro acesso.</p>
+    <form><label for="cn-nome">Nome</label><input id="cn-nome" maxlength="80" required>
+      <label for="cn-email">E-mail</label><input id="cn-email" type="email" maxlength="254" required>
+      <label for="cn-papel">Papel</label><select class="in" id="cn-papel"><option value="usuario">Usuário: vê o painel</option><option value="admin">Administrador: também gerencia acessos</option></select>
+      <div class="cfg-msg" id="cn-msg"></div>
+      <div style="margin-top:12px;display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" type="button" onclick="this.closest('.modal').remove()">Cancelar</button><button class="btn" type="submit">Adicionar</button></div>
+    </form>`);
+  m.querySelector('#cn-nome').focus();
+  m.querySelector('form').onsubmit = async e => {
+    e.preventDefault(); const b=m.querySelector('[type=submit]'); b.disabled=true;
+    try{
+      const j=await api('',{acao:'criar', nome:$('#cn-nome').value, email:$('#cn-email').value, papel:$('#cn-papel').value});
+      m.remove(); cfgTemp(j.email, j.senha_temporaria, true); cfgCarregarUsuarios();
+    }catch(err){ cfgMsg('#cn-msg', err.message); b.disabled=false; }
+  };
+}
+function cfgTemp(email, senha, novo){
+  const m=cfgModal(`<h2>${novo?'Acesso criado':'Nova senha temporária'}</h2>
+    <p>Senha temporária de <strong>${esc(email)}</strong>. Ela aparece só agora: copie e envie à pessoa por um canal privado. No primeiro acesso ela cria a própria senha.</p>
+    <div class="temp">${esc(senha)}</div>
+    <div style="margin-top:14px;display:flex;gap:8px;justify-content:flex-end"><button class="btn ghost" type="button" data-copiar>Copiar</button><button class="btn" type="button" onclick="this.closest('.modal').remove()">Pronto</button></div>`);
+  m.querySelector('[data-copiar]').onclick = async e => { try{ await navigator.clipboard.writeText(senha); e.target.textContent='Copiado'; }catch(_){ e.target.textContent='Selecione e copie'; } };
+}
+async function cfgAcao(btn){
+  const {acao, email} = btn.dataset;
+  const pergunta = {redefinir:`Gerar uma senha temporária nova para ${email}? A senha atual deixa de valer e as sessões abertas dessa pessoa são encerradas.`,
+    desativar:`Desativar o acesso de ${email}? As sessões abertas são encerradas na hora.`, reativar:`Reativar o acesso de ${email}?`}[acao];
+  if(!pergunta || !confirm(pergunta)) return;
+  btn.disabled=true;
+  try{
+    const j=await api('',{acao, email});
+    if(j.senha_temporaria) cfgTemp(email, j.senha_temporaria, false); else toast(acao==='desativar'?'Acesso desativado.':'Acesso reativado.');
+    cfgCarregarUsuarios();
+  }catch(err){ toast(esc(err.message), true); btn.disabled=false; }
+}
+async function cfgCarregarUsuarios(){
+  const box=$('#cf-usuarios'); if(!box) return;
+  try{
+    const {usuarios, eu} = await api('acao=usuarios');
+    if(!usuarios.length){ box.innerHTML='<div class="empty">Ninguém ainda.</div>'; return; }
+    box.innerHTML = `<div style="overflow-x:auto"><table><tr><th>Pessoa</th><th>Papel</th><th>Situação</th><th>Último acesso</th><th></th></tr>${usuarios.map(x=>{
+      const sit = !x.ativo ? '<span class="tag red">Desativado</span>' : (x.trocar_senha ? '<span class="tag amb">Aguardando 1º acesso</span>' : '<span class="tag ok">Ativo</span>');
+      const acts = `<button class="btn ghost sm" type="button" data-acao="redefinir" data-email="${esc(x.email)}" onclick="cfgAcao(this)">Nova senha</button>`
+        + (x.email===eu ? '' : `<button class="btn ghost sm" type="button" data-acao="${x.ativo?'desativar':'reativar'}" data-email="${esc(x.email)}" onclick="cfgAcao(this)">${x.ativo?'Desativar':'Reativar'}</button>`);
+      return `<tr><td><div style="display:flex;align-items:center;gap:10px"><span class="av">${esc(iniciais(x.nome||x.email))}</span><div style="min-width:0"><strong>${esc(x.nome||'—')}</strong>${x.email===eu?' <span class="tag">você</span>':''}<div class="ua">${esc(x.email)}</div></div></div></td>
+        <td>${x.papel==='admin'?'Administrador':'Usuário'}</td><td>${sit}</td><td>${cfgQuando(x.ultimo_acesso)}</td><td><div class="cfg-acts">${acts}</div></td></tr>`;
+    }).join('')}</table></div>`;
+  }catch(err){ box.innerHTML=`<p class="ua">${esc(err.message)}</p>`; }
+}
+function cfgFiltrar(e){
+  e.preventDefault();
+  const p=new URLSearchParams({aba:'acessos'});
+  [['usuario','#cf-f-usuario'],['de','#cf-f-de'],['ate','#cf-f-ate']].forEach(([k,s])=>{ const v=$(s).value; if(v) p.set(k,v); });
+  const h='#/config?'+p.toString();
+  if(location.hash===h) render(); else location.hash=h;
+}
+async function cfgCarregarRegistro(q){
+  const box=$('#cf-registro'); if(!box) return;
+  const filtro=new URLSearchParams(); ['usuario','de','ate'].forEach(k=>{ if(q[k]) filtro.set(k,q[k]); });
+  $('#cf-csv').href='/acesso/api.php?acao=csv'+(filtro.toString()?'&'+filtro.toString():'');
+  try{
+    const [reg, us] = await Promise.all([api('acao=registro'+(filtro.toString()?'&'+filtro.toString():'')), api('acao=usuarios')]);
+    const sel=$('#cf-f-usuario');
+    sel.innerHTML='<option value="">Todas as pessoas</option>'+us.usuarios.map(x=>`<option value="${esc(x.email)}"${x.email===q.usuario?' selected':''}>${esc(x.nome||x.email)}</option>`).join('');
+    $('#cf-integ').innerHTML = reg.integridade===null
+      ? `<i class="dot"></i>Íntegro · ${fmtN(reg.total_geral)} registros`
+      : `<i class="dot red"></i>Alterado a partir do registro ${fmtN(reg.integridade)}`;
+    if(!reg.linhas.length){ box.innerHTML='<div class="empty">Nada neste filtro.</div>'; return; }
+    const nomes={}; us.usuarios.forEach(x=>nomes[x.email]=x.nome||x.email);
+    box.innerHTML = `<div style="overflow-x:auto"><table><tr><th>Quando</th><th>Evento</th><th>Pessoa</th><th>IP : porta</th><th>Navegador</th></tr>${reg.linhas.map(l=>{
+      const det=[]; if(l.motivo) det.push(CFG_MOTIVOS[l.motivo]||l.motivo); if(l.alvo) det.push(nomes[l.alvo]||l.alvo); if(l.ip_anterior) det.push('antes: '+l.ip_anterior); if(l.removidas) det.push(fmtN(l.removidas)+' removidos');
+      return `<tr><td style="white-space:nowrap">${cfgQuandoSeg(l.em_brasilia)}</td>
+        <td><span style="display:inline-flex;align-items:center;gap:7px"><i class="dot ${CFG_ALERTA[l.evento]?'red':'off'}"></i>${esc(CFG_EVENTOS[l.evento]||l.evento)}</span>${det.length?`<div class="ua">${esc(det.join(' · '))}</div>`:''}</td>
+        <td>${l.usuario?esc(nomes[l.usuario]||l.usuario):'<span class="ua">—</span>'}</td>
+        <td><code>${esc(l.ip||'—')}${l.porta!=null?' : '+esc(l.porta):''}</code></td>
+        <td class="ua" title="${esc(l.navegador||'')}">${esc(navegadorCurto(l.navegador))}</td></tr>`;
+    }).join('')}</table></div>
+    <p class="ua" style="margin:10px 0 0">${fmtN(reg.total)} registros neste filtro${reg.total>reg.linhas.length?`; mostrando os ${fmtN(reg.linhas.length)} mais recentes (o CSV traz todos)`:''}.</p>`;
+  }catch(err){ box.innerHTML=`<p class="ua">${esc(err.message)}</p>`; }
+}
+cfgCarregarEu();
+
 /* ---------------- rotas ---------------- */
-const TITLES = {home:'Visão geral', ok:'OK do dia', campanhas:'Campanhas', campanha:'Campanha', criativos:'Criativos', publicos:'Públicos', resultados:'Resultados', agentes:'Agentes', agente:'Agente', nova:'Novo tema / cliente'};
+const TITLES = {home:'Visão geral', ok:'OK do dia', campanhas:'Campanhas', campanha:'Campanha', criativos:'Criativos', publicos:'Públicos', resultados:'Resultados', agentes:'Agentes', agente:'Agente', nova:'Novo tema / cliente', config:'Configurações'};
 function parse(){ const h=location.hash.replace(/^#\/?/,''); const [path,qs]=h.split('?'); const seg=path.split('/').filter(Boolean).map(decodeURIComponent); const q={}; new URLSearchParams(qs||'').forEach((v,k)=>q[k]=v); return {seg,q}; }
 function setQ(k,v){ const {seg,q}=parse(); if(v) q[k]=v; else delete q[k]; const qs=new URLSearchParams(q).toString(); location.hash='#/'+seg.join('/')+(qs?'?'+qs:''); }
 function render(){
@@ -659,6 +906,8 @@ function render(){
   const navKey = name==='campanha'?'campanhas':(name==='agente'?'agentes':(name==='home'?'':name));
   document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on', a.getAttribute('href')==='#/'+navKey));
   if(name==='agentes') checkEditing();
+  const me=$('#me'); if(me) me.classList.toggle('on', name==='config');
+  if(name==='config') cfgMontar(q);
   if(name!=='agente') ED={skill:null,original:'',loading:false};
   const n=okPend(), okEl=$('[data-n=ok]'); okEl.textContent=n||''; okEl.classList.toggle('hot',!!n); okEl.style.display=n?'':'none';
   $('[data-n=camp]').textContent=camps().length; $('[data-n=cri]').textContent=allCreatives().length; $('[data-n=pub]').textContent=(DATA.clientes||[]).length; $('[data-n=ag]').textContent=AGENTES.length;
@@ -675,7 +924,7 @@ async function loadSim(){
   DATA=Object.assign({},VAZIO,s); DATA.benchmarks=Object.assign({},VAZIO.benchmarks,s.benchmarks||{}); DATA.ok_diario=Object.assign({},VAZIO.ok_diario,s.ok_diario||{}); SIM=true; render();
 }
 function exitSim(){ DATA=REAL; SIM=false; render(); }
-function setUpd(){ if(REAL.atualizado_em){ const [y,m,d]=REAL.atualizado_em.split('-'); $('#upd').textContent=`${+d} ${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+m-1]} ${y}`; } }
+function setUpd(){ const el=$('#upd'); if(el && REAL.atualizado_em){ const [y,m,d]=REAL.atualizado_em.split('-'); el.textContent=`${+d} ${['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'][+m-1]} ${y}`; } }
 async function boot(){
   try{ const r=await fetch('dados/campanhas.json',{cache:'no-store'}); if(r.ok){ const j=await r.json(); if(j.versao>=2){ REAL=Object.assign({},VAZIO,j); REAL.benchmarks=Object.assign({},VAZIO.benchmarks,j.benchmarks||{}); REAL.ok_diario=Object.assign({},VAZIO.ok_diario,j.ok_diario||{}); REAL.utm=Object.assign({},VAZIO.utm,j.utm||{}); } } }catch(e){}
   DATA=REAL; setUpd(); render();

@@ -243,6 +243,71 @@ function ddm_usuario_ativar(string $email, bool $ativo, string $por): void {
     ddm_registrar($ativo ? 'usuario_reativado' : 'usuario_desativado', ['usuario' => $por, 'alvo' => $email]);
 }
 
+/** Troca a senha do próprio usuário. Devolve a mensagem de erro, ou null se trocou (e mantém a sessão atual válida). */
+function ddm_trocar_senha(array $u, string $atual, string $nova, string $conf): ?string {
+    $email = (string)$u['email'];
+    if (!password_verify(substr($atual, 0, 1024), (string)$u['hash'])) {
+        ddm_registrar('senha_troca_falha', ['usuario' => $email, 'motivo' => 'senha_atual_incorreta']);
+        return 'A senha atual não confere.';
+    }
+    if (mb_strlen($nova) < DDM_SENHA_MIN) return 'A senha nova precisa ter pelo menos ' . DDM_SENHA_MIN . ' caracteres.';
+    if (strlen($nova) > 1024) return 'Senha longa demais.';
+    if ($nova !== $conf) return 'A confirmação não é igual à senha nova.';
+    if ($nova === $atual) return 'A senha nova precisa ser diferente da atual.';
+    if (stripos($nova, explode('@', $email)[0]) !== false) return 'A senha não pode conter o seu e-mail.';
+    $hash = password_hash($nova, PASSWORD_DEFAULT);
+    $versao = ddm_json_alterar('usuarios.json', function (array &$t) use ($email, $hash) {
+        $t[$email]['hash'] = $hash;
+        $t[$email]['trocar_senha'] = false;
+        $t[$email]['versao'] = (int)($t[$email]['versao'] ?? 0) + 1;   // derruba as outras sessões
+        $t[$email]['senha_trocada_em'] = gmdate('Y-m-d\TH:i:s\Z');
+        return $t[$email]['versao'];
+    });
+    session_regenerate_id(true);
+    $_SESSION['ddm']['versao'] = $versao;
+    ddm_registrar('senha_trocada', ['usuario' => $email]);
+    return null;
+}
+
+function ddm_usuario_renomear(string $email, string $nome): void {
+    $nome = trim($nome);
+    if ($nome === '' || mb_strlen($nome) > 80) throw new InvalidArgumentException('nome vazio ou longo demais');
+    ddm_json_alterar('usuarios.json', function (array &$t) use ($email, $nome) { if (isset($t[$email])) $t[$email]['nome'] = $nome; });
+    ddm_registrar('nome_alterado', ['usuario' => $email]);
+}
+
+/** Filtra o registro por pessoa (quem fez ou quem sofreu a ação) e por dia (Brasília). */
+function ddm_registro_filtrar(array $linhas, string $usuario, string $de, string $ate): array {
+    return array_values(array_filter($linhas, function ($l) use ($usuario, $de, $ate) {
+        $dia = substr((string)($l['em_brasilia'] ?? ''), 0, 10);
+        if ($usuario !== '' && strtolower((string)($l['usuario'] ?? '')) !== $usuario && strtolower((string)($l['alvo'] ?? '')) !== $usuario) return false;
+        if ($de !== '' && $dia < $de) return false;
+        if ($ate !== '' && $dia > $ate) return false;
+        return true;
+    }));
+}
+
+function ddm_registro_csv(array $linhas): void {
+    $campos = ['em_brasilia', 'em_utc', 'evento', 'usuario', 'alvo', 'motivo', 'ip', 'porta', 'navegador', 'sessao', 'hash'];
+    ddm_cabecalhos();
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="acessos-painel-' . gmdate('Ymd-His') . '.csv"');
+    $out = fopen('php://output', 'w');
+    fwrite($out, "\xEF\xBB\xBF");
+    fputcsv($out, $campos, ';');
+    foreach ($linhas as $l) {
+        $row = [];
+        foreach ($campos as $c) {
+            $v = is_scalar($l[$c] ?? null) ? (string)$l[$c] : '';
+            if ($v !== '' && strpos('=+-@', $v[0]) !== false) $v = "'" . $v;   // evita fórmula no Excel
+            $row[] = $v;
+        }
+        fputcsv($out, $row, ';');
+    }
+    fclose($out);
+    exit;
+}
+
 // ---------- tentativas (bloqueio) ----------
 
 function ddm_chaves_tentativa(string $email): array {

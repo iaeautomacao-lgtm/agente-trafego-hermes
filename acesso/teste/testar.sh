@@ -17,7 +17,7 @@ confere "/ (navegador) vai para o login" "$(curl -s -o /dev/null -w '%{http_code
 for p in /dados/campanhas.json /HANDOFF.md /WORKLOG.md /index.html /skills/trafego-pago/ddm-audiencia-crm/SKILL.md; do
   confere "$p" "$(code $BASE$p)" 401
 done
-for p in /.git/config /.htaccess /acesso/nucleo.php /acesso/usuarios.php /acesso/portao.php /scripts/testar_chaves.py /acesso/teste/testar.sh; do
+for p in /acesso/api.php /.git/config /.htaccess /acesso/nucleo.php /acesso/usuarios.php /acesso/portao.php /scripts/testar_chaves.py /acesso/teste/testar.sh; do
   c=$(code $BASE$p); [ "$c" != 200 ] && ok "$p bloqueado ($c)" || erro "$p devolveu 200"
 done
 confere "marca da tela de login" "$(code $BASE/assets/ddm-marca.png)" 200
@@ -70,14 +70,43 @@ confere "/dados/campanhas.json com login" "$(code -b $J/c $BASE/dados/campanhas.
 curl -s -b $J/c $BASE/dados/campanhas.json | python3 -c 'import json,sys; json.load(sys.stdin)' && ok "JSON íntegro" || erro "JSON corrompido"
 curl -s -b $J/c -D $J/th -o /dev/null $BASE/dados/campanhas.json
 grep -qi '^content-type: application/json' $J/th && ok "content-type JSON" || erro "content-type errado"
-curl -s -b $J/c $BASE/acesso/eu.php | grep -q '"admin":true' && ok "eu.php" || erro "eu.php"
+curl -s -b $J/c "$BASE/acesso/api.php?acao=eu" -o $J/eu.json
+grep -q '"admin":true' $J/eu.json && ok "api eu: admin" || erro "api eu"
+CSRF=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["csrf"])' $J/eu.json)
+[ -n "$CSRF" ] && ok "api eu: token CSRF" || erro "api eu sem CSRF"
 for p in "/..%2f..%2f..%2fetc%2fpasswd" "/dados/..%2facesso%2fnucleo.php" "/%2e%2e/%2e%2e/etc/passwd" "/.git/HEAD" "/acesso/nucleo.php" "/scripts/_env.py" "/dashboard/server/index.js"; do
   c=$(code -b $J/c "$BASE$p"); [ "$c" != 200 ] && ok "logado, $p bloqueado ($c)" || erro "logado, $p devolveu 200"
 done
-curl -s -b $J/c $BASE/acesso/admin.php -o $J/a.html
-grep -q 'íntegro' $J/a.html && ok "admin: registro íntegro" || erro "admin: integridade"
-grep -q 'login_falha' $J/a.html && ok "admin: falhas aparecem" || erro "admin: falhas não aparecem"
-confere "admin: CSV" "$(curl -s -b $J/c -o /dev/null -w '%{content_type}' "$BASE/acesso/admin.php?baixar=csv")" "text/csv; charset=utf-8"
+curl -s -b $J/c "$BASE/acesso/api.php?acao=registro" -o $J/r.json
+grep -q '"integridade":null' $J/r.json && ok "api registro: íntegro" || erro "api registro: integridade"
+grep -q '"evento":"login_falha"' $J/r.json && ok "api registro: falhas aparecem" || erro "api registro: falhas não aparecem"
+grep -q '"hash"' $J/r.json && erro "api registro expõe hash" || ok "api registro só com os campos da tela"
+confere "api: CSV" "$(curl -s -b $J/c -o /dev/null -w '%{content_type}' "$BASE/acesso/api.php?acao=csv")" "text/csv; charset=utf-8"
+confere "admin.php leva às Configurações" "$(curl -s -b $J/c -o /dev/null -w '%{http_code} %{redirect_url}' -H 'Accept: text/html' $BASE/acesso/admin.php)" "303 $BASE/#/config?aba=usuarios"
+
+echo "== configurações (API)"
+post() { curl -s -b $J/c -c $J/c -H 'Content-Type: application/json' -H "X-CSRF: $1" -w '\n%{http_code}' --data "$2" $BASE/acesso/api.php; }
+confere "POST sem CSRF recusado" "$(post '' '{"acao":"nome","nome":"X"}' | tail -1)" 403
+confere "mudar o próprio nome" "$(post "$CSRF" '{"acao":"nome","nome":"Pessoa Teste Renomeada"}' | tail -1)" 200
+curl -s -b $J/c "$BASE/acesso/api.php?acao=eu" | grep -q 'Renomeada' && ok "nome novo aparece" || erro "nome não mudou"
+R=$(post "$CSRF" '{"acao":"criar","nome":"Comum","email":"comum@exemplo.com.br","papel":"usuario"}')
+TEMP2=$(echo "$R" | grep -o '[A-Za-z0-9]\{4\}-[A-Za-z0-9]\{4\}-[A-Za-z0-9]\{4\}-[A-Za-z0-9]\{4\}')
+[ -n "$TEMP2" ] && ok "admin cria usuário pela API" || erro "criar pela API: $R"
+confere "não cria e-mail inválido" "$(post "$CSRF" '{"acao":"criar","nome":"X","email":"x@grupoddm.","papel":"usuario"}' | tail -1)" 400
+confere "não desativa a si mesmo" "$(post "$CSRF" '{"acao":"desativar","email":"teste@exemplo.com.br"}' | tail -1)" 400
+curl -s -b $J/c "$BASE/acesso/api.php?acao=usuarios" | grep -q 'comum@exemplo.com.br' && ok "lista de usuários" || erro "lista sem o novo usuário"
+# usuário comum: entra, troca a senha e não vê usuários nem registro
+J2=$(mktemp -d); cp -r $J/. $J2/; J0=$J; J=$J2; rm -f $J/c
+login comum@exemplo.com.br "$TEMP2"
+curl -s -c $J/c -b $J/c $BASE/acesso/senha.php -o $J/s.html
+curl -s -c $J/c -b $J/c -o /dev/null --data-urlencode "csrf=$(csrf $J/s.html)" --data-urlencode "atual=$TEMP2" --data-urlencode "nova=Outra-forte-2026!x2" --data-urlencode "confirma=Outra-forte-2026!x2" $BASE/acesso/senha.php
+curl -s -b $J/c "$BASE/acesso/api.php?acao=eu" | grep -q '"admin":false' && ok "usuário comum entra" || erro "usuário comum não entrou"
+confere "usuário comum não vê usuários" "$(code -b $J/c "$BASE/acesso/api.php?acao=usuarios")" 403
+confere "usuário comum não vê o registro" "$(code -b $J/c "$BASE/acesso/api.php?acao=registro")" 403
+J=$J0
+confere "admin desativa o usuário comum" "$(post "$CSRF" '{"acao":"desativar","email":"comum@exemplo.com.br"}' | tail -1)" 200
+confere "sessão do desativado cai na hora" "$(code -b $J2/c "$BASE/acesso/api.php?acao=eu")" 401
+rm -rf $J2
 
 echo "== sair"
 curl -s -b $J/c -c $J/c -o /dev/null $BASE/acesso/sair.php

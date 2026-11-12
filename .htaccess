@@ -10,7 +10,7 @@
   # validação do certificado HTTPS (AutoSSL / Let's Encrypt): aberta
   RewriteRule ^\.well-known/ - [END]
   # páginas de acesso e a marca da tela de login: abertas
-  RewriteRule ^acesso/(entrar|sair|senha|admin|eu)\.php$ - [END]
+  RewriteRule ^acesso/(entrar|sair|senha|admin|api)\.php$ - [END]
   RewriteRule ^assets/ddm-marca\.png$ - [END]
   # todo o resto, inclusive "/", vai para o portão
   RewriteRule ^ acesso/portao.php [END]

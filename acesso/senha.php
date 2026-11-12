@@ -6,30 +6,10 @@ $u = ddm_exigir_login(false, true);
 $email = $u['email'];
 $erro = '';
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
-    $atual = substr((string)($_POST['atual'] ?? ''), 0, 1024);
-    $nova = substr((string)($_POST['nova'] ?? ''), 0, 1024);
-    $conf = substr((string)($_POST['confirma'] ?? ''), 0, 1024);
     if (!ddm_csrf_ok()) $erro = 'A página ficou aberta muito tempo. Tente de novo.';
-    elseif (!password_verify($atual, (string)$u['hash'])) {
-        ddm_registrar('senha_troca_falha', ['usuario' => $email, 'motivo' => 'senha_atual_incorreta']);
-        $erro = 'A senha atual não confere.';
-    } elseif (mb_strlen($nova) < DDM_SENHA_MIN) $erro = 'A senha nova precisa ter pelo menos ' . DDM_SENHA_MIN . ' caracteres.';
-    elseif ($nova !== $conf) $erro = 'A confirmação não é igual à senha nova.';
-    elseif ($nova === $atual) $erro = 'A senha nova precisa ser diferente da atual.';
-    elseif (stripos($nova, explode('@', $email)[0]) !== false) $erro = 'A senha não pode conter o seu e-mail.';
     else {
-        $hash = password_hash($nova, PASSWORD_DEFAULT);
-        $versao = ddm_json_alterar('usuarios.json', function (array &$t) use ($email, $hash) {
-            $t[$email]['hash'] = $hash;
-            $t[$email]['trocar_senha'] = false;
-            $t[$email]['versao'] = (int)($t[$email]['versao'] ?? 0) + 1;   // derruba as outras sessões
-            $t[$email]['senha_trocada_em'] = gmdate('Y-m-d\TH:i:s\Z');
-            return $t[$email]['versao'];
-        });
-        session_regenerate_id(true);
-        $_SESSION['ddm']['versao'] = $versao;
-        ddm_registrar('senha_trocada', ['usuario' => $email]);
-        ddm_ir('/');
+        $erro = (string)ddm_trocar_senha($u, (string)($_POST['atual'] ?? ''), (string)($_POST['nova'] ?? ''), (string)($_POST['confirma'] ?? ''));
+        if ($erro === '') ddm_ir('/');
     }
 }
 
