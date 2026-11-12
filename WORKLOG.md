@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-11 by Claude Code (API da base)
+Last updated: 2026-11-12 by Claude Code
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -135,6 +135,10 @@ Last updated: 2026-11-11 by Claude Code (API da base)
 - (time not recorded, ~5 min) — Gustavo: base legal vai para o jurídico; os testes com a Cruzeiro (o público que já está no Meta) foram feitos sem autorização da Cruzeiro. Linguagem: decisão do Gustavo de usar a comunicação que funcionar melhor e testar o que o Meta aprova. GitHub conferido de novo: `joaoguilherme-ops` sem escrita e sem convite neste repo (Claude Code)
 - (time not recorded, ~10 min) — Push resolvido: a conta do Grupo tem dois repos parecidos, `Agente-Trafego` (privado, antigo, de junho) e `agente-trafego-hermes` (o nosso); o Gui tinha se adicionado ao antigo. Adicionado ao certo, 13 commits enviados (2e44a94..97d455b); remoto sem usuário embutido e credencial pelo `gh` só neste repo. Paperclip: `ddm-audiencia-crm` atualizada para 97d455b (texto da API conferido); as outras 8 sem mudança de conteúdo (Claude Code + Gui)
 - Open: cPanel "Atualizar do remoto" (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo) · API do sistema (Jair) · respostas do planejamento · Paperclip "Check for updates" na skill `ddm-audiencia-crm` depois do push
+
+## 2026-11-12 (Thursday) — Pendências do Gui (~5 min, est.)
+- (time not recorded, ~5 min est.) — Rótulos `review:gpt` e `review:grok` criados no repo (agora com escrita). cPanel tentado pelo navegador: sessão expirada, pede login; fica com o Gui. Passo a passo das pendências entregue ao Gui (Claude Code)
+- Open: cPanel "Atualizar do remoto" (Gui) · mensagens ao planejamento e ao Jair (Gui) · base legal + autorização da Cruzeiro (jurídico, via Gustavo)
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)
