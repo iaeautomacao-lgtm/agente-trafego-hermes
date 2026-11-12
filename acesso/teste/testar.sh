@@ -21,6 +21,7 @@ for p in /.git/config /.htaccess /acesso/nucleo.php /acesso/usuarios.php /acesso
   c=$(code $BASE$p); [ "$c" != 200 ] && ok "$p bloqueado ($c)" || erro "$p devolveu 200"
 done
 confere "marca da tela de login" "$(code $BASE/assets/ddm-marca.png)" 200
+c=$(code $BASE/.well-known/acme-challenge/teste); [ "$c" != 401 ] && ok "validação do certificado não passa pelo login ($c)" || erro ".well-known exige login"
 
 echo "== tela de login"
 curl -s -c $J/c -b $J/c -D $J/h $BASE/acesso/entrar.php -o $J/entrar.html
@@ -107,6 +108,15 @@ sudo stat -c '%a' "$LOG" | grep -q '^600$' && ok "registro com permissão 600" |
 $USUARIOS conferir | grep -q 'íntegro' && ok "cadeia de hashes íntegra" || erro "cadeia quebrada"
 sudo sed -i '2s/login_falha/login_ok/' "$LOG"
 $USUARIOS conferir >/dev/null && erro "alteração no registro não detectada" || ok "alteração no registro detectada"
+
+echo "== expurgo de 6 meses"
+DIRP=$(dirname "$LOG")
+VELHA='{"em_utc":"2020-01-01T00:00:00.000Z","em_brasilia":"2019-12-31T21:00:00-03:00","evento":"login_ok","usuario":"antigo@exemplo.com.br"}'
+sudo sed -i "1i $VELHA" "$LOG"
+sudo rm -f "$DIRP/ultimo-expurgo"
+curl -s -o /dev/null $BASE/acesso/entrar.php
+sudo grep -q 'antigo@exemplo.com.br' "$LOG" && erro "registro de 2020 não foi apagado" || ok "registro com mais de 6 meses apagado"
+sudo grep -q '"evento":"expurgo"' "$LOG" && ok "expurgo registrado" || erro "expurgo não registrado"
 
 rm -rf $J
 echo
