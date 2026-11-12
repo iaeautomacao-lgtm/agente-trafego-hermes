@@ -54,7 +54,7 @@ confere "senha temporária leva à troca de senha" "$(loc)" "/acesso/senha.php"
 confere "com troca pendente, dados bloqueados" "$(code -b $J/c $BASE/dados/campanhas.json)" 403
 
 echo "== troca de senha"
-NOVA='Nova-senha-de-teste-2026!'
+NOVA='Outra-senha-forte-2026!x'
 curl -s -c $J/c -b $J/c $BASE/acesso/senha.php -o $J/s.html
 curl -s -c $J/c -b $J/c -o $J/sb.html --data-urlencode "csrf=$(csrf $J/s.html)" --data-urlencode "atual=$TEMP" \
   --data-urlencode "nova=curta" --data-urlencode "confirma=curta" $BASE/acesso/senha.php
