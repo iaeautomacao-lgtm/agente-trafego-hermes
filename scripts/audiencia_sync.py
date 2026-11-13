@@ -12,6 +12,7 @@ Uso:
   python3 scripts/audiencia_sync.py --cliente inst-a --base <csv> --mock --gravar                          # simula + atualiza o painel
   python3 scripts/audiencia_sync.py --cliente inst-a --base <csv> --executar --gravar                      # troca de verdade no Meta
   python3 scripts/audiencia_sync.py --cliente inst-a --api                                                 # base direto do sistema da DDM (dry-run)
+  python3 scripts/audiencia_sync.py --cliente inst-a --sftp                                                # arquivo do dia na pasta SFTP da DDM (dry-run)
 
 Base: CSV (vírgula ou ponto e vírgula) exportado do CRM. Colunas reconhecidas pelo nome:
   e-mail: email, e-mail, mail      telefone: telefone, celular, fone, phone, whatsapp, tel (pode ter várias)
@@ -22,6 +23,13 @@ Base pela API do sistema da DDM (--api, no lugar de --base): GET em DDM_API_URL_
   (ou na chave DDM_API_LISTA). Campos aninhados valem pelo último nome (contato.email → email);
   lista de telefones é aceita. Paginação: segue next/proxima/next_page_url só no mesmo servidor.
   A resposta fica só na memória: nada é gravado em disco além das contagens.
+
+Base pela pasta SFTP do sistema da DDM (--sftp, no lugar de --base): usa o sftp do próprio Mac (OpenSSH),
+  entra com chave (sem senha), só lista e baixa: nunca envia nem apaga nada no servidor.
+  DDM_SFTP_ARQUIVO_<CLIENTE> é o caminho no servidor; aceita * (pega o mais novo) e datas no formato
+  do strftime (%Y%m%d = hoje). O arquivo passa por uma pasta temporária privada (0700) fora do repositório
+  e é apagado no fim, com erro ou sem. Arquivo com mais de DDM_SFTP_IDADE_MAX_H horas → aborta (base velha).
+  A chave do servidor fica em ~/.hermes/ddm_sftp_known_hosts (gravada na 1ª conexão; se mudar, aborta).
 
 Privacidade (LGPD):
   - E-mail e telefone são normalizados e transformados em hash SHA-256 aqui; o Meta só recebe hashes.
@@ -38,6 +46,13 @@ Variáveis (só para --api), em ~/.hermes/.env:
   DDM_API_AUTH_HEADER             opcional, padrão Authorization
   DDM_API_AUTH_ESQUEMA            opcional, padrão Bearer (vazio = manda só o token)
   DDM_API_LISTA                   opcional, chave da lista na resposta JSON
+Variáveis (só para --sftp), em ~/.hermes/.env:
+  DDM_SFTP_HOST                   servidor SFTP da DDM
+  DDM_SFTP_USUARIO                usuário só de leitura
+  DDM_SFTP_PORTA                  opcional, padrão 22
+  DDM_SFTP_CHAVE                  opcional, chave privada (padrão ~/.ssh/ddm_sftp)
+  DDM_SFTP_ARQUIVO_<CLIENTE>      caminho do arquivo do dia (ex.: /pasta/cliente_%Y%m%d.csv ou /pasta/cliente_*.csv)
+  DDM_SFTP_IDADE_MAX_H            opcional, idade máxima do arquivo em horas (padrão 30)
 
 Travas:
   - --executar só roda se dados/campanhas.json → clientes[<cliente>].publico.base_legal estiver preenchido (LGPD).
@@ -45,7 +60,7 @@ Travas:
   - Tamanho mudou mais de 30% em relação à última troca → aborta, a não ser com --forcar
     (o agente só usa --forcar depois do OK humano do dia).
 """
-import argparse, csv, hashlib, io, json, os, random, re, sys, time, urllib.error, urllib.parse, urllib.request
+import argparse, csv, hashlib, io, json, os, random, re, shutil, subprocess, sys, tempfile, time, urllib.error, urllib.parse, urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from _env import carregar_env, meta_versao  # noqa: E402
@@ -104,12 +119,20 @@ def linhas_de_csv(texto, origem):
     return linhas, c_email, c_fone
 
 
+def decodificar(bruto):
+    """UTF-8 (com ou sem BOM); senão Windows-1252, comum em exportação de sistema brasileiro."""
+    try:
+        return bruto.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return bruto.decode("cp1252", errors="replace")
+
+
 def ler_csv(caminho):
     caminho = os.path.expanduser(caminho)
     if not os.path.exists(caminho):
         die(f"arquivo não encontrado: {caminho}")
-    with open(caminho, encoding="utf-8-sig", errors="replace") as f:
-        return linhas_de_csv(f.read(), os.path.basename(caminho))
+    with open(caminho, "rb") as f:
+        return linhas_de_csv(decodificar(f.read()), os.path.basename(caminho))
 
 
 def achatar(reg, prefixo=""):
@@ -179,6 +202,82 @@ def ler_api(cliente):
     c_email, c_fone = colunas(cab_todas, "resposta da API")
     print(f"API da DDM: {len(registros)} registros em {paginas} página(s)")
     return registros, c_email, c_fone
+
+
+SEGURO = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+def ler_sftp(cliente):
+    """Arquivo do dia na pasta SFTP da DDM. Só ls e get; o arquivo vive numa pasta 0700 apagada no fim."""
+    carregar_env()
+    var = "DDM_SFTP_ARQUIVO_" + cliente.upper().replace("-", "_")
+    padrao = os.environ.get(var) or die(f"{var} ausente em ~/.hermes/.env")
+    host = os.environ.get("DDM_SFTP_HOST") or die("DDM_SFTP_HOST ausente em ~/.hermes/.env")
+    usuario = os.environ.get("DDM_SFTP_USUARIO") or die("DDM_SFTP_USUARIO ausente em ~/.hermes/.env")
+    porta = os.environ.get("DDM_SFTP_PORTA", "22")
+    chave = os.path.expanduser(os.environ.get("DDM_SFTP_CHAVE", "~/.ssh/ddm_sftp"))
+    idade_max = float(os.environ.get("DDM_SFTP_IDADE_MAX_H", "30"))
+    if not (SEGURO.match(host) and SEGURO.match(usuario) and porta.isdigit()):
+        die("DDM_SFTP_HOST, DDM_SFTP_USUARIO ou DDM_SFTP_PORTA com caracteres inválidos")
+    if not os.path.isfile(chave):
+        die(f"chave SFTP não encontrada ({chave}); crie com: ssh-keygen -t ed25519 -N '' -f ~/.ssh/ddm_sftp")
+    remoto = time.strftime(padrao) if "%" in padrao else padrao
+    if any(c in remoto for c in '"\\\n\r') or not remoto.strip():
+        die(f"{var} com caracteres inválidos")
+    hosts = os.path.expanduser("~/.hermes/ddm_sftp_known_hosts")
+    os.makedirs(os.path.dirname(hosts), exist_ok=True)
+    cmd = ["sftp", "-F", "none", "-P", porta, "-i", chave,
+           "-o", "IdentitiesOnly=yes", "-o", "PasswordAuthentication=no", "-o", "KbdInteractiveAuthentication=no",
+           "-o", f"UserKnownHostsFile={hosts}", "-o", "StrictHostKeyChecking=accept-new",
+           "-o", "ConnectTimeout=20", "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=4",
+           "-o", "LogLevel=ERROR", "-b", "-", f"{usuario}@{host}"]
+
+    def rodar(lote):
+        try:
+            r = subprocess.run(cmd, input=lote, capture_output=True, text=True, timeout=600)
+        except FileNotFoundError:
+            die("comando sftp não encontrado neste computador")
+        except subprocess.TimeoutExpired:
+            die("SFTP da DDM não respondeu em 10 minutos")
+        if r.returncode != 0:
+            err = r.stderr
+            if "IDENTIFICATION HAS CHANGED" in err or "Host key verification failed" in err:
+                die("a chave do servidor SFTP mudou desde a 1ª conexão; parado. Confirme com o Jair antes de apagar "
+                    "~/.hermes/ddm_sftp_known_hosts")
+            if "Permission denied" in err:
+                die("o servidor SFTP recusou a chave (Jair ainda não liberou ~/.ssh/ddm_sftp.pub para esse usuário?)")
+            if "Connection refused" in err or "timed out" in err or "Could not resolve" in err:
+                die("servidor SFTP inacessível (endereço, porta ou bloqueio por IP)")
+            if "not found" in err or "No such file" in err:
+                die("arquivo não encontrado na pasta SFTP da DDM (a base de hoje ainda não chegou ou o caminho mudou)")
+            linhas = [l for l in err.strip().splitlines() if l.strip() and not l.startswith("Connection closed")]
+            die("SFTP da DDM falhou: " + ((linhas or ["sem detalhe"])[-1][:300]))
+        return r.stdout
+
+    if any(c in remoto for c in "*?["):
+        # entre aspas o sftp não expande o *; sem aspas, espaço precisa de barra
+        saida = rodar("ls -1t " + re.sub(r"([\s'])", r"\\\1", remoto) + "\n")
+        nomes = [l.rstrip("\r") for l in saida.splitlines() if l.strip() and not l.startswith("sftp>")]
+        if not nomes:
+            die("nenhum arquivo do dia na pasta SFTP da DDM")
+        remoto = nomes[0]
+        if any(c in remoto for c in '"\\\n\r'):
+            die("nome de arquivo inesperado na pasta SFTP")
+    pasta = tempfile.mkdtemp(prefix="ddm-sftp-")
+    try:
+        local = os.path.join(pasta, "base")
+        rodar(f'get -p "{remoto}" "{local}"\n')
+        idade_h = (time.time() - os.stat(local).st_mtime) / 3600
+        if idade_h > idade_max:
+            die(f"o arquivo do SFTP tem {idade_h:.0f} h (limite {idade_max:.0f} h); base de hoje ainda não chegou — nada enviado")
+        with open(local, "rb") as f:
+            bruto = f.read()
+    finally:
+        shutil.rmtree(pasta, ignore_errors=True)
+    lido = linhas_de_csv(decodificar(bruto), "arquivo do SFTP")
+    print(f"SFTP da DDM: arquivo de {time.strftime('%Y-%m-%d %H:%M', time.localtime(time.time() - idade_h * 3600))} "
+          f"({idade_h:.1f} h atrás) · {len(lido[0])} linhas")
+    return lido
 
 
 def pessoas(caminho=None, lido=None):
@@ -318,6 +417,7 @@ def main():
     fonte = ap.add_mutually_exclusive_group(required=True)
     fonte.add_argument("--base", help="CSV do CRM com quem está em aberto hoje")
     fonte.add_argument("--api", action="store_true", help="puxa a base do dia do sistema da DDM (DDM_API_URL_<CLIENTE>)")
+    fonte.add_argument("--sftp", action="store_true", help="baixa o arquivo do dia da pasta SFTP da DDM (DDM_SFTP_ARQUIVO_<CLIENTE>)")
     ap.add_argument("--excluir", help="CSV com quem pagou/fechou acordo desde a exportação (opcional)")
     g = ap.add_mutually_exclusive_group()
     g.add_argument("--dry-run", action="store_true")
@@ -328,7 +428,12 @@ def main():
     a = ap.parse_args()
     modo = "executar" if a.executar else ("mock" if a.mock else "dry-run")
 
-    base, invalidas, total = pessoas(lido=ler_api(a.cliente)) if a.api else pessoas(a.base)
+    if a.api:
+        base, invalidas, total = pessoas(lido=ler_api(a.cliente))
+    elif a.sftp:
+        base, invalidas, total = pessoas(lido=ler_sftp(a.cliente))
+    else:
+        base, invalidas, total = pessoas(a.base)
     excl = pessoas(a.excluir)[0] if a.excluir else []
     linhas, pessoas_ok, removidos, ks = montar_linhas(base, excl)
 
@@ -365,7 +470,7 @@ def main():
             die("base legal do público não registrada (clientes[].publico.base_legal em dados/campanhas.json) — nada enviado")
     r = enviar(a.cliente, linhas, modo)
     resumo = {
-        "cliente": a.cliente, "modo": modo, "fonte": "api" if a.api else "csv", "ultima_sync": time.strftime("%Y-%m-%dT%H:%M"),
+        "cliente": a.cliente, "modo": modo, "fonte": "api" if a.api else ("sftp" if a.sftp else "csv"), "ultima_sync": time.strftime("%Y-%m-%dT%H:%M"),
         "linhas_crm": total, "invalidas_crm": invalidas, "pessoas": pessoas_ok, "linhas": len(linhas),
         "removidos_pagos": removidos, "entraram": entraram, "sairam": sairam,
         "variacao_pct": round(variacao * 100, 1) if anterior else None, **r,

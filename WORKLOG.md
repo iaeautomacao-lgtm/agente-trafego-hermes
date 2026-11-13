@@ -1,7 +1,7 @@
 # Work log: Agente de Tráfego Pago (Meta Ads) — Grupo DDM
 
 Times are America/New_York. Automated/background monitoring runs are not counted in time totals. "~" = estimate. Rules: `project-worklog` skill.
-Last updated: 2026-11-12 by Claude Code
+Last updated: 2026-11-13 15:40 by Claude Code
 
 ## 1. Project overview
 - **O que é e por quê:** um time de agentes de IA que mantém as campanhas de Meta Ads da Grupo DDM (cobrança de mensalidades de faculdades) **sempre ligadas**, uma por cliente (instituição), falando com os alunos que ainda estão em aberto. Escopo definido pelo Gustavo na reunião de 20/10/2026: o público do Meta é a base do CRM com quem está em aberto, trocada todo dia (quem pagou sai); o anúncio leva ao DDMP ou ao WhatsApp com `cliente`/`campanha`/`criativo` no link; o resultado é custo por visita e por acordo de cada criativo; um humano dá um OK por dia. Sucesso = acordos/visitas no DDMP a custo baixo, dentro da verba.
@@ -40,6 +40,7 @@ Last updated: 2026-11-12 by Claude Code
 ### Waiting on others
 | Item | Waiting on (who) | Since | Last follow-up | What happens when it arrives |
 |---|---|---|---|---|
+| Dados do SFTP do sistema (servidor, porta, usuário, pasta e nome do arquivo por cliente, horário) + liberar a chave pública do agente + **o arquivo é a lista completa de quem está em aberto ou só as mudanças do dia?** | Jair (mensagem pronta com o Gui) | 2026-11-13 | — | preencher `DDM_SFTP_*` no `~/.hermes/.env` do Mac, dry-run com `--sftp`; `--executar` só se for a lista completa |
 | Base legal do público registrada (LGPD) + autorização da Cruzeiro | Gui com Gustavo e o jurídico (o Gui cuida; não cobrar) | 2026-10-22 | 2026-11-12 | `base_legal` em `dados/campanhas.json`; troca diária do público pode ir para produção |
 
 ### Needs Gui's decision
@@ -47,7 +48,8 @@ Last updated: 2026-11-12 by Claude Code
 - Re-teste do Designer (imagens reais, 2 criativos) — só com OK do Gui — desde 2026-10-19.
 
 ### Next up (agent can do now)
-1. Quando o Gui trouxer a fonte do mailing (sistema da DDM): ligar em `audiencia_sync.py` (`--api` ou `--base`) e rodar em dry-run — ~15–30 min
+1. Quando o Jair mandar os dados do SFTP: configurar e rodar `audiencia_sync.py --sftp` em dry-run; ajustar se o arquivo não for CSV — ~15–30 min
+1b. Enquanto isso, se o Gui baixar um arquivo pela tela de carga do sistema: dry-run com `--base` para conferir colunas e formato — ~5 min
 2. Material de treino do planejamento (OK do dia, painel) — quando o Gui pedir
 
 ### Blocked / at risk
@@ -61,6 +63,7 @@ Last updated: 2026-11-12 by Claude Code
 - Paperclip: skills atualizadas e regra de verba nos AGENTS.md (2026-11-10)
 - Push resolvido (colaborador no repo certo), 13 commits enviados; `ddm-audiencia-crm` no Paperclip com o `--api` (2026-11-11)
 - `audiencia_sync.py --api` (2026-11-11)
+- `audiencia_sync.py --sftp` + chave do agente criada no Mac (2026-11-13)
 - Gustavo confirmou: R$ 100/dia é a soma de todas as campanhas ativas, igual à trava de `meta_publicar.py` e ao AGENTS.md (2026-11-11)
 
 ## 3. Log
@@ -142,6 +145,10 @@ Last updated: 2026-11-12 by Claude Code
 - (time not recorded, ~15 min) — Deploy do login: o "Atualizar do remoto" do cPanel parou porque havia um `.htaccess` vazio fora do git no servidor; Gui moveu para `~/htaccess-vazio-backup` e fez `git pull` pelo Terminal (PHP 8.2.35, mbstring e posix OK). Conferido de fora: tudo sem login dá 401/303, cookie com Secure. Gui criou o admin dele e entrou (Claude Code + Gui)
 - (time not recorded, ~45 min est.) — Gui achou feio o "Conectado" no rodapé: virou um botão de perfil (iniciais, nome, papel) que abre **Configurações** dentro do painel, com abas Conta (nome, senha, sessão, privacidade), Usuários (adicionar, nova senha temporária, desativar/reativar), Registro de acessos (filtros, integridade, CSV) e Sistema; `acesso/api.php` (JSON, CSRF por cabeçalho); `admin.php` agora leva para lá; `eu.php` removido. Testes no Apache ampliados (usuário comum sem acesso a usuários/registro, desativado perde a sessão na hora, POST sem CSRF recusado); capturas conferidas com dados falsos (Claude Code)
 - Open: Gui atualiza o site de novo (Configurações) · fonte do mailing (Gui) · base legal + autorização da Cruzeiro (Gui com Gustavo e o jurídico)
+
+## 2026-11-13 (Friday) — Base do dia pelo SFTP do sistema (~30 min, est.)
+- (time not recorded, ~30 min est.) — Jair (12/11): o mailing sai do sistema por SFTP (programa ou FileZilla) ou, um arquivo por vez, pela tela de carga. `audiencia_sync.py --sftp`: usa o `sftp` do próprio Mac (sem biblioteca nova), entra só com chave, só lista e baixa; pega o arquivo mais novo do padrão (aceita `*` e data do dia), recusa arquivo com mais de 30 h, grava a chave do servidor na 1ª conexão e para se ela mudar; o arquivo passa por uma pasta temporária 0700 e é apagado no fim. CSV agora também lê Windows-1252. Testado num servidor SFTP local só-SFTP com dados falsos: 11 casos (mais novo pelo `*`, data do dia, arquivo velho, sem arquivo, chave recusada, chave do servidor trocada, porta fechada, caminho com espaço, injeção no host/caminho), nenhuma pasta temporária sobrou. Skill `ddm-audiencia-crm`: SFTP como 1ª fonte, só dry-run até o Jair confirmar que o arquivo é a lista completa. Chave do agente criada no Mac (`~/.ssh/ddm_sftp`); mensagem ao Jair pronta com o Gui (Claude Code)
+- Open: dados do SFTP + lista completa ou não (Jair) · Gui atualiza o site (Configurações) · base legal (Gui com Gustavo e o jurídico)
 
 ## 4. Summary (2026-10-19 → today)
 - Total time: ~2 h 10 min (estimated; sum of the day totals 2026-10-19 → 2026-10-28; earlier history is in `HANDOFF.md` section 9, not counted)

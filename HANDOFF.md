@@ -23,7 +23,7 @@ Exemplo real mostrado pelo Gustavo: R$ 3.888 gastos → 2.291 pessoas no DDMP (�
 |---|---|
 | Repo | `iaeautomacao-lgtm/agente-trafego-hermes` (**público**) · clone no Mac: `~/Downloads/Agente-Trafego-main` |
 | Skills (fonte da verdade) | `skills/trafego-pago/ddm-*/SKILL.md` (9 skills) |
-| Scripts | `audiencia_sync.py` (troca o público: CSV → hash → `usersreplace`; dry-run/mock/executar; trava de 30%; exige base legal) · `resultados_ddmp.py` (gasto Meta + visitas/acordos DDMP por criativo) · `utm.py` (monta/confere links) · `meta_publicar.py` (spec `adicionar`/`pausar` do dia, ou campanha nova; sempre PAUSED; recusa link sem rastreio) · `gerar_arte.py` (Gemini) · `jev_risk_score.py` (Jev) · `testar_chaves.py` · `_env.py` |
+| Scripts | `audiencia_sync.py` (troca o público: CSV, API ou SFTP do sistema → hash → `usersreplace`; dry-run/mock/executar; trava de 30%; exige base legal) · `resultados_ddmp.py` (gasto Meta + visitas/acordos DDMP por criativo) · `utm.py` (monta/confere links) · `meta_publicar.py` (spec `adicionar`/`pausar` do dia, ou campanha nova; sempre PAUSED; recusa link sem rastreio) · `gerar_arte.py` (Gemini) · `jev_risk_score.py` (Jev) · `testar_chaves.py` · `_env.py` |
 | Dados do painel | `dados/campanhas.json` v2 (clientes → público + campanha sempre ligada → criativos + resultados; `ok_diario`), schema em `dados/README.md`; simulação em `dados/exemplo-simulado.json` |
 | Bases e exports (fora do git) | `~/ddm-crm/<cliente>/<data>.csv` (CRM), `~/ddm-crm/ddmp/<data>.csv`, `~/ddm-crm/meta/<cliente>-<data>.csv` |
 | Painel | `index.html` → https://agente.trafego.grupoddm.ia.br · tema claro (padrão) / escuro no topo · `?sim=1` abre a simulação |
